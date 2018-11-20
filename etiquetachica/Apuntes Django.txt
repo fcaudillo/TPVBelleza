@@ -17,3 +17,6 @@ Entonces ahora desde la maquina host. Podemos accesar asi.
 http://127.0.0.1:8001/consulta/
 
 
+git config --global http.sslVerify false
+
+
