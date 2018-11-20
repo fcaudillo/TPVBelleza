@@ -1,0 +1,19 @@
+sudo apt-get install python-pip python-dev build-essential
+pip install Django
+pip install djangorestframework
+
+ django-admin startproject consultaprecio
+./manage.py startapp precios
+
+
+//Ejecutar el servidor. Con esto se puede accesar el servidor desde el puerto 8001 segun lo que 
+// se tiene configurado en vagrant.
+config.vm.network "forwarded_port", host: 8001, guest: 8000
+
+./manage.py runserver 0.0.0.0:8000
+
+Entonces ahora desde la maquina host. Podemos accesar asi.
+
+http://127.0.0.1:8001/consulta/
+
+

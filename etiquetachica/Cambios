@@ -1,0 +1,173 @@
+   
+    compraactivity
+	
+   //FDCP Click en el carrito de compras.
+    private View.OnClickListener carritoClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Boletos boletos = getDatosBoletos();
+            Intent intent = new Intent(CompraActivity.this,CarritoActivity.class);
+            intent.putExtra("Boletos",boletos);
+            //FDCP AQUI COLOCAR TODOS LOS DATOS PARA LLAMAR A saveTransaction.
+            SeatsSelectResponse seatsSelectResponse = getPresenter().getPresentationModel().getSeatsSelectResponse();
+            ShowtimeDetails showtimeDetails = getPresenter().getPresentationModel().getShowtimeDetails();
+            SeatsLayout seatsLayout = getPresenter().getPresentationModel().getSeatsResponse().getSeatsLayout();
+            List<TicketSelected> selectedTickets = getPresenter().getPresentationModel().getTicketsSelected();
+
+            Transaction transaction = getPresenter().populateTransaction(seatsSelectResponse,showtimeDetails,seatsLayout, selectedTickets,"",null);
+            //FIN FDCP
+            intent.putExtra("TipoCompra", TipoCompra.BOLETOS_ALIMENTOS);
+            intent.putExtra("isBuyWithAnnualPass",isBuyWithAnnualPass());
+            intent.putExtra("transaction", transaction);
+            startActivityForResult(intent,SessionTimerListener.SESSION_INTENT);
+        }
+    };
+	
+	
+	
+	public class CarritoActivity extends BaseFragmentActivity implements SessionTimerListener {
+    @Override
+    protected Fragment getInitialFragment() {
+        Transaction transaction = (Transaction) getIntent().getSerializableExtra("transaction");
+		
+		CarritoFragment.
+    @Override
+    public void onOrdenGenerada(OrderResponse orderResponse) {
+         Transaction transaction = (Transaction) getArguments().getSerializable("transacction");		
+		 
+		 
+		   public void saveTransaction(Transaction tr){
+        open();
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Transaction transaction = realm.createObject(Transaction.class);
+                transaction.setMovieID(tr.getMovieID());
+                transaction.setMovieName(tr.getMovieName());
+                transaction.setShowtimeID(tr.getShowtimeID());
+                transaction.setShowtime(tr.getShowtime());
+                transaction.setBookingId(tr.getBookingId());
+                transaction.setBookingNumber(tr.getBookingNumber());
+                transaction.setCinemaName(tr.getCinemaName());
+                transaction.setCinemaVistaId(tr.getCinemaVistaId());
+                transaction.setPoster(tr.getPoster());
+                transaction.setScreen(tr.getScreen());
+                transaction.setTotal(tr.getTotal());
+
+                transaction.setPaymentMethod(tr.getPaymentMethod());
+                transaction.setSeats(tr.getSeats());
+
+
+                transaction.setTransactionNumber(tr.getTransactionNumber());
+
+                transaction.setReservationDate(tr.getReservationDate());
+
+                RealmList<Boleto> boletos = new RealmList<>();
+                for(Boleto bol: transaction.getTickets()){
+                    Boleto boleto = realm.createObject(Boleto.class);
+                    boleto.setDescription(bol.getDescription());
+                    boleto.setPrice(bol.getPrice());
+                    boletos.add(boleto);
+                }
+
+                transaction.setTickets(boletos);
+                realm.copyToRealm(transaction);
+            }
+        });
+		
+		
+		paymentInteractor.
+		
+    public Transaction populateTransaction(SeatsSelectResponse seatsSelectResponse, ShowtimeDetails showtimeDetails, SeatsLayout seatsLayout, List<TicketSelected> selectedTickets, String paymentMethod, ConcessionDataResponse concessionData) {
+        Transaction transaction = new Transaction();
+        transaction.setMovieID(Integer.toString(showtimeDetails.getMovie().getId()));
+        transaction.setMovieName(showtimeDetails.getMovie().getName());
+        transaction.setShowtimeID(showtimeDetails.getShowtime().getVistaId());
+        transaction.setShowtime(showtimeDetails.getShowtime().getDatetime());
+        //transaction.setBookingId(compraResponse.getBookingId());
+        //transaction.setBookingNumber(compraResponse.getBookingNumber());
+        transaction.setCinemaName(showtimeDetails.getCinema().getName());
+        transaction.setCinemaVistaId(showtimeDetails.getCinema().getVistaId());
+        transaction.setPoster(showtimeDetails.getMovie().getPoster());
+        transaction.setScreen(showtimeDetails.getShowtime().getScreen());
+        if (seatsSelectResponse != null)
+        {
+            transaction.setTotal(seatsSelectResponse.getTotalValue());
+        }
+        else
+        {
+            long total = 0;
+            for (TicketSelected ticketSelected : selectedTickets) {
+                if (ticketSelected.getQuantity() > 0) {
+                    total = total + ticketSelected.getPrice() * ticketSelected.getQuantity() / 100;
+                }
+            }
+            transaction.setTotal(total);
+        }
+        transaction.setPaymentMethod(paymentMethod);
+
+        String seatsString = "";
+        if (seatsSelectResponse != null)
+        {
+            for(SeatSelected seatSelected: seatsSelectResponse.getTickets()){
+                Area area = seatsLayout.findArea(seatSelected.getAreaCategoryCode());
+                if(area!=null) {
+                    String seatString = "";
+                    List<SeatsRow> seatsRows = new ArrayList<>();
+                    rx.Observable.from(area.getRows())
+                            .filter(seatsRow -> seatsRow.getSeats().get(0).getPosition().getRowIndex() == seatSelected.getRowIndex())
+                            .subscribe(seatsRows::add);
+                    if(seatsRows.size()>0){
+                        SeatsRow seatsRow = seatsRows.get(0);
+                        seatString = seatsRow.getPhysicalName();
+                        List<Seat> seats = new ArrayList<>();
+                        rx.Observable.from(seatsRow.getSeats())
+                                .filter(seat -> seat.getPosition().getColumnIndex() == seatSelected.getColumnIndex())
+                                .subscribe(seats::add);
+                        if(seats.size()>0){
+                            seatString =  seatString.concat(seats.get(0).getId() + ", ");
+                        }
+                    }
+                    seatsString = seatsString.concat(seatString);
+                }
+            }
+        }
+
+        if (!TextUtils.isEmpty(seatsString))
+        {
+            transaction.setSeats(seatsString.substring(0, seatsString.length()-2));
+        }
+
+
+        //transaction.setTransactionNumber(compraResponse.getTransactionNumber());
+
+        SimpleDateFormat s = new SimpleDateFormat(App.getInstance().getApplicationContext().getString(R.string.date_format));
+        String format = s.format(new Date());
+        transaction.setReservationDate(format);
+
+        RealmList<Boleto> boletos = new RealmList<>();
+        for(TicketSelected ticketSelected: selectedTickets){
+            Boleto boleto = new Boleto();
+            boleto.setDescription(ticketSelected.getTypeTicket() + " (" + ticketSelected.getQuantity() + ")");
+            boleto.setPrice(ticketSelected.getPrice());
+            boletos.add(boleto);
+        }
+
+        if(concessionData!=null) {
+            if (concessionData.getConcessions() != null) {
+                for (Concession concession : concessionData.getConcessions()) {
+                    Boleto boletoConcesion = new Boleto();
+                    boletoConcesion.setDescription(concession.getName() + " (" + concession.getQuantity() + ")");
+                    boletoConcesion.setPrice(concessionData.getConcessionsTotal());
+                    boletos.add(boletoConcesion);
+                }
+            }
+        }
+
+        transaction.setTickets(boletos);
+
+        return transaction;
+
+    }
+
+    }
