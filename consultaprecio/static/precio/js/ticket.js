@@ -68,14 +68,14 @@ $(document).ready(function() {
 				sortable: true,
 				title: 'Precio venta',
 				formatter: function(value, row, index) {
-							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + '</div>';
+							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
 						  }
 			}, {
 				field: 'total',
 				sortable: true,
 				title: 'Total',
 				formatter: function(value, row, index) {
-							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('en-US', { style: 'currency', currency: 'USD' }) + '</div>';
+							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
 						  }
 			}],
 			data: [],
@@ -265,6 +265,10 @@ $(document).ready(function() {
 				data: jsonData, // Some data e.g. Valid JSON as a string
 				success: function (response) {
 					$('#ventaTabla').bootstrapTable('removeAll');
+					var data = $tableVenta.bootstrapTable('getData');
+			                total = calculaGranTotal(data);
+			                $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
+
 					alert("Venta registrada");
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
