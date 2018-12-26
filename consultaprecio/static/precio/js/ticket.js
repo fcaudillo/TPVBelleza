@@ -264,8 +264,8 @@ $(document).ready(function() {
 				headers: {"X-HTTP-Method-Override": "PUT", "X-CSRFToken": $.cookie("csrftoken")}, // X-HTTP-Method-Override set to PUT.
 				data: jsonData, // Some data e.g. Valid JSON as a string
 				success: function (response) {
-					
-					alert("Details saved successfully!!!");
+					$('#ventaTabla').bootstrapTable('removeAll');
+					alert("Venta registrada");
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
 					alert(xhr.status);
