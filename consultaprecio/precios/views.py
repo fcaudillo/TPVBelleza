@@ -96,3 +96,14 @@ class FindProductView(TemplateView):
       print vta.codigo, vta.description
       context['tipo_movimiento'] = vta
       return context
+
+
+class ChangeProductView(TemplateView):
+   template_name = 'precios/cambioprecio.html'
+   def get_context_data(self, **kwargs):
+      context = super(TemplateView, self).get_context_data(**kwargs)
+      vta = TipoMovimiento.objects.filter(codigo='VTA')[0]
+      print vta
+      print vta.codigo, vta.description
+      context['tipo_movimiento'] = vta
+      return context
