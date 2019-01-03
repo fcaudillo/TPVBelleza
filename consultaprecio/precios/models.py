@@ -36,6 +36,33 @@ class MovimientoManager(models.Manager):
       mov.save()
       return mov;
 
+   def create_for_cambios (self, data):
+      tipo_mov = TipoMovimiento.objects.get(id=data['tipo_movimiento'])
+      user = User.objects.all()[0]
+      mov = self.create(tipo_movimiento = tipo_mov,total = data['total'], fecha = datetime.date.today(), user = user);
+      totalCompra = 0
+      totalVenta = 0
+      for item in data['items']:
+         item['movimiento'] = mov.id
+         producto = Producto.objects.filter(barcode=item['barcode'])[0]
+         item['__tipo_movimiento'] = tipo_mov.codigo
+         item['__precioVenta'] = producto.precioVenta
+         item['__precioCompra'] = producto.precioCompra
+         DetalleMovimiento.objects.create_from_json(item)
+         precioCompra = producto.precioCompra
+         precioVenta = producto.precioVenta
+         if tipo_mov.codigo == 'VTA':
+            precioVenta = item['precioVenta']
+         totalCompra = totalCompra + (item['cantidad'] * precioCompra)
+         totalVenta = totalVenta + (item['cantidad'] * precioVenta)
+         if tipo_mov.factor != 0:
+            
+            producto.existencia = producto.existencia + (item['cantidad'] * tipo_mov.factor)
+            producto.save()
+      mov.totalCompra = totalCompra
+      mov.totalVenta = totalVenta
+      mov.save()
+      return mov;
 	  
 class DetalleMovimientoManager(models.Manager):
    def create_from_json(self, data):

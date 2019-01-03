@@ -1,10 +1,7 @@
-
-function calculaGranTotal(data) {
-	var producto = null;
-	var total = 0;
+function calculaGranTotal(data) { var producto = null; var total = 0;
 	for (item in data) {
 		producto = data[item];
-		total = total + (producto.cantidad * producto.precioVenta)  
+		total = total + (producto.cantidad * producto.precioCompra)  
 	}	
 	return total;
 }
@@ -52,7 +49,7 @@ $(document).ready(function() {
 						var data = $('#ventaTabla').bootstrapTable('getData'),
 							index = $(this).parents('tr').data('index');
 						data[index].cantidad = parseInt(value);
-						data[index].total = data[index].cantidad * data[index].precioVenta;
+						data[index].total = data[index].cantidad * data[index].precioCompra;
 						$tableVenta.bootstrapTable('updateRow', {
 							index: parseInt(index),
 							row: data[index]
@@ -62,18 +59,106 @@ $(document).ready(function() {
 			}, {
 				field: 'description',
 				sortable: true,
-				title: 'Descripcion'
+				title: 'Descripcion',
+
+
+				editable: {
+					type: 'text',
+					title: 'Descripcion',
+					send: 'never',
+					url: '',
+					validate: function (value) {
+						value = $.trim(value);
+						if (!value) {
+							return 'La descripcion es requerida';
+						}
+  
+						var data = $('#ventaTabla').bootstrapTable('getData'),
+						index = $(this).parents('tr').data('index');
+						data[index].description = value;
+						$tableVenta.bootstrapTable('updateRow', {
+							index: parseInt(index),
+							row: data[index]
+						});	
+					}
+				}
+
 			}, {
+
+
+				field: 'precioCompra',
+				sortable: true,
+				title: 'Precio compra',
+
+
+				editable: {
+					type: 'text',
+					title: 'Precio compra',
+					send: 'never',
+					url: '',
+					success : function (response, newValue) {
+					   var data = $('#ventaTabla').bootstrapTable('getData');
+					   total = calculaGranTotal(data);
+					   $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
+					},
+					validate: function (value) {
+						value = $.trim(value);
+						if (!value) {
+							return 'El precio es requerido';
+						}
+						if (!/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(value)) {
+							return 'Ingrese una cantida correcta'
+						}
+						var data = $('#ventaTabla').bootstrapTable('getData'),
+							index = $(this).parents('tr').data('index');
+						data[index].precioCompra = parseFloat(value);
+						data[index].total = data[index].cantidad * data[index].precioCompra;
+						$tableVenta.bootstrapTable('updateRow', {
+							index: parseInt(index),
+							row: data[index]
+						});	
+					}
+				}
+
+                        },{
 				field: 'precioVenta',
 				sortable: true,
 				title: 'Precio venta',
-				formatter: function(value, row, index) {
-							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
-						  }
+
+				editable: {
+					type: 'text',
+					title: 'Precio venta',
+					send: 'never',
+					url: '',
+					success : function (response, newValue) {
+					   var data = $('#ventaTabla').bootstrapTable('getData');
+					   total = calculaGranTotal(data);
+					   $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
+					},
+					validate: function (value) {
+						value = $.trim(value);
+						if (!value) {
+							return 'El precio es requerido';
+						}
+						if (!/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/.test(value)) {
+							return 'Ingrese una cantida correcta'
+						}
+						var data = $('#ventaTabla').bootstrapTable('getData'),
+							index = $(this).parents('tr').data('index');
+						data[index].precioVenta = parseFloat(value);
+						data[index].total = data[index].cantidad * data[index].precioCompra;
+						$tableVenta.bootstrapTable('updateRow', {
+							index: parseInt(index),
+							row: data[index]
+						});	
+					}
+				}
+
+
 			}, {
 				field: 'total',
 				sortable: true,
-				title: 'Total',
+				title: 'Total COMPRA',
 				formatter: function(value, row, index) {
 							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
 						  }
@@ -117,12 +202,22 @@ $(document).ready(function() {
 				sortable: true,
 				title: 'Descripcion'
 			}, {
+				field: 'precioCompra',
+				sortable: true,
+				title: 'Precio compra',
+				formatter: function(value, row, index) {
+							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
+						  }
+			}, {
+                           
 				field: 'precioVenta',
 				sortable: true,
 				title: 'Precio venta',
 				formatter: function(value, row, index) {
-							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
-						  }
+
+			                                return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
+			                  }
+
 			}],
 			data: result,
 			search : true,
@@ -154,8 +249,9 @@ $(document).ready(function() {
 						cantidad: 1,
 						barcode: $el.barcode,
 						description: 'Item ' + $el.description,
+                                                precioCompra: $el.precioCompra,
 						precioVenta: $el.precioVenta,
-						total: $el.precioVenta * 1
+						total: $el.precioCompra * 1
 					}
 				});	
                 $tableVenta.bootstrapTable('scrollTo', 'bottom');
