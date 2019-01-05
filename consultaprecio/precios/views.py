@@ -34,7 +34,8 @@ def guarda_ticket(request):
      received_json_data=json.loads(request.body)
      print received_json_data
      print "saludos"
-     Movimiento.objects.create_from_json(received_json_data)
+     mov = Movimiento.objects.create_from_json(received_json_data)
+     print mov
      return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
    
 class LoadDataView(View):   
@@ -103,7 +104,9 @@ class ChangeProductView(TemplateView):
    def get_context_data(self, **kwargs):
       context = super(TemplateView, self).get_context_data(**kwargs)
       vta = TipoMovimiento.objects.filter(codigo='VTA')[0]
+      catalogo = list(TipoMovimiento.objects.all())
       print vta
       print vta.codigo, vta.description
       context['tipo_movimiento'] = vta
+      context['catalogo_tipos_mov'] = catalogo
       return context

@@ -71,6 +71,15 @@
 		</div>	
 	
 	<!-- fin dialog consulta precio -->
+        <label> Tipo de Movimiento </label>
+        <select id='tipoMov' >
+           {% for item in catalogo_tipos_mov %}
+             {% if 'VTA' != item.codigo %}
+                <option value='{{ item.id }}'> {{ item.description }} </option>
+             {% endif %}
+           {% endfor %}
+
+        </select>
 	
 	<div id="toolbar" class="btn-group">
 		<button id="btnCobrar" type="button" class="btn btn-default">

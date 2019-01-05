@@ -17,64 +17,39 @@ class MovimientoManager(models.Manager):
       for item in data['items']:
          item['movimiento'] = mov.id
          producto = Producto.objects.filter(barcode=item['barcode'])[0]
-         item['__tipo_movimiento'] = tipo_mov.codigo
-         item['__precioVenta'] = producto.precioVenta
-         item['__precioCompra'] = producto.precioCompra
-         DetalleMovimiento.objects.create_from_json(item)
-         precioCompra = producto.precioCompra
-         precioVenta = producto.precioVenta
+
+         print 'MovimientoManager', tipo_mov
+         
          if tipo_mov.codigo == 'VTA':
-            precioVenta = item['precioVenta']
-         totalCompra = totalCompra + (item['cantidad'] * precioCompra)
-         totalVenta = totalVenta + (item['cantidad'] * precioVenta)
-         if tipo_mov.factor != 0:
-            
+            print "Es una venta"
             producto.existencia = producto.existencia + (item['cantidad'] * tipo_mov.factor)
             producto.save()
-      mov.totalCompra = totalCompra
-      mov.totalVenta = totalVenta
-      mov.save()
+
+         if tipo_mov.codigo != 'VTA':
+           print "No es venta"
+           producto.precioVenta = item['precioVenta']
+           producto.precioCompra = item['precioCompra']
+           producto.description = item['description']
+           producto.existencia = producto.existencia + (item['cantidad'] * tipo_mov.factor)
+           print "Existencia actual ", producto.existencia
+           producto.save()
+           print "Guardo el producto"
+            
+
+         item['__tipo_movimiento'] = tipo_mov.codigo
+         DetalleMovimiento.objects.create_from_json(item)
+         
       return mov;
 
-   def create_for_cambios (self, data):
-      tipo_mov = TipoMovimiento.objects.get(id=data['tipo_movimiento'])
-      user = User.objects.all()[0]
-      mov = self.create(tipo_movimiento = tipo_mov,total = data['total'], fecha = datetime.date.today(), user = user);
-      totalCompra = 0
-      totalVenta = 0
-      for item in data['items']:
-         item['movimiento'] = mov.id
-         producto = Producto.objects.filter(barcode=item['barcode'])[0]
-         item['__tipo_movimiento'] = tipo_mov.codigo
-         item['__precioVenta'] = producto.precioVenta
-         item['__precioCompra'] = producto.precioCompra
-         DetalleMovimiento.objects.create_from_json(item)
-         precioCompra = producto.precioCompra
-         precioVenta = producto.precioVenta
-         if tipo_mov.codigo == 'VTA':
-            precioVenta = item['precioVenta']
-         totalCompra = totalCompra + (item['cantidad'] * precioCompra)
-         totalVenta = totalVenta + (item['cantidad'] * precioVenta)
-         if tipo_mov.factor != 0:
-            
-            producto.existencia = producto.existencia + (item['cantidad'] * tipo_mov.factor)
-            producto.save()
-      mov.totalCompra = totalCompra
-      mov.totalVenta = totalVenta
-      mov.save()
-      return mov;
 	  
 class DetalleMovimientoManager(models.Manager):
    def create_from_json(self, data):
+      print "detalle movimiento save"
+      print data
       movimiento = Movimiento.objects.get(id=data['movimiento'])
       tipo_movimiento = data['__tipo_movimiento']
-      precioVenta = data['__precioVenta']
-      precioCompra = data['__precioCompra']
-      if tipo_movimiento == 'VTA':
-         precioVenta = data['precioVenta']
-	     
-      print "movimiento "
-      print movimiento
+      precioVenta = data['cantidad'] * data['precioVenta']
+      precioCompra = data['cantidad'] * data['precioCompra']
       det = self.create(movimiento = movimiento, barcode = data['barcode'], description = data['description'], cantidad = data['cantidad'], precioCompra = precioCompra, precioVenta = precioVenta)
       return det
 	  
@@ -86,6 +61,13 @@ class Producto (models.Model):
    existencia = models.IntegerField(default=0)
    precioCompra = models.DecimalField(max_digits=5, decimal_places=2)
    precioVenta =models.DecimalField(max_digits=5, decimal_places=2)
+  
+   @staticmethod 
+   def findByBarcode(codigo):
+     return Producto.objects.filter(barcode = codigo)[0]
+
+   def __str__(self):
+    return 'barcode: %s, descricion: %s, existencia :  %d, precioCompra : %f, precioVenta: %f \n' % (self.barcode, self.description, self.existencia, self.precioCompra, self.precioVenta)
    
    def as_dict(self):
       return {
@@ -103,7 +85,7 @@ class TipoMovimiento (models.Model):
     description = models.CharField(max_length=255)
     factor = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     def __str__(self):
-	 return self.description
+	 return 'Codigo : %s, Descripcion : %s, factor: %f \n' % (self.codigo, self.description, self.factor)
 
 class Movimiento (models.Model):
     id = models.AutoField(primary_key=True)
@@ -112,6 +94,14 @@ class Movimiento (models.Model):
     fecha =  models.DateTimeField(blank=False, null=False)
     user =  models.ForeignKey(User,null=True) 
     objects = MovimientoManager()
+
+    def __str__(self):
+      items = list(DetalleMovimiento.objects.filter(movimiento = self.id))
+      detalle = ''
+      for item in items:
+         detalle = detalle + str(item) 
+      
+      return 'id : %d , Tipo Mov: %s , total : %f \n Detalle: \n %s' % (self.id, self.tipo_movimiento.description, self.total, detalle)
 	  
 class DetalleMovimiento (models.Model):
    id = models.AutoField(primary_key=True)
@@ -122,6 +112,9 @@ class DetalleMovimiento (models.Model):
    precioCompra = models.DecimalField(default=0, max_digits=5, decimal_places=2)
    precioVenta =models.DecimalField(default=0, max_digits=5, decimal_places=2)
    objects = DetalleMovimientoManager()
+
+   def __str__(self):
+     return '   barcode : %s , description : %s, cantidad : %f, precioCompra : %f, precioVenta : %f \n ' % (self.barcode, self.description, self.cantidad, self.precioCompra, self.precioVenta)
    
    def as_dict(self):
       return {

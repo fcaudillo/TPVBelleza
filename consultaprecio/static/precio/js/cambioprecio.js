@@ -348,7 +348,7 @@ $(document).ready(function() {
 	$( "#btnCobrar" ).click(function() {
 		    var data = $tableVenta.bootstrapTable('getData');
 			var ticket = {
-			   tipo_movimiento : venta_tipo_mov,
+			   tipo_movimiento : $('#tipoMov').val(),
 			   total : calculaGranTotal(data),
 			   items : data
 			}
