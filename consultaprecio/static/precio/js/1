@@ -365,7 +365,7 @@ $(document).ready(function() {
 					var data = $tableVenta.bootstrapTable('getData');
 			                total = calculaGranTotal(data);
 			                $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
-
+                                        $('#mov_description').val('');
 					alert("Venta registrada");
 				},
 				error: function (xhr, ajaxOptions, thrownError) {

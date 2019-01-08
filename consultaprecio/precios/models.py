@@ -11,7 +11,7 @@ class MovimientoManager(models.Manager):
    def create_from_json(self, data):
       tipo_mov = TipoMovimiento.objects.get(id=data['tipo_movimiento'])
       user = User.objects.all()[0]
-      mov = self.create(tipo_movimiento = tipo_mov,total = data['total'], fecha = datetime.date.today(), user = user);
+      mov = self.create(tipo_movimiento = tipo_mov,total = data['total'], description = data['descripcion'],  fecha = datetime.date.today(), user = user);
       totalCompra = 0
       totalVenta = 0
       for item in data['items']:
@@ -59,9 +59,12 @@ class Producto (models.Model):
    barcode = models.CharField(max_length =30, unique=True)
    description = models.CharField(max_length=255)
    existencia = models.IntegerField(default=0)
+   minimoexist = models.IntegerField(default=0)
    precioCompra = models.DecimalField(max_digits=5, decimal_places=2)
    precioVenta =models.DecimalField(max_digits=5, decimal_places=2)
-  
+   falta =  models.DateTimeField(blank=False, null=False)
+   fmodificacion =  models.DateTimeField(blank=False, null=False)
+
    @staticmethod 
    def findByBarcode(codigo):
      return Producto.objects.filter(barcode = codigo)[0]
@@ -90,6 +93,7 @@ class TipoMovimiento (models.Model):
 class Movimiento (models.Model):
     id = models.AutoField(primary_key=True)
     tipo_movimiento = models.ForeignKey(TipoMovimiento)
+    description = models.CharField(max_length=255)
     total = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     fecha =  models.DateTimeField(blank=False, null=False)
     user =  models.ForeignKey(User,null=True) 
@@ -101,7 +105,7 @@ class Movimiento (models.Model):
       for item in items:
          detalle = detalle + str(item) 
       
-      return 'id : %d , Tipo Mov: %s , total : %f \n Detalle: \n %s' % (self.id, self.tipo_movimiento.description, self.total, detalle)
+      return 'id : %d , Tipo Mov: %s , total : %f, descripcion: %s \n Detalle: \n %s' % (self.id, self.tipo_movimiento.description, self.total, self.description,  detalle)
 	  
 class DetalleMovimiento (models.Model):
    id = models.AutoField(primary_key=True)
