@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from precios.views import FindProductView, FindView, LoadDataView,ChangeProductView
-from precios.views import find_consulta, find_all, guarda_ticket
+from precios.views import find_consulta, find_all, guarda_ticket, guarda_producto
 
 
 urlpatterns = [
@@ -25,6 +25,7 @@ urlpatterns = [
 	url('find/(?P<barcode>\w+)/$',find_consulta),
 	url('find/$',find_all),
 	url('tickets/add',guarda_ticket),
+        url('producto/add',guarda_producto),
 	url('encuentra/(?P<barcode>\w+)/$',FindView.as_view()),
 	url(r'consulta/',FindProductView.as_view()),
 	url(r'cambioprecio/',ChangeProductView.as_view())

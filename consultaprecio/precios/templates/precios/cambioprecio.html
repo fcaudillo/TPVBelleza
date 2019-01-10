@@ -41,8 +41,12 @@
 		<!-- Button -->
 		<div class="form-group">
 		  <label class="col-md-4 control-label" ></label>
-		  <div class="col-md-4">
+		  <div class="col-md-2">
 			<button class="btn btn-primary" id="btnSearch">Buscar</button>
+		  </div>
+
+		  <div class="col-md-2">
+			<button class="btn" id="btnCrearProducto">Agregar producto</button>
 		  </div>
 		</div>
 
@@ -71,6 +75,130 @@
 		</div>	
 	
 	<!-- fin dialog consulta precio -->
+
+
+	<!-- Dialog  crear producto -->
+		<div id="modalCrearProducto" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Creacion del producto </h4>
+					</div>
+					<div class="modal-body">
+				              	<div class="row row-space">
+								<div class="col-md-3">
+									<label class="control-label" for="c_codigobarras"> Codigo Barras:
+										<span class="required form-text">*</span></label>
+								</div>
+								<div class="col-md-9">
+									<input class="form-control" id="c_codigobarras" name="c_codigobarras"
+										maxlength="300" placeholder="Codigo de barras" type="text">
+									<small class="form-text form-text-error"></small>
+								</div>
+						</div>
+
+
+				              	<div class="row row-space">
+								<div class="col-md-3">
+									<label class="control-label" for="c_descripcion"> Descripcion:
+										<span class="required form-text">*</span></label>
+								</div>
+								<div class="col-md-9">
+									<input class="form-control" id="c_descripcion" name="c_descripcion"
+										maxlength="300" placeholder="Descripcion" type="text">
+									<small class="form-text form-text-error"></small>
+                                                                </div>
+	
+						</div>
+
+
+				              	<div class="row row-space">
+								<div class="col-md-3">
+									<label class="control-label" for="c_categoria"> Categoria:
+										<span class="required form-text">*</span></label>
+								</div>
+								<div class="col-md-9">
+                                                                        
+                                                                    <select id='c_categoria' >
+                                                                         {% for item in categorias %}
+                                                                               <option value='{{ item.id }}'> {{ item.description }} </option>
+                                                                         {% endfor %}
+
+                                                                   </select>
+						                   <small class="form-text form-text-error"></small>
+                                                                </div>
+	
+						</div>
+
+
+				              	<div class="row row-space">
+								<div class="col-md-3">
+									<label class="control-label" for="c_precioCompra"> Precio Compra:
+										<span class="required form-text">*</span></label>
+								</div>
+								<div class="col-md-9">
+									<input class="form-control" id="c_precioCompra" name="c_precioCompra"
+										maxlength="300" placeholder="" type="text">
+									<small class="form-text form-text-error"></small>
+                                                                </div>
+	
+						</div>
+
+
+				              	<div class="row row-space">
+								<div class="col-md-3">
+									<label class="control-label" for="c_precioVenta"> Precio Venta:
+										<span class="required form-text">*</span></label>
+								</div>
+								<div class="col-md-9">
+									<input class="form-control" id="c_precioVenta" name="c_precioVenta"
+										maxlength="300" placeholder="" type="text">
+									<small class="form-text form-text-error"></small>
+                                                                </div>
+	
+						</div>
+
+
+
+				              	<div class="row row-space">
+								<div class="col-md-3">
+									<label class="control-label" for="c_puntoreorden"> Punto reorden:
+										<span class="required form-text">*</span></label>
+								</div>
+								<div class="col-md-9">
+									<input class="form-control" id="c_puntoreorden" name="c_puntoreorden"
+										maxlength="300" placeholder="" type="text">
+									<small class="form-text form-text-error"></small>
+                                                                </div>
+	
+						</div>
+
+
+
+				              	<div class="row row-space">
+								<div class="col-md-3">
+									<label class="control-label" for="c_ubicacion"> Ubicacion:
+										<span class="required form-text">*</span></label>
+								</div>
+								<div class="col-md-9">
+									<input class="form-control" id="c_ubicacion" name="c_ubicacion"
+										maxlength="300" placeholder="" type="text">
+									<small class="form-text form-text-error"></small>
+                                                                </div>
+	
+						</div>
+
+                                        </div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-primary" id="btnInsertarProduto">Crear producto </button>
+					</div>
+				</div>
+			</div>
+		</div>	
+        <!-- Fin de dialogo crear producto -->	
+
         <label> Tipo de Movimiento </label>
         <select id='tipoMov' >
            {% for item in catalogo_tipos_mov %}

@@ -74,7 +74,7 @@ function fill_table_products() {
 }
 
 $(document).ready(function() {
-
+        $.extend($.fn.bootstrapTable.defaults, $.fn.bootstrapTable.locales['es-MX']);
         inicializa_table_products();
 
 	$('#ventaTabla').bootstrapTable({
@@ -263,7 +263,7 @@ $(document).ready(function() {
 					row: {
 						cantidad: 1,
 						barcode: $el.barcode,
-						description: 'Item ' + $el.description,
+						description: $el.description,
                                                 precioCompra: $el.precioCompra,
 						precioVenta: $el.precioVenta,
 						total: $el.precioCompra * 1
@@ -321,8 +321,43 @@ $(document).ready(function() {
 	  });			 
 	
 
-   
-    var ean = null;
+        $('#btnCrearProducto').click(function() {
+           $('#modalCrearProducto').modal('show'); 
+        });
+
+        $('#btnInsertarProduto').click(function() {
+
+			var producto = {
+                           barcode : $('#c_codigobarras').val(),
+                           descripcion : $('#c_descripcion').val(),
+                           categoria : $('#c_categoria').val(),
+                           precioCompra : $('#c_precioCompra').val(),
+                           precioVenta : $('#c_precioVenta').val(),
+                           puntoreorden : $('#c_puntoreorden').val(),
+                           ubicacion : $('#c_ubicacion').val()
+			}
+			var jsonData = JSON.stringify(producto);
+		    $.ajax({
+				type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+				dataType: 'json', // Set datatype - affects Accept header
+				url: "/producto/add", // A valid URL
+				headers: {"X-HTTP-Method-Override": "PUT", "X-CSRFToken": $.cookie("csrftoken")}, // X-HTTP-Method-Override set to PUT.
+				data: jsonData, // Some data e.g. Valid JSON as a string
+				success: function (response) {
+                                        fill_table_products();
+					alert("Producto agregado ");
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					alert(xhr.status);
+					alert(thrownError);
+				}
+			});
+		   
+
+        });
+
+ 
+        var ean = null;
 	$( "#btnSearch" ).click(function() {
 		    ean = null;
 			var codigo = $( "#codigobarras" ).val()

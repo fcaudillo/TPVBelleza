@@ -53,7 +53,11 @@ class DetalleMovimientoManager(models.Manager):
       det = self.create(movimiento = movimiento, barcode = data['barcode'], description = data['description'], cantidad = data['cantidad'], precioCompra = precioCompra, precioVenta = precioVenta)
       return det
 	  
-	  
+class Categoria(models.Model):
+    id = models.AutoField(primary_key=True)
+    description = models.CharField(max_length=255)
+    parent = models.ForeignKey('self',models.SET_NULL, blank=True, null=True)
+
 class Producto (models.Model):
    id = models.AutoField(primary_key=True)
    barcode = models.CharField(max_length =30, unique=True)
@@ -62,8 +66,10 @@ class Producto (models.Model):
    minimoexist = models.IntegerField(default=0)
    precioCompra = models.DecimalField(max_digits=5, decimal_places=2)
    precioVenta =models.DecimalField(max_digits=5, decimal_places=2)
+   ubicacion = models.CharField(max_length=255)
+   categoria = models.ForeignKey(Categoria,models.SET_NULL, blank=True, null=True)
    falta =  models.DateTimeField(blank=False, null=False)
-   fmodificacion =  models.DateTimeField(blank=False, null=False)
+   fmodificacion =  models.DateTimeField(blank=True, null=True)
 
    @staticmethod 
    def findByBarcode(codigo):

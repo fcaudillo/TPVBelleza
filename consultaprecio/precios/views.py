@@ -10,7 +10,8 @@ from precios.models import Producto
 from django.core.serializers import serialize
 import xlrd
 import json
-from precios.models import TipoMovimiento, Movimiento
+import datetime
+from precios.models import TipoMovimiento, Movimiento, Categoria
 
 # Create your views here.
 
@@ -27,7 +28,18 @@ def find_all(request):
    result = [ obj.as_dict() for obj in productos ]
    return HttpResponse(json.dumps(result), content_type='application/json')   
 
+def guarda_producto(request):
+   print "Guardar producto"
+   if request.method=='POST':
+      producto = json.loads(request.body)
+      print producto 
+      id = producto['categoria'];
+      categoria = Categoria.objects.get(pk=id)
+      print categoria
+      Producto.objects.create(barcode=producto['barcode'],description=producto['descripcion'], existencia=0,precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'],  categoria=categoria, minimoexist=producto['puntoreorden'], ubicacion=producto['ubicacion'], falta = datetime.datetime.now())		 
 
+      return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
+ 
 def guarda_ticket(request):
    print "Guardar Tickets"
    if request.method=='POST':
@@ -39,7 +51,7 @@ def guarda_ticket(request):
      return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
    
 class LoadDataView(View):   
-   def obtener_lista_prod_excel(self, filename, pos_codigo_barras = 1, pos_producto = 2, pos_precio_compra = 3, pos_precio_venta = 5, pos_impresiones = 0, pos_inicio = -1, pos_final = -1):
+   def obtener_lista_prod_excel(self, filename, pos_codigo_barras = 1, pos_producto = 2, pos_precio_compra = 3, pos_precio_venta = 5, pos_existencia = 0, pos_categoria = 6, pos_ubicacion = 7, pos_inicio = -1, pos_final = -1):
        data = []
        workbook = xlrd.open_workbook(filename)
        worksheet = workbook.sheet_by_name('Sheet1')
@@ -59,18 +71,27 @@ class LoadDataView(View):
          precioVenta = None
          if type(worksheet.cell(rx,pos_precio_venta).value) is float:
             precioVenta = worksheet.cell(rx,pos_precio_venta).value	
-         impresiones = 1
-         if type(worksheet.cell(rx,pos_impresiones).value) is float:
-            impresiones = int(worksheet.cell(rx,pos_impresiones).value)
-         data.append({'producto': producto, 'codigo': codigo_barras, 'precioCompra': precioCompra,'precioVenta':precioVenta, 'cantidad': impresiones})
+         existencia = 1
+         if type(worksheet.cell(rx,pos_existencia).value) is float:
+            existencia = int(worksheet.cell(rx,pos_existencia).value)
+         puntoreorden = 1
+         if type(worksheet.cell(rx,pos_puntoreorden).value) is float:
+            puntoreorden = worksheet.cell(rx,pos_puntoreorden).value
+         ubicacion = worksheet.cell(rx,pos_ubicacion)
+         categoria = 1
+         if type(worksheet.cell(rx,pos_categoria).value) is int:
+            categoria = worksheet.cell(rx,pos_categoria).value 
+
+         data.append({'producto': producto, 'codigo': codigo_barras, 'precioCompra': precioCompra,'precioVenta':precioVenta, 'existencia': existencia, 'categoria' : categoria , 'ubicacion': ubicacion, 'puntoreorden': puntoreorden})
        return data
 	   
    def get(self, request, *args, **kwargs):
        Producto.objects.all().delete()	
-       productos = self.obtener_lista_prod_excel('/vagrant/consultaprecio/ListaDePrecios23enero.xlsx',1, 4,5, 6, 4, 3,-1)
+       productos = self.obtener_lista_prod_excel('/app/TPV/TPVBelleza/consultaprecio/ListaDePrecios23enero.xlsx',1, 4,5, 6, 4, 3,-1)
        for producto in productos:
           print producto  
-          Producto.objects.create(barcode=producto['codigo'],description=producto['producto'], existencia=producto['cantidad'],precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'])		  
+          cat_categoria = Categoria.objects.get(pk=producto['categoria'])
+          Producto.objects.create(barcode=producto['codigo'],description=producto['producto'], existencia=producto['existencia'],precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'], categoria = cat_categoria, ubicacion=producto['ubicacion'], minimoexist=producto['puntoreorden'], falta=datetime.datetime.now())		  
        return HttpResponse('LISTO', content_type='text/plain')       	
    
    
@@ -105,8 +126,10 @@ class ChangeProductView(TemplateView):
       context = super(TemplateView, self).get_context_data(**kwargs)
       vta = TipoMovimiento.objects.filter(codigo='VTA')[0]
       catalogo = list(TipoMovimiento.objects.all())
+      categorias = list(Categoria.objects.all())
       print vta
       print vta.codigo, vta.description
       context['tipo_movimiento'] = vta
       context['catalogo_tipos_mov'] = catalogo
+      context['categorias'] = categorias
       return context
