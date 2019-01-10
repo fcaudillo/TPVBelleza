@@ -10,9 +10,10 @@ from precios.models import Producto
 from django.core.serializers import serialize
 import xlrd
 import json
+import os
 import datetime
 from precios.models import TipoMovimiento, Movimiento, Categoria
-
+from precios.etiqueta_chica import generar_etiquetas, obtener_lista_productos
 # Create your views here.
 
 def find_consulta(request,barcode):
@@ -26,7 +27,28 @@ def find_consulta(request,barcode):
 def find_all(request): 
    productos = list(Producto.objects.all())
    result = [ obj.as_dict() for obj in productos ]
-   return HttpResponse(json.dumps(result), content_type='application/json')   
+   return HttpResponse(json.dumps(result), content_type='application/json') 
+
+def download(request):
+    print os.getcwd() 
+    #file_path = '/app/TPV/TPVBelleza/consultaprecio/salida_dj.pdf'
+    print "Modificando ruta descarga" 
+     
+    file_path = os.getcwd()+'/generated/salida_dj.pdf'
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/pdf")
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+            return response
+    raise Http404
+
+
+def genera_etiquetas(request):
+   lista_productos = obtener_lista_productos()
+   archivo = os.getcwd()+'/generated/salida_dj.pdf'
+   generar_etiquetas(archivo,lista_productos,20,4,'a1')  
+    
+   return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
 
 def guarda_producto(request):
    print "Guardar producto"
@@ -51,7 +73,7 @@ def guarda_ticket(request):
      return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
    
 class LoadDataView(View):   
-   def obtener_lista_prod_excel(self, filename, pos_codigo_barras = 1, pos_producto = 2, pos_precio_compra = 3, pos_precio_venta = 5, pos_existencia = 0, pos_categoria = 6, pos_ubicacion = 7, pos_inicio = -1, pos_final = -1):
+   def obtener_lista_prod_excel(self, filename, pos_codigo_barras = 1, pos_existencia = 2,pos_puntoreorden = 3,  pos_producto = 4, pos_precio_compra = 5, pos_precio_venta = 6, pos_ubicacion = 7,  pos_categoria = 8, pos_inicio = -1, pos_final = -1):
        data = []
        workbook = xlrd.open_workbook(filename)
        worksheet = workbook.sheet_by_name('Sheet1')
@@ -87,7 +109,7 @@ class LoadDataView(View):
 	   
    def get(self, request, *args, **kwargs):
        Producto.objects.all().delete()	
-       productos = self.obtener_lista_prod_excel('/app/TPV/TPVBelleza/consultaprecio/ListaDePrecios23enero.xlsx',1, 4,5, 6, 4, 3,-1)
+       productos = self.obtener_lista_prod_excel('/app/TPV/TPVBelleza/consultaprecio/ListaDePrecios23enero.xlsx',1, 2, 3, 4,5,6,7,8, 3,-1)
        for producto in productos:
           print producto  
           cat_categoria = Categoria.objects.get(pk=producto['categoria'])

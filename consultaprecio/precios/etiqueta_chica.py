@@ -150,41 +150,6 @@ def generar_etiquetas(file_output,lista_productos,page_renglones, page_columnas,
    return etiquetas
     
 
-if __name__ == '__main__':
-   parser = argparse.ArgumentParser()
-   parser.add_argument("--pos_barcode", nargs='?', const=1, type=int, default=1)
-   parser.add_argument("--pos_descripcion", nargs='?', const=2, type=int, default=2)
-   parser.add_argument("--pos_precio", nargs='?', const=3, type=int, default=3)
-   parser.add_argument("--pos_impresiones", nargs='?', const=0, type=int, default=0)
-   parser.add_argument("--pos_inicio", nargs='?', const=3, type=int, default=3)
-   parser.add_argument("--pos_final", nargs='?', const=-1, type=int, default=-1)
-   
-   parser.add_argument("--archivo_xls", help="Archivo donde se encuentran los productos en formato de excel")
-   parser.add_argument("--archivo_pdf", help="Archivo de salida de impresion en formato pdf")
-   parser.add_argument("--inicio_etiqueta", help="Posicion de la primera etiqueta en blanco de la primer hoja")
-   args = parser.parse_args()
-   file_input = 'precios.xlsx'
-   file_output = 'output.pdf'
-   if args.archivo_xls is not None:
-     file_input = args.archivo_xls
-   if args.archivo_pdf is not None:
-     file_output = args.archivo_pdf
-   start_etiqueta = args.inicio_etiqueta
-   if args.inicio_etiqueta is None:
-      start_etiqueta = "a1"
-     
-   print args.archivo_xls
-   print args.archivo_pdf
-   print args.pos_inicio
-   print args.pos_final
-   lista_productos = obtener_lista_productos()
-   #lista_productos = obtener_lista_prod_excel(file_input,args.pos_barcode, args.pos_descripcion, args.pos_precio, args.pos_impresiones, args.pos_inicio, args.pos_final)
-   print lista_productos
-   generar_etiquetas(file_output,lista_productos,20,4,start_etiqueta)
-
-
-#celda = genera_etiqueta("Carrito de niño, mi alegria. áéíóú azul","$23.00","0123456789123")
-#celd#a2 = genera_etiqueta("Carrito de niño, mi alegria. áéíóú azul","$44.00")
  
 
 
