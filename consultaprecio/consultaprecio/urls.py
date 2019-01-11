@@ -15,8 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from precios.views import FindProductView, FindView, LoadDataView,ChangeProductView,PrintLabelView
-from precios.views import find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas, download
+from precios.views import FindProductView, FindView, LoadDataView,ChangeProductView,PrintLabelView,ImportCatalogView
+from precios.views import find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas, download, upload_file
 
 
 urlpatterns = [
@@ -31,5 +31,7 @@ urlpatterns = [
 	url('encuentra/(?P<barcode>\w+)/$',FindView.as_view()),
 	url(r'consulta/',FindProductView.as_view()),
 	url(r'cambioprecio/',ChangeProductView.as_view()),
+        url(r'importar',ImportCatalogView.as_view()),
+        url(r'subir_archivo',upload_file),
         url(r'impresion/',PrintLabelView.as_view())
 ]

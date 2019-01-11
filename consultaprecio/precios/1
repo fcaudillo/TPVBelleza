@@ -14,9 +14,6 @@ import os
 import datetime
 from precios.models import TipoMovimiento, Movimiento, Categoria
 from precios.etiqueta_chica import generar_etiquetas, obtener_lista_productos
-from django.core.files.storage import FileSystemStorage
-
-
 # Create your views here.
 
 def find_consulta(request,barcode):
@@ -80,19 +77,7 @@ def guarda_ticket(request):
      mov = Movimiento.objects.create_from_json(received_json_data)
      print mov
      return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
-  
-
-def upload_file(request):
-    print "Subiendo el archivo"
-    if request.method == 'POST' and request.FILES['catalogo']:
-        myfile = request.FILES['catalogo']
-        fs = FileSystemStorage()
-        filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = fs.url(filename)
-        print uploaded_file_url
-
-    return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
-
+   
 class LoadDataView(View):   
    def obtener_lista_prod_excel(self, filename, pos_codigo_barras = 1, pos_existencia = 2,pos_puntoreorden = 3,  pos_producto = 4, pos_precio_compra = 5, pos_precio_venta = 6, pos_ubicacion = 7,  pos_categoria = 8, pos_inicio = -1, pos_final = -1):
        data = []
