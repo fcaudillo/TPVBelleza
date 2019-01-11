@@ -44,9 +44,15 @@ def download(request):
 
 
 def genera_etiquetas(request):
-   lista_productos = obtener_lista_productos()
+   print "Imprimir etiquetas"
+   data = json.loads(request.body)
+   print data
+   lista_productos=[]
+   for item in data['items']:
+      lista_productos.append({'producto': item['description'], 'codigo': item['barcode'], 'precio': item['precioVenta'], 'cantidad': item['cantidad'] }) 
+   #lista_productos = obtener_lista_productos()
    archivo = os.getcwd()+'/generated/salida_dj.pdf'
-   generar_etiquetas(archivo,lista_productos,20,4,'a1')  
+   generar_etiquetas(archivo,lista_productos,20,4,data['posicion'])  
     
    return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
 
@@ -154,4 +160,13 @@ class ChangeProductView(TemplateView):
       context['tipo_movimiento'] = vta
       context['catalogo_tipos_mov'] = catalogo
       context['categorias'] = categorias
+      return context
+
+
+class PrintLabelView(TemplateView):
+   template_name = 'precios/impresion_etiquetas.html'
+   def get_context_data(self, **kwargs):
+      context = super(TemplateView, self).get_context_data(**kwargs)
+      compra = TipoMovimiento.objects.filter(codigo='COM')[0]
+      context['tipo_movimiento'] = compra
       return context
