@@ -15,13 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from precios.views import FindProductView, FindView, LoadDataView,ChangeProductView,PrintLabelView,ImportCatalogView
+from precios.views import FindProductView, FindView, ChangeProductView,PrintLabelView,ImportCatalogView
 from precios.views import find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas, download, upload_file
 
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-	url(r'loaddata/',LoadDataView.as_view()),
 	url('find/(?P<barcode>\w+)/$',find_consulta),
         url('download/$',download),
 	url('find/$',find_all),

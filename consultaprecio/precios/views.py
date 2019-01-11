@@ -15,7 +15,7 @@ import datetime
 from precios.models import TipoMovimiento, Movimiento, Categoria
 from precios.etiqueta_chica import generar_etiquetas, obtener_lista_productos
 from django.core.files.storage import FileSystemStorage
-
+from django.conf import settings
 
 # Create your views here.
 
@@ -90,10 +90,17 @@ def upload_file(request):
         filename = fs.save(myfile.name, myfile)
         uploaded_file_url = fs.url(filename)
         print uploaded_file_url
-
+        path_file = settings.BASE_DIR + uploaded_file_url 
+        print path_file
+        load = LoadData(path_file)
+        load.carga_catalogo()
+        
     return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
 
-class LoadDataView(View):   
+class LoadData:
+   def __init__(self, pathfile):
+       self.pathfile = pathfile
+   
    def obtener_lista_prod_excel(self, filename, pos_codigo_barras = 1, pos_existencia = 2,pos_puntoreorden = 3,  pos_producto = 4, pos_precio_compra = 5, pos_precio_venta = 6, pos_ubicacion = 7,  pos_categoria = 8, pos_inicio = -1, pos_final = -1):
        data = []
        workbook = xlrd.open_workbook(filename)
@@ -128,14 +135,14 @@ class LoadDataView(View):
          data.append({'producto': producto, 'codigo': codigo_barras, 'precioCompra': precioCompra,'precioVenta':precioVenta, 'existencia': existencia, 'categoria' : categoria , 'ubicacion': ubicacion, 'puntoreorden': puntoreorden})
        return data
 	   
-   def get(self, request, *args, **kwargs):
-       Producto.objects.all().delete()	
-       productos = self.obtener_lista_prod_excel('/app/TPV/TPVBelleza/consultaprecio/ListaDePrecios23enero.xlsx',1, 2, 3, 4,5,6,7,8, 3,-1)
+   def carga_catalogo(self):
+       #Producto.objects.all().delete()	
+       productos = self.obtener_lista_prod_excel(self.pathfile,1, 2, 3, 4,5,6,7,8, 3,-1)
        for producto in productos:
           print producto  
           cat_categoria = Categoria.objects.get(pk=producto['categoria'])
           Producto.objects.create(barcode=producto['codigo'],description=producto['producto'], existencia=producto['existencia'],precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'], categoria = cat_categoria, ubicacion=producto['ubicacion'], minimoexist=producto['puntoreorden'], falta=datetime.datetime.now())		  
-       return HttpResponse('LISTO', content_type='text/plain')       	
+       return 1       	
    
    
 class FindView(View):
