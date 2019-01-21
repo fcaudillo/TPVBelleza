@@ -154,6 +154,7 @@ $(document).ready(function() {
 						cantidad: 1,
 						barcode: $el.barcode,
 						description: 'Item ' + $el.description,
+                                                precioCompra: $el.precioCompra,
 						precioVenta: $el.precioVenta,
 						total: $el.precioVenta * 1
 					}
@@ -238,6 +239,7 @@ $(document).ready(function() {
 				barcode: ean.barcode,
 				description: ean.description,
 				precioVenta: ean.precioVenta,
+                                precioCompra: ean.precioCompra,
 				total: ean.precioVenta * 1
 			}
 		});	
@@ -254,6 +256,7 @@ $(document).ready(function() {
 			var ticket = {
 			   tipo_movimiento : venta_tipo_mov,
 			   total : calculaGranTotal(data),
+                           descripcion : 'Venta al publico',
 			   items : data
 			}
 			var jsonData = JSON.stringify(ticket);
