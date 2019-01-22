@@ -102,7 +102,7 @@ class Movimiento (models.Model):
     description = models.CharField(max_length=255)
     total = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     fecha =  models.DateTimeField(blank=False, null=False)
-    user =  models.ForeignKey(User,null=True) 
+    user =  models.ForeignKey(User,on_delete=models.SET_NULL, null=True) 
     objects = MovimientoManager()
 
     def __str__(self):

@@ -16,21 +16,24 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from precios.views import FindProductView, FindView, ChangeProductView,PrintLabelView,ImportCatalogView
-from precios.views import find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas, download, upload_file
+from precios.views import find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas, download, upload_file, login_view, logout_view
+from django.contrib.auth.decorators import login_required
 
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-	url('find/(?P<barcode>\w+)/$',find_consulta),
-        url('download/$',download),
-	url('find/$',find_all),
-	url('tickets/add',guarda_ticket),
-        url('producto/add',guarda_producto),
-        url('genera_etiquetas',genera_etiquetas),
-	url('encuentra/(?P<barcode>\w+)/$',FindView.as_view()),
-	url(r'consulta/',FindProductView.as_view()),
-	url(r'cambioprecio/',ChangeProductView.as_view()),
-        url(r'importar',ImportCatalogView.as_view()),
-        url(r'subir_archivo',upload_file),
-        url(r'impresion/',PrintLabelView.as_view())
+	url('find/(?P<barcode>\w+)/$',find_consulta, name='find'),
+        url('download/$',download, name='download'),
+	url('find/$',find_all, name='find_all'),
+	url('tickets/add',guarda_ticket, name='ticket_add'),
+        url('producto/add',guarda_producto,name='producto_add'),
+        url('genera_etiquetas',genera_etiquetas,name='genera_etiquetas'),
+	url('encuentra/(?P<barcode>\w+)/$',FindView.as_view(),name='encuentra'),
+	url(r'consulta/',login_required(FindProductView.as_view()),name='consulta'),
+	url(r'cambioprecio/',login_required(ChangeProductView.as_view()),name='cambioprecio'),
+        url(r'importar',login_required(ImportCatalogView.as_view()),name='importar'),
+        url(r'subir_archivo',upload_file, name='subir_archivo'),
+        url(r'login',login_view, name='login'),
+        url(r'logout',logout_view, name='logout'),
+        url(r'impresion/',login_required(PrintLabelView.as_view()),name='impresion')
 ]

@@ -1,0 +1,21 @@
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   {% block head_content %} {% endblock %}
+
+   {% load static %}
+
+   <link rel="stylesheet" href="{% static '/precio/css/main.css' %}">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css">
+</head>
+
+<body>
+
+  <div class="container">
+    {% block container %} {% endblock%}
+  </div> 
+
+
+</html>

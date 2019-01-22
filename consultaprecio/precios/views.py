@@ -16,9 +16,33 @@ from precios.models import TipoMovimiento, Movimiento, Categoria
 from precios.etiqueta_chica import generar_etiquetas, obtener_lista_productos
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 # Create your views here.
+@login_required
+def logout_view(request):
+  logout(request)
+  return redirect('login')
 
+def login_view(request):
+   #import pdb; pdb.set_trace()
+   if request.method == 'POST': 
+      username = request.POST['username']
+      password = request.POST['password']
+      print username, ':', password
+      user = authenticate(request, username=username, password=password)
+      if user is not None:
+        login(request, user)
+        return redirect('consulta')
+      else:
+        return render(request,'precios/login.html',{'error':'Invalid username o password'}) 
+   return render(request, 'precios/login.html')
+
+
+@login_required
 def find_consulta(request,barcode):
    print 'saludos 3'
    productos = list(Producto.objects.filter(barcode=barcode))
@@ -27,11 +51,15 @@ def find_consulta(request,barcode):
    pr = productos[0]
    return HttpResponse(json.dumps(pr.as_dict()), content_type='application/json')  
 
+
+@login_required
 def find_all(request): 
    productos = list(Producto.objects.all())
    result = [ obj.as_dict() for obj in productos ]
    return HttpResponse(json.dumps(result), content_type='application/json') 
 
+
+@login_required
 def download(request):
     print os.getcwd() 
     #file_path = '/app/TPV/TPVBelleza/consultaprecio/salida_dj.pdf'
@@ -46,6 +74,7 @@ def download(request):
     raise Http404
 
 
+@login_required
 def genera_etiquetas(request):
    print "Imprimir etiquetas"
    data = json.loads(request.body)
@@ -59,6 +88,8 @@ def genera_etiquetas(request):
     
    return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
 
+
+@login_required
 def guarda_producto(request):
    print "Guardar producto"
    if request.method=='POST':
@@ -70,7 +101,9 @@ def guarda_producto(request):
       Producto.objects.create(barcode=producto['barcode'],description=producto['descripcion'], existencia=0,precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'],  categoria=categoria, minimoexist=producto['puntoreorden'], ubicacion=producto['ubicacion'], falta = datetime.datetime.now())		 
 
       return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
+
  
+@login_required
 def guarda_ticket(request):
    print "Guardar Tickets"
    if request.method=='POST':
@@ -82,6 +115,7 @@ def guarda_ticket(request):
      return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
   
 
+@login_required
 def upload_file(request):
     print "Subiendo el archivo"
     if request.method == 'POST' and request.FILES['catalogo']:
