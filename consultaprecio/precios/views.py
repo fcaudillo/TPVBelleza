@@ -198,9 +198,11 @@ class FindProductView(TemplateView):
    def get_context_data(self, **kwargs):
       context = super(TemplateView, self).get_context_data(**kwargs)
       vta = TipoMovimiento.objects.filter(codigo='VTA')[0]
-      print vta
-      print vta.codigo, vta.description
+      list_grupos = list(self.request.user.groups.all()); 
+      nombres_grupos = [item.name for item in list_grupos] 
       context['tipo_movimiento'] = vta
+      context['pantalla'] = 'ventas'
+      context['es_master'] = True if 'Master' in nombres_grupos else False;
       return context
 
 
@@ -211,20 +213,33 @@ class ChangeProductView(TemplateView):
       vta = TipoMovimiento.objects.filter(codigo='VTA')[0]
       catalogo = list(TipoMovimiento.objects.all())
       categorias = list(Categoria.objects.all())
-      print vta
-      print vta.codigo, vta.description
+      #import pdb; pdb.set_trace()
+      list_grupos = list(self.request.user.groups.all()); 
+      nombres_grupos = [item.name for item in list_grupos] 
       context['tipo_movimiento'] = vta
       context['catalogo_tipos_mov'] = catalogo
       context['categorias'] = categorias
+      context['pantalla'] = 'movimiento_inventario'
+      context['es_master'] = True if 'Master' in nombres_grupos else False;
       return context
 
+   def dispatch(self, request, *args, **kwargs):
+      list_grupos = list(self.request.user.groups.all()); 
+      nombres_grupos = [item.name for item in list_grupos] 
+      if not 'Master' in nombres_grupos:
+        return redirect('consulta')
+      return super(ChangeProductView,self).dispatch(request,args, kwargs)
 
 class PrintLabelView(TemplateView):
    template_name = 'precios/impresion_etiquetas.html'
    def get_context_data(self, **kwargs):
       context = super(TemplateView, self).get_context_data(**kwargs)
       compra = TipoMovimiento.objects.filter(codigo='COM')[0]
+      list_grupos = list(self.request.user.groups.all()); 
+      nombres_grupos = [item.name for item in list_grupos] 
       context['tipo_movimiento'] = compra
+      context['pantalla'] = 'impresion'
+      context['es_master'] = True if 'Master' in nombres_grupos else False;
       return context
 
 
@@ -233,7 +248,11 @@ class ImportCatalogView(TemplateView):
    def get_context_data(self, **kwargs):
       context = super(TemplateView, self).get_context_data(**kwargs)
       compra = TipoMovimiento.objects.filter(codigo='COM')[0]
+      list_grupos = list(self.request.user.groups.all()); 
+      nombres_grupos = [item.name for item in list_grupos] 
       context['tipo_movimiento'] = compra
+      context['pantalla'] = 'importacion'
+      context['es_master'] = True if 'Master' in nombres_grupos else False;
       return context
 
 

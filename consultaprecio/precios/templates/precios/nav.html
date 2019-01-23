@@ -17,9 +17,31 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="{% url "consulta" %}">Ventas <span class="sr-only">(current)</span></a></li>
-        <li><a href="{% url "impresion" %}">Impresion</a></li>
-        <li class="dropdown">
+
+        {% if pantalla == 'ventas' %}
+           <li class="active">
+           <a href="{% url "consulta" %}">Ventas <span class="sr-only">(current)</span></a></li>
+        {% else %}
+           <li>
+           <a href="{% url "consulta" %}">Ventas </a></li>
+        {%  endif %}
+
+        {% if pantalla == 'impresion' %}
+          <li class="active">
+            <a href="{% url "impresion" %}">Impresion <span class="sr-only">(current)</span></a>
+          </li>
+        {% else %}
+           <li>
+             <a href="{% url "impresion" %}">Impresion</a>
+           </li>
+        {% endif %}
+     {% if es_master %}
+        {% if pantalla == 'movimiento_inventario' or pantalla == 'importacion' %}
+           <li class="dropdown active" >
+        {% else %} 
+           <li class="dropdown">
+        {% endif %}
+
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Administracion <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="{% url "cambioprecio" %}">Movimientos al  inventario</a></li>
@@ -27,6 +49,7 @@
 
           </ul>
         </li>
+      {% endif %}
       </ul>
 
       <ul class="nav navbar-nav navbar-right">

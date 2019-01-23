@@ -11,6 +11,7 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" crossorigin="anonymous" />
     <link rel="stylesheet" href="/static/precio/css/import_catalog.css">
     <script>
 	   var compra_tipo_mov = {{tipo_movimiento.id}};
@@ -23,7 +24,8 @@
     <![endif]-->
   </head>
   <body>
-
+    <div class="container mt-5">
+        {% include "precios/nav.html" %}
 	 <form class="form-horizontal" action="subir_archivo" method="post" enctype="multipart/form-data">
 		  
                 {% csrf_token %}
@@ -50,7 +52,7 @@
 		</fieldset>
 	</form>
 	
-
+     </div>
 
 	<script
 	  src="http://code.jquery.com/jquery-3.3.1.js"
