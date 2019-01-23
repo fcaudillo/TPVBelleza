@@ -11,8 +11,6 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" crossorigin="anonymous" />
-
     <link rel="stylesheet" href="/static/precio/css/ticket.css">
     <script>
 	   var venta_tipo_mov = {{tipo_movimiento.id}};
@@ -25,9 +23,10 @@
     <![endif]-->
   </head>
   <body>
-    <div class="container mt-5">	 
-        {% include "precios/nav.html" %}
-        <form class="form-horizontal">
+
+   <div class="container mt-5">
+         {% include "nav.html" %}
+	 <form class="form-horizontal">
 		  
                 {% csrf_token %}
 		<!-- Form Name -->
@@ -133,6 +132,6 @@
 	<script src="https://rawgit.com/fsauter/bootstrap-table/develop/src/extensions/editable/bootstrap-table-editable.js"></script>
 	
 	<script src="/static/precio/js/ticket.js"></script>
-    </div>
+  </div>
   </body>
 </html>
