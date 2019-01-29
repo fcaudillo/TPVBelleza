@@ -4,8 +4,8 @@ FROM sabbir1cse/ubuntu-python-pip-supervisor
 	
 WORKDIR tlapape
 
-COPY ./consultaprecio .
-COPY ./requirements.txt .
+COPY ../consultaprecio .
+COPY ../requirements.txt .
 
 RUN pip install -r requirements.txt
 
