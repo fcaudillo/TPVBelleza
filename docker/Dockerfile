@@ -1,6 +1,6 @@
 FROM sabbir1cse/ubuntu-python-pip-supervisor 
-RUN apt-get -y update; \
-    apt-get -y upgrade;
+#RUN apt-get -y update; \
+#    apt-get -y upgrade;
 	
 WORKDIR tlapape
 
