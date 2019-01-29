@@ -4,16 +4,16 @@ RUN apt-get -y update; \
 	
 WORKDIR tlapape
 
-COPY ../consultaprecio .
-COPY ../requirements.txt .
+COPY ./consultaprecio .
+COPY ./requirements.txt .
 
 RUN pip install -r requirements.txt
 
-RUN chmod +x ../consultaprecio/manage.py
+RUN chmod +x ./manage.py
 
 EXPOSE 9000
 
-CMD ["./consultaprecio/manage.py", "runserver", "0.0.0.0:9000"]
+CMD ["./manage.py", "runserver", "0.0.0.0:9000"]
 
 
 
