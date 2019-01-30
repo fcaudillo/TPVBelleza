@@ -11,7 +11,7 @@
    stage('Construyendo imagen') {
 
        sh ('ls -larh')
-       sh ('docker build -t  ${DOCKER_REPO}:lts . ')
+       sh ('docker build -t  ${env.DOCKER_REPO}:lts . ')
        
    }
 }
