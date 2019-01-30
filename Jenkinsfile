@@ -11,7 +11,7 @@
    stage('Construyendo imagen') {
 
        sh ('ls -larh')
-       sh ('echo :${env.GIT_COMMIT} ')
+       sh ('echo ${env.GIT_COMMIT} ')
        sh ('docker build -t  ${DOCKER_REPO}:lts . ')
        
    }
