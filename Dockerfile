@@ -4,10 +4,11 @@ RUN apt-get -y update; \
 	
 WORKDIR tlapape
 
-COPY ./consultaprecio .
+
 COPY ./requirements.txt .
 
 RUN pip install -r requirements.txt
+COPY ./consultaprecio .
 
 RUN chmod +x ./manage.py
 
