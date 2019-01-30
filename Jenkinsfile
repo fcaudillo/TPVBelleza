@@ -7,7 +7,7 @@
    
    stage('Construyendo imagen') {
 
-       sh ('ls')
+       sh ('ls -larh')
        sh ('pwd')
        sh ('docker build -t tpv-verde . ')
        
