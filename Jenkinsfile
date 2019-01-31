@@ -2,16 +2,24 @@
    environment {
         DOCKER_REPO = "fcaudillo/tpv-verde"
         DOCKER_CREDENTIAL = "dockerhub"
-  }   
+   }   
    stage('Git checkout') {
-       
        git 'https://github.com/fcaudillo/TPVBelleza.git'
    }
    
    stage('Construyendo imagen') {
-
-       sh ('ls -larh')
-       sh ('docker build -t  fcaudillo/tpv-verde:lts . ')
-       
+       sh ('docker build -t  fcaudillo/tpv-verde:lts . ') 
    }
+  
+   stage('Subiendo la imagen.') {
+        withDockerRegistry([ credentialsId: "my_crends_docker", url: '' ]) {   
+           sh "docker push fcaudillo/tpv-verde:lts "    
+           
+       }    
+   }
+   
+   stage('Deploy a produccion') {
+       sh "cd main && docker-compose up -d --no-deps --build tlapape"
+   }
+
 }
