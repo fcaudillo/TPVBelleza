@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  tlapape:
+    image: fcaudillo/tpv-verde:lts
+    ports:
+      - "9000:9000"
+    volumes:
+      - /home/dockeradm/data/tpv-verde:/app/tlapape/data
+    expose:
+      - 9000
+    environment:
+      - VIRTUAL_HOST=tlapape.elverde.mx
+      - VIRTUAL_PORT=9000
+      - LETSENCRYPT_HOST=tlapape.elverde.mx
+      - LETSENCRYPT_EMAIL=fcaudilloperez1971@gmail.com
