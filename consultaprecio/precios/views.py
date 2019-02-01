@@ -247,7 +247,7 @@ class ImportCatalogView(TemplateView):
    template_name = 'precios/import_catalog.html'
    def get_context_data(self, **kwargs):
       context = super(TemplateView, self).get_context_data(**kwargs)
-      compra = TipoMovimiento.objects.filter(codigo='COM')[0]
+      compra = TipoMovimiento.objects.filter(codigo='INV')[0]
       list_grupos = list(self.request.user.groups.all()); 
       nombres_grupos = [item.name for item in list_grupos] 
       context['tipo_movimiento'] = compra
