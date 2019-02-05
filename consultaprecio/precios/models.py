@@ -61,9 +61,11 @@ class Categoria(models.Model):
 class Producto (models.Model):
    id = models.AutoField(primary_key=True)
    barcode = models.CharField(max_length =30, unique=True)
+   codigoproveedor = models.CharField(max_length = 40,default='')
    description = models.CharField(max_length=255)
    existencia = models.IntegerField(default=0)
    minimoexist = models.IntegerField(default=0)
+   maximoexist = models.IntegerField(default=0)
    precioCompra = models.DecimalField(max_digits=5, decimal_places=2)
    precioVenta =models.DecimalField(max_digits=5, decimal_places=2)
    ubicacion = models.CharField(max_length=255)
@@ -76,13 +78,14 @@ class Producto (models.Model):
      return Producto.objects.filter(barcode = codigo)[0]
 
    def __str__(self):
-    return 'barcode: %s, descricion: %s, existencia :  %d, precioCompra : %f, precioVenta: %f \n' % (self.barcode, self.description, self.existencia, self.precioCompra, self.precioVenta)
+    return 'barcode: %s, descricion: %s, existencia :  %d, precioCompra : %f, precioVenta: %f, minimoexist: %d, maximoexist: %d, codigoprov: %s \n' % (self.barcode, self.description, self.existencia, self.precioCompra, self.precioVenta, self.minimoexist, self.maximoexist, self.codigoproveedor)
    
    def as_dict(self):
       return {
 	     'barcode': self.barcode,
 		 'description':self.description,
 		 'existencia':self.existencia,
+                 'ubicacion': self.ubicacion,
 		 'precioCompra':float(self.precioCompra),
 		 'precioVenta':float(self.precioVenta)
 	  

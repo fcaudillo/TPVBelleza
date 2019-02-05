@@ -32,7 +32,6 @@ def login_view(request):
    if request.method == 'POST': 
       username = request.POST['username']
       password = request.POST['password']
-      print username, ':', password
       user = authenticate(request, username=username, password=password)
       if user is not None:
         login(request, user)
@@ -44,7 +43,6 @@ def login_view(request):
 
 @login_required
 def find_consulta(request,barcode):
-   print 'saludos 3'
    productos = list(Producto.objects.filter(barcode=barcode))
    if len(productos) == 0:
       return HttpResponse(status=204)
@@ -97,8 +95,7 @@ def guarda_producto(request):
       print producto 
       id = producto['categoria'];
       categoria = Categoria.objects.get(pk=id)
-      print categoria
-      Producto.objects.create(barcode=producto['barcode'],description=producto['descripcion'], existencia=0,precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'],  categoria=categoria, minimoexist=producto['puntoreorden'], ubicacion=producto['ubicacion'], falta = datetime.datetime.now())		 
+      Producto.objects.create(barcode=producto['barcode'],description=producto['descripcion'], existencia=0,precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'],  categoria=categoria, minimoexist=producto['puntoreorden'], maximoexist=producto['maximoexist'], ubicacion=producto['ubicacion'], falta = datetime.datetime.now())		 
 
       return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
 
@@ -135,7 +132,7 @@ class LoadData:
    def __init__(self, pathfile):
        self.pathfile = pathfile
    
-   def obtener_lista_prod_excel(self, filename, pos_codigo_barras = 1, pos_existencia = 2,pos_puntoreorden = 3,  pos_producto = 4, pos_precio_compra = 5, pos_precio_venta = 6, pos_ubicacion = 7,  pos_categoria = 8, pos_inicio = -1, pos_final = -1):
+   def obtener_lista_prod_excel(self, filename, pos_codigo_barras = 1,pos_codigoproveedor = 2, pos_existencia = 3,pos_puntoreorden = 4, pos_maximoexist= 5,  pos_producto = 6, pos_precio_compra = 7, pos_precio_venta = 8, pos_ubicacion = 9,  pos_categoria = 10, pos_inicio = -1, pos_final = -1):
        data = []
        workbook = xlrd.open_workbook(filename)
        worksheet = workbook.sheet_by_name('Sheet1')
@@ -145,6 +142,10 @@ class LoadData:
          codigo_barras = worksheet.cell(rx,pos_codigo_barras).value;
          if type(worksheet.cell(rx,pos_codigo_barras).value) is float:
            codigo_barras = '%13.0f' % worksheet.cell(rx,pos_codigo_barras).value
+          
+         codigoproveedor = worksheet.cell(rx,pos_codigoproveedor).value;
+         if type(worksheet.cell(rx,pos_codigoproveedor).value) is float:
+           codigoproveedor = '%13.0f' % worksheet.cell(rx,pos_codigoproveedor).value
          if type(codigo_barras) is unicode:
             if codigo_barras == u'':
                codigo_barras = None
@@ -161,21 +162,25 @@ class LoadData:
          puntoreorden = 1
          if type(worksheet.cell(rx,pos_puntoreorden).value) is float:
             puntoreorden = worksheet.cell(rx,pos_puntoreorden).value
+          
+         maximoexist = 1
+         if type(worksheet.cell(rx,pos_maximoexist).value) is float:
+            maximoexist = worksheet.cell(rx,pos_maximoexist).value
          ubicacion = worksheet.cell(rx,pos_ubicacion)
          categoria = 1
          if type(worksheet.cell(rx,pos_categoria).value) is int:
             categoria = worksheet.cell(rx,pos_categoria).value 
 
-         data.append({'producto': producto, 'codigo': codigo_barras, 'precioCompra': precioCompra,'precioVenta':precioVenta, 'existencia': existencia, 'categoria' : categoria , 'ubicacion': ubicacion, 'puntoreorden': puntoreorden})
+         data.append({'producto': producto, 'codigo': codigo_barras, 'codigoproveedor': codigoproveedor, 'precioCompra': precioCompra,'precioVenta':precioVenta, 'existencia': existencia, 'categoria' : categoria , 'ubicacion': ubicacion, 'puntoreorden': puntoreorden, 'maximoexist': maximoexist})
        return data
 	   
    def carga_catalogo(self):
        #Producto.objects.all().delete()	
-       productos = self.obtener_lista_prod_excel(self.pathfile,1, 2, 3, 4,5,6,7,8, 3,-1)
+       productos = self.obtener_lista_prod_excel(self.pathfile,1, 2, 3, 4,5,6,7,8,9,10, 3,-1)
        for producto in productos:
           print producto  
           cat_categoria = Categoria.objects.get(pk=producto['categoria'])
-          Producto.objects.create(barcode=producto['codigo'],description=producto['producto'], existencia=producto['existencia'],precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'], categoria = cat_categoria, ubicacion=producto['ubicacion'], minimoexist=producto['puntoreorden'], falta=datetime.datetime.now())		  
+          Producto.objects.create(barcode=producto['codigo'],codigoproveedor=producto['codigoproveedor'],description=producto['producto'], existencia=producto['existencia'],precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'], categoria = cat_categoria, ubicacion=producto['ubicacion'], minimoexist=producto['puntoreorden'],maximoexist=producto['maximoexist'], falta=datetime.datetime.now())		  
        return 1       	
    
    

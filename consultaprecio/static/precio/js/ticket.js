@@ -9,8 +9,66 @@ function calculaGranTotal(data) {
 	return total;
 }
 
-$(document).ready(function() {
+function inicializa_table_products() {
 
+		$('#testTabla').bootstrapTable({
+			columns: [{
+				field: 'agregar',
+				
+				formatter: function(value, row, index) {
+							//return '<i class="glyphicon glyphicon-ok-sign" onclick="agregar($(this))" ></i>';
+							return '<i class="glyphicon glyphicon-shopping-cart" data-barcode="' + row.barcode + '" ></i>';
+						  },
+				
+				title: 'codebar'
+			}, {
+                            field: 'existencia',
+                            title: 'existencia'
+                        },
+                        {
+				field: 'barcode',
+				
+				formatter: function(value, row, index) {
+							return '<div data-field="' + this.field + '">' + value + '</div>';;
+						  },
+				
+				title: 'codebar'
+			}, {
+				field: 'description',
+				sortable: true,
+				title: 'Descripcion'
+			}, {
+				field: 'precioVenta',
+				sortable: true,
+				title: 'Precio venta',
+				formatter: function(value, row, index) {
+							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
+						  }
+			}],
+			//data: result,
+			search : true,
+			pagination: true,
+			sortOrder: 'desc',
+			showColumns: true,
+			showToggle: true,
+			showToggle: true,
+			showRefresh: true,
+			striped: true,
+			showColumns: true,
+			sortable : true
+			
+		});
+}
+
+function cargaInventario() {
+        $('#testTabla').bootstrapTable('removeAll');    
+	$.getJSON("find/", function(result){
+          $('#testTabla').bootstrapTable('load',result);
+	});  
+}
+
+$(document).ready(function() {
+        inicializa_table_products();
 	$('#ventaTabla').bootstrapTable({
 			columns: [{
 				field: 'eliminar',
@@ -92,52 +150,7 @@ $(document).ready(function() {
 			
 		}); 
 	 
-	
-	$.getJSON("find/", function(result){
-		$('#testTabla').bootstrapTable({
-			columns: [{
-				field: 'agregar',
-				
-				formatter: function(value, row, index) {
-							//return '<i class="glyphicon glyphicon-ok-sign" onclick="agregar($(this))" ></i>';
-							return '<i class="glyphicon glyphicon-shopping-cart" data-barcode="' + row.barcode + '" ></i>';
-						  },
-				
-				title: 'codebar'
-			}, {
-				field: 'barcode',
-				
-				formatter: function(value, row, index) {
-							return '<div data-field="' + this.field + '">' + value + '</div>';;
-						  },
-				
-				title: 'codebar'
-			}, {
-				field: 'description',
-				sortable: true,
-				title: 'Descripcion'
-			}, {
-				field: 'precioVenta',
-				sortable: true,
-				title: 'Precio venta',
-				formatter: function(value, row, index) {
-							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
-						  }
-			}],
-			data: result,
-			search : true,
-			pagination: true,
-			sortOrder: 'desc',
-			showColumns: true,
-			showToggle: true,
-			showToggle: true,
-			showRefresh: true,
-			striped: true,
-			showColumns: true,
-			sortable : true
-			
-		});
-	});  
+        cargaInventario();
 	
 	$.fn.editable.defaults.mode = 'inline';
 	var $tableVenta = $('#ventaTabla');
@@ -271,7 +284,7 @@ $(document).ready(function() {
 					var data = $tableVenta.bootstrapTable('getData');
 			                total = calculaGranTotal(data);
 			                $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
-
+                                        cargaInventario();
 					alert("Venta registrada");
 				},
 				error: function (xhr, ajaxOptions, thrownError) {

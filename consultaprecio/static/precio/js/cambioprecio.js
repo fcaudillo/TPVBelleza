@@ -20,7 +20,10 @@ function inicializa_table_products() {
 						  },
 				
 				title: 'codebar'
-			}, {
+			}, {  
+                                field: 'existencia',
+                                title: 'existencia'
+                        },  {
 				field: 'barcode',
 				
 				formatter: function(value, row, index) {
@@ -329,11 +332,13 @@ $(document).ready(function() {
 
 			var producto = {
                            barcode : $('#c_codigobarras').val(),
+                           codigoproveedor: $('#c_codigoproveedor').val(),
                            descripcion : $('#c_descripcion').val(),
                            categoria : $('#c_categoria').val(),
                            precioCompra : $('#c_precioCompra').val(),
                            precioVenta : $('#c_precioVenta').val(),
                            puntoreorden : $('#c_puntoreorden').val(),
+                           maximoexist: $('#c_maximoexist').val(),
                            ubicacion : $('#c_ubicacion').val()
 			}
 			var jsonData = JSON.stringify(producto);
