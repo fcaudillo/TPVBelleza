@@ -20,6 +20,9 @@ $(document).ready(function() {
 				
 				title: 'codebar'
 			}, {
+                                field: 'ubicacion',
+                                title: 'ubicacion'
+                        },  {
 				field: 'cantidad',
 				title: 'Cantidad',
 				editable: {
@@ -99,6 +102,9 @@ $(document).ready(function() {
 				
 				title: 'codebar'
 			}, {
+                                field: 'ubicacion',
+                                title: 'ubicacion'
+                        },  {
 				field: 'description',
 				sortable: true,
 				title: 'Descripcion'
@@ -139,6 +145,7 @@ $(document).ready(function() {
 					row: {
 						cantidad: 1,
 						barcode: $el.barcode,
+                                                ubicacion: $el.ubicacion,
 						description: $el.description,
 						precioVenta: $el.precioVenta,
 						total: $el.precioVenta * 1
