@@ -78,7 +78,7 @@ class Producto (models.Model):
      return Producto.objects.filter(barcode = codigo)[0]
 
    def __str__(self):
-    return 'barcode: %s, descricion: %s, existencia :  %d, precioCompra : %f, precioVenta: %f, minimoexist: %d, maximoexist: %d, codigoprov: %s \n' % (self.barcode, self.description, self.existencia, self.precioCompra, self.precioVenta, self.minimoexist, self.maximoexist, self.codigoproveedor)
+    return 'barcode: %s, descricion: %s, existencia :  %d, precioCompra : %f, precioVenta: %f, minimoexist: %d, maximoexist: %d, codigoprov: %s, ubicacion: %s \n' % (self.barcode, self.description, self.existencia, self.precioCompra, self.precioVenta, self.minimoexist, self.maximoexist, self.codigoproveedor, self.ubicacion)
    
    def as_dict(self):
       return {

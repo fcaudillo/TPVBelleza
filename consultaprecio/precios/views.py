@@ -21,6 +21,33 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 
+
+def siguiente_folio(prefix):
+  prefijo = prefix.strip();
+  dat = list(Producto.objects.raw("Select *, max(substr(barcode,length('%s'))) as maximo from precios_producto where  barcode like '%s' " % (prefijo,prefijo + '%%' ) ))
+  if dat[0].id  == None:
+     return 1
+  
+  #import pdb; pdb.set_trace()
+  return int( dat[0].barcode[len(prefijo):]  ) + 1
+
+def calcular_codigo_barras(codigo):
+  if len(codigo.strip()) > 4:
+     return codigo.strip()
+  prefijo = 'A' 
+  if len(codigo.strip()) > 0:
+    prefijo = codigo.strip()
+
+  siguiente = str(siguiente_folio(prefijo))
+  codigo_generado = prefijo + siguiente.zfill(11 - len(prefijo) )
+  return codigo_generado
+    
+  
+@login_required
+def generar_codigo_barras(request,prefijo):
+   codigo = calcular_codigo_barras(prefijo) 
+   return HttpResponse(json.dumps({'respuesta':'OK', 'codigo_barras': codigo}), content_type='application/json')
+
 # Create your views here.
 @login_required
 def logout_view(request):
@@ -140,6 +167,8 @@ class LoadData:
        pos_final = worksheet.nrows if pos_final == -1 else pos_final
        for rx in range(pos_inicio,pos_final): 
          codigo_barras = worksheet.cell(rx,pos_codigo_barras).value;
+         if codigo_barras is None:
+           codigo_barras = ''
          if type(worksheet.cell(rx,pos_codigo_barras).value) is float:
            codigo_barras = '%13.0f' % worksheet.cell(rx,pos_codigo_barras).value
           
@@ -148,7 +177,7 @@ class LoadData:
            codigoproveedor = '%13.0f' % worksheet.cell(rx,pos_codigoproveedor).value
          if type(codigo_barras) is unicode:
             if codigo_barras == u'':
-               codigo_barras = None
+               codigo_barras = ''
          producto = worksheet.cell(rx,pos_producto).value
          precioCompra = None
          if type(worksheet.cell(rx,pos_precio_compra).value) is float:
@@ -166,7 +195,7 @@ class LoadData:
          maximoexist = 1
          if type(worksheet.cell(rx,pos_maximoexist).value) is float:
             maximoexist = worksheet.cell(rx,pos_maximoexist).value
-         ubicacion = worksheet.cell(rx,pos_ubicacion)
+         ubicacion = worksheet.cell(rx,pos_ubicacion).value
          categoria = 1
          if type(worksheet.cell(rx,pos_categoria).value) is int:
             categoria = worksheet.cell(rx,pos_categoria).value 
@@ -180,6 +209,7 @@ class LoadData:
        for producto in productos:
           print producto  
           cat_categoria = Categoria.objects.get(pk=producto['categoria'])
+          producto['codigo'] = calcular_codigo_barras(producto['codigo'])
           Producto.objects.create(barcode=producto['codigo'],codigoproveedor=producto['codigoproveedor'],description=producto['producto'], existencia=producto['existencia'],precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'], categoria = cat_categoria, ubicacion=producto['ubicacion'], minimoexist=producto['puntoreorden'],maximoexist=producto['maximoexist'], falta=datetime.datetime.now())		  
        return 1       	
    

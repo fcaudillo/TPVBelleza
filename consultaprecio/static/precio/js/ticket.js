@@ -24,6 +24,9 @@ function inicializa_table_products() {
 			}, {
                             field: 'existencia',
                             title: 'existencia'
+                        }, {
+                            field: 'ubicacion',
+                            title: 'ubicacion'
                         },
                         {
 				field: 'barcode',
@@ -87,6 +90,10 @@ $(document).ready(function() {
 				
 				title: 'codebar'
 			}, {
+
+                                field: 'ubicacion',
+                                title: 'ubicacion'
+                        }, {
 				field: 'cantidad',
 				title: 'Cantidad',
 				editable: {
@@ -166,6 +173,7 @@ $(document).ready(function() {
 					row: {
 						cantidad: 1,
 						barcode: $el.barcode,
+                                                ubicacion: $el.ubicacion,
 						description: 'Item ' + $el.description,
                                                 precioCompra: $el.precioCompra,
 						precioVenta: $el.precioVenta,

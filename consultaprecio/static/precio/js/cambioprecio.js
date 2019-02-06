@@ -328,6 +328,18 @@ $(document).ready(function() {
            $('#modalCrearProducto').modal('show'); 
         });
 
+        $('#btnGenerar').click(function() {
+                        prefijo = $('#c_codigobarras').val();
+                        if ($.trim(prefijo) == "")
+                           prefijo = 'A'
+			$.getJSON("/generar_codigo_barras/" + $.trim(prefijo) + "/", function(result){
+                                alert(result); 
+				if (result.respuesta == "OK")
+                                  $('#c_codigobarras').val(result.codigo_barras);
+			});
+
+        });
+
         $('#btnInsertarProduto').click(function() {
 
 			var producto = {
