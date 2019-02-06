@@ -7,4 +7,10 @@
 .glyphicon-shopping-cart {
    color: green;
 }
+.form-control.form-control-error {
+    border-color: #D0021B;
+}
 
+.form-text.form-text-error {
+    color: #D0021B;
+}

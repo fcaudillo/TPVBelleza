@@ -1,4 +1,49 @@
 
+var validadores = [
+		{
+			"componentId" : "c_codigobarras",
+			"mensajeError" : [ "Este campo es obligatorio" ],
+			"validate" : [ isValidEmpty ]
+		},
+		{
+			"componentId" : "c_descripcion",
+			"mensajeError" : [ "Este campo es obligatorio" ],
+			"validate" : [ isValidEmpty]
+		},
+		{
+			"componentId" : "c_categoria",
+			"mensajeError" : [ "Este campo es obligatorio" ],
+			"validate" : [ isValidEmptyCombo ]
+		},
+		{
+			"componentId" : "c_precioCompra",
+			"mensajeError" : [ "Este campo es obligatorio",
+					"Solo admite numeros" ],
+			"validate" : [ isValidEmpty, isValidFloat ]
+		},
+		{
+			"componentId" : "c_precioVenta",
+			"mensajeError" : [ "Este campo es obligatorio",
+					"Solo numeros." ],
+			"validate" : [ isValidEmpty, isValidFloat ]
+		},
+		{
+			"componentId" : "c_puntoreorden",
+			"mensajeError" : [ "Este campo es obligatorio","Solo caracteres n&uacutemericos" ],
+			"validate" : [ isValidEmpty, isValidSoloNumeros ]
+		},
+		{
+			"componentId" : "c_maximoexist",
+			"mensajeError" : [ "Este campo es obligatorio","Solo caracteres n&uacutemericos" ],
+			"validate" : [ isValidEmpty, isValidSoloNumeros ]
+		},
+		{
+			"componentId" : "c_ubicacion",
+			"mensajeError" : [ "Este campo es obligatorio" ],
+			"validate" : [ isValidEmpty ]
+		}
+		];
+
 function calculaGranTotal(data) { var producto = null; var total = 0;
 	for (item in data) {
 		producto = data[item];
@@ -332,6 +377,14 @@ $(document).ready(function() {
 	
 
         $('#btnCrearProducto').click(function() {
+           $('#c_codigobarras').val('');
+           $('#c_codigoproveedor').val('');
+           $('#c_descripcion').val('');
+           $('#c_precioCompra').val('');
+           $('#c_precioVenta').val('');
+           $('#c_puntoreorden').val('');
+           $('#c_maximoexist').val('');
+           $('#c_ubicacion').val('');
            $('#modalCrearProducto').modal('show'); 
         });
 
@@ -340,7 +393,6 @@ $(document).ready(function() {
                         if ($.trim(prefijo) == "")
                            prefijo = 'A'
 			$.getJSON("/generar_codigo_barras/" + $.trim(prefijo) + "/", function(result){
-                                alert(result); 
 				if (result.respuesta == "OK")
                                   $('#c_codigobarras').val(result.codigo_barras);
 			});
@@ -348,6 +400,10 @@ $(document).ready(function() {
         });
 
         $('#btnInsertarProduto').click(function() {
+
+                       	if (!isValidForm(validadores)) {
+		          return false;
+			} 
 
 			var producto = {
                            barcode : $('#c_codigobarras').val(),
@@ -369,6 +425,7 @@ $(document).ready(function() {
 				data: jsonData, // Some data e.g. Valid JSON as a string
 				success: function (response) {
                                         fill_table_products();
+                                        $('#modalCrearProducto').modal('hide'); 
 					alert("Producto agregado ");
 				},
 				error: function (xhr, ajaxOptions, thrownError) {

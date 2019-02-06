@@ -96,10 +96,10 @@
 								</div>
 								<div class="col-md-9">
 									<input class="form-control" id="c_codigobarras" name="c_codigobarras"
-										maxlength="300" placeholder="Codigo de barras" type="text">
+										maxlength="30" placeholder="Codigo de barras" type="text">
 
-						                        <button id="btnGenerar" type="button" class="btn btn-default" >Generar</button>
 									<small class="form-text form-text-error"></small>
+						                        <button id="btnGenerar" type="button" class="btn btn-default" >Generar</button>
 								</div>
 						</div>
 
@@ -111,7 +111,7 @@
 								</div>
 								<div class="col-md-9">
 									<input class="form-control" id="c_codigoproveedor" name="c_codigoproveedor"
-										maxlength="300" placeholder="Codigo de proveedor" type="text">
+										maxlength="40" placeholder="Codigo de proveedor" type="text">
 									<small class="form-text form-text-error"></small>
 								</div>
 						</div>
@@ -124,7 +124,7 @@
 								</div>
 								<div class="col-md-9">
 									<input class="form-control" id="c_descripcion" name="c_descripcion"
-										maxlength="300" placeholder="Descripcion" type="text">
+										maxlength="255" placeholder="Descripcion" type="text">
 									<small class="form-text form-text-error"></small>
                                                                 </div>
 	
@@ -157,7 +157,7 @@
 								</div>
 								<div class="col-md-9">
 									<input class="form-control" id="c_precioCompra" name="c_precioCompra"
-										maxlength="300" placeholder="" type="text">
+										maxlength="10" placeholder="" type="text">
 									<small class="form-text form-text-error"></small>
                                                                 </div>
 	
@@ -171,7 +171,7 @@
 								</div>
 								<div class="col-md-9">
 									<input class="form-control" id="c_precioVenta" name="c_precioVenta"
-										maxlength="300" placeholder="" type="text">
+										maxlength="10" placeholder="" type="text">
 									<small class="form-text form-text-error"></small>
                                                                 </div>
 	
@@ -186,7 +186,7 @@
 								</div>
 								<div class="col-md-9">
 									<input class="form-control" id="c_puntoreorden" name="c_puntoreorden"
-										maxlength="300" placeholder="" type="text">
+										maxlength="4" placeholder="" type="text">
 									<small class="form-text form-text-error"></small>
                                                                 </div>
 	
@@ -200,7 +200,7 @@
 								</div>
 								<div class="col-md-9">
 									<input class="form-control" id="c_maximoexist" name="c_maximoexist"
-										maxlength="300" placeholder="" type="text">
+										maxlength="4" placeholder="" type="text">
 									<small class="form-text form-text-error"></small>
                                                                 </div>
 	
@@ -213,7 +213,7 @@
 								</div>
 								<div class="col-md-9">
 									<input class="form-control" id="c_ubicacion" name="c_ubicacion"
-										maxlength="300" placeholder="" type="text">
+										maxlength="255" placeholder="" type="text">
 									<small class="form-text form-text-error"></small>
                                                                 </div>
 	
@@ -296,6 +296,7 @@
 	
 	<script src="https://rawgit.com/fsauter/bootstrap-table/develop/src/extensions/editable/bootstrap-table-editable.js"></script>
 	
+	<script src="/static/precio/js/validadores.js"></script>
 	<script src="/static/precio/js/cambioprecio.js"></script>
     </div>
   </body>
