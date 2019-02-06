@@ -20,7 +20,7 @@
    
    stage('Deploy a produccion') {
        sh "cd main && docker-compose stop tlapape"
-       sh "docker run --rm fcaudillo/tpv-verde:lts ./manage.py migrate " 
+       sh "docker run -v /home/dockeradm/data/tpv-verde:/app/tlapape/data --rm fcaudillo/tpv-verde:lts ./manage.py migrate " 
        sh "cd main && docker-compose up -d --no-deps --build tlapape"
    }
 
