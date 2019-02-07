@@ -88,7 +88,7 @@ function inicializa_table_products() {
 				sortable: true,
 				title: 'Precio compra',
 				formatter: function(value, row, index) {
-							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
+							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }) + '</div>';
 						  }
 			}, {
                            
@@ -97,7 +97,7 @@ function inicializa_table_products() {
 				title: 'Precio venta',
 				formatter: function(value, row, index) {
 
-			                                return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
+			                                return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }) + '</div>';
 			                  }
 
 			}],
@@ -147,7 +147,29 @@ $(document).ready(function() {
 				title: 'codebar'
 			}, {
                                 field: 'ubicacion',
-                                title: 'ubicacion'
+                                title: 'ubicacion',
+
+				editable: {
+					type: 'text',
+					title: 'ubicacion',
+					send: 'never',
+					url: '',
+					validate: function (value) {
+						value = $.trim(value);
+						if (!value) {
+							return 'La ubicacion es requerida';
+						}
+  
+						var data = $('#ventaTabla').bootstrapTable('getData'),
+						index = $(this).parents('tr').data('index');
+						data[index].ubicacion = value;
+						$tableVenta.bootstrapTable('updateRow', {
+							index: parseInt(index),
+							row: data[index]
+						});	
+					}
+				}
+
                         },  {
 				field: 'cantidad',
 				title: 'Cantidad',
@@ -159,7 +181,7 @@ $(document).ready(function() {
 					success : function (response, newValue) {
 					   var data = $('#ventaTabla').bootstrapTable('getData');
 					   total = calculaGranTotal(data);
-					   $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
+					   $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 					},
 					validate: function (value) {
 						value = $.trim(value);
@@ -222,7 +244,7 @@ $(document).ready(function() {
 					success : function (response, newValue) {
 					   var data = $('#ventaTabla').bootstrapTable('getData');
 					   total = calculaGranTotal(data);
-					   $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
+					   $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 					},
 					validate: function (value) {
 						value = $.trim(value);
@@ -256,7 +278,7 @@ $(document).ready(function() {
 					success : function (response, newValue) {
 					   var data = $('#ventaTabla').bootstrapTable('getData');
 					   total = calculaGranTotal(data);
-					   $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
+					   $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 					},
 					validate: function (value) {
 						value = $.trim(value);
@@ -283,7 +305,7 @@ $(document).ready(function() {
 				sortable: true,
 				title: 'Total COMPRA',
 				formatter: function(value, row, index) {
-							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
+							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }) + '</div>';
 						  }
 			}],
 			data: [],
@@ -349,7 +371,7 @@ $(document).ready(function() {
 			}
 			
 			total = calculaGranTotal(data);
-			$tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
+			$tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 
 		}
 	 });	
@@ -365,8 +387,7 @@ $(document).ready(function() {
 			}
 			var data = $tableVenta.bootstrapTable('getData');
 			total = calculaGranTotal(data);
-			$tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
-
+			$tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' })); 
 		}
 	 });	
 
@@ -444,7 +465,7 @@ $(document).ready(function() {
 			var codigo = $( "#codigobarras" ).val()
 			$.getJSON("/find/" + $.trim(codigo) + "/", function(result){
 				$('#descriptionProductoLabel').text(result.description);
-				$('.precioProductoLabel').text(Number(result.precioVenta).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
+				$('.precioProductoLabel').text(Number(result.precioVenta).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 				ean = result;
 				$("#myModal").modal('show')
 			});
@@ -470,7 +491,7 @@ $(document).ready(function() {
 		});	
 		var data = $tableVenta.bootstrapTable('getData');
 		total = calculaGranTotal(data);
-		$tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
+		$tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 		$tableVenta.bootstrapTable('scrollTo', 'bottom');
 		$("#myModal").modal('hide');
 		evt.stopPropagation();
@@ -495,7 +516,7 @@ $(document).ready(function() {
 					$('#ventaTabla').bootstrapTable('removeAll');
 					var data = $tableVenta.bootstrapTable('getData');
 			                total = calculaGranTotal(data);
-			                $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
+			                $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
                                         fill_table_products();
 					alert("Movimiento  registrado");
 				},

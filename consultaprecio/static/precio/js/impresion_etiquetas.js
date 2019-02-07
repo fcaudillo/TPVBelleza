@@ -57,14 +57,14 @@ $(document).ready(function() {
 				sortable: true,
 				title: 'Precio venta',
 				formatter: function(value, row, index) {
-							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
+							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }) + '</div>';
 						  }
 			}, {
 				field: 'total',
 				sortable: true,
 				title: 'Total',
 				formatter: function(value, row, index) {
-							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
+							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }) + '</div>';
 						  }
 			}],
 			data: [],
@@ -113,7 +113,7 @@ $(document).ready(function() {
 				sortable: true,
 				title: 'Precio venta',
 				formatter: function(value, row, index) {
-							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }) + '</div>';
+							return '<div align="right" data-field="' + this.field + '">' + Number(value).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }) + '</div>';
 						  }
 			}],
 			data: result,
@@ -204,7 +204,7 @@ $(document).ready(function() {
 			var codigo = $( "#codigobarras" ).val()
 			$.getJSON("/find/" + $.trim(codigo) + "/", function(result){
 				$('#descriptionProductoLabel').text(result.description);
-				$('.precioProductoLabel').text(Number(result.precioVenta).toLocaleString('mx-MX', { style: 'currency', currency: 'USD' }));
+				$('.precioProductoLabel').text(Number(result.precioVenta).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 				ean = result;
 				$("#myModal").modal('show')
 			});
