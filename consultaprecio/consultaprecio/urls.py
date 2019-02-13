@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from precios.views import FindProductView, FindView, ChangeProductView,PrintLabelView,ImportCatalogView
-from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas, download, upload_file, login_view, logout_view
+from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas, download, upload_file, login_view, logout_view, resumen_movimiento
 from django.contrib.auth.decorators import login_required
 
 
@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
         url('generar_codigo_barras/(?P<prefijo>\w+)/$',generar_codigo_barras, name='generar_codigo_barras'),
 	url('find/(?P<barcode>\w+)/$',find_consulta, name='find'),
+        url('resumenmovimiento/(?P<fechaIni>\w+)/(?P<fechaFin>\w+)/$',resumen_movimiento, name='resumen_movimiento'),
         url('download/$',download, name='download'),
 	url('find/$',find_all, name='find_all'),
 	url('tickets/add',guarda_ticket, name='ticket_add'),

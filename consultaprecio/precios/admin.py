@@ -11,4 +11,4 @@ class CategoriaAdmin(admin.ModelAdmin):
 
 @admin.register(TipoMovimiento)
 class TipoMovimientoAdmin(admin.ModelAdmin):
-   list_display = ('codigo','description','factor')
+   list_display = ('codigo','description','factor','factor_conta','prioridad')

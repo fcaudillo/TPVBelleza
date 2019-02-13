@@ -11,7 +11,7 @@ class MovimientoManager(models.Manager):
    def create_from_json(self, data, current_user):
       tipo_mov = TipoMovimiento.objects.get(id=data['tipo_movimiento'])
       user = current_user
-      mov = self.create(tipo_movimiento = tipo_mov,total = data['total'], description = data['descripcion'],  fecha = datetime.date.today(), user = user);
+      mov = self.create(tipo_movimiento = tipo_mov,total = data['total'], description = data['descripcion'],  fecha = datetime.datetime.today(), user = user);
       totalCompra = 0
       totalVenta = 0
       for item in data['items']:
@@ -96,6 +96,8 @@ class TipoMovimiento (models.Model):
     codigo = models.CharField(max_length =30, unique=True)
     description = models.CharField(max_length=255)
     factor = models.DecimalField(default=0, max_digits=5, decimal_places=2)
+    factor_conta = models.DecimalField(default=0, max_digits=5, decimal_places=2)
+    prioridad = models.DecimalField(default=0, max_digits=2, decimal_places=0)
     def __str__(self):
 	 return 'Codigo : %s, Descripcion : %s, factor: %f \n' % (self.codigo, self.description, self.factor)
 
@@ -114,7 +116,7 @@ class Movimiento (models.Model):
       for item in items:
          detalle = detalle + str(item) 
       
-      return 'id : %d, username: %s , Tipo Mov: %s , total : %f, descripcion: %s \n Detalle: \n %s' % (self.id, self.user.username, self.tipo_movimiento.description, self.total, self.description,  detalle)
+      return 'id : %d, username: %s , Tipo Mov: %s , total : %f, descripcion: %s fecha: %s \n Detalle: \n %s' % (self.id, self.user.username, self.tipo_movimiento.description, self.total, self.description, self.fecha, detalle)
 	  
 class DetalleMovimiento (models.Model):
    id = models.AutoField(primary_key=True)

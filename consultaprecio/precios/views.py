@@ -20,6 +20,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from django.db import connection
 
 
 def siguiente_folio(prefix):
@@ -67,6 +68,42 @@ def login_view(request):
         return render(request,'precios/login.html',{'error':'Invalid username o password'}) 
    return render(request, 'precios/login.html')
 
+@login_required
+def find_movimiento(request,fechaIni, fechaFin):
+    result = [];
+    fini = datetime.datetime.strptime(fechaIni  + ' 0:0:0','%d/%m/%Y %H:%M:%S')
+    ffin = datetime.datetime.strptime(fechaFin  + ' 23:59:59','%d/%m/%Y %H:%M:%S')
+    lista = list(Movimiento.objects.filter(fecha__time__range=(fini,ffin)).order_by('tipo_movimiento__prioridad'))
+    for item in lista:
+      dat = {'fecha': item.fecha, 'Tipo Mov': item.tipo_movimiento.description }
+      result.append(dat)
+    return result
+
+@login_required
+def  resumen_movimiento(request,fechaIni, fechaFin):
+    result = [];
+    fi = fechaIni[:4] + "/" + fechaIni[4:6] + "/" + fechaIni[6:8]
+    ff = fechaFin[:4] + "/" + fechaFin[4:6] + "/" + fechaFin[6:8]
+    fini = datetime.datetime.strptime(fi  + ' 0:0:0','%Y/%m/%d %H:%M:%S')
+    ffin = datetime.datetime.strptime(ff  + ' 23:59:59','%Y/%m/%d %H:%M:%S')
+    sql = """
+             select date(m.fecha) as fecha, tm.description, sum(m.total * tm.factor_conta) as total
+               from precios_movimiento m inner join precios_tipomovimiento tm
+                                            on m.tipo_movimiento_id = tm.id
+             where fecha between '%s' and '%s'
+               and tm.prioridad in (2,3,4,5)
+             group by date(fecha), tipo_movimiento_id
+             order by 2
+          """ % (fini, ffin)
+    print sql
+    cursor = connection.cursor()
+    cursor.execute(sql, [])
+    items = cursor.fetchall()
+    for item in items:
+      dat = {'fecha': item[0] , "TipoMovimiento"  : item[1],  "Total : " : item[2] }
+      result.append(dat)
+
+    return HttpResponse(json.dumps(result), content_type='application/json')
 
 @login_required
 def find_consulta(request,barcode):
