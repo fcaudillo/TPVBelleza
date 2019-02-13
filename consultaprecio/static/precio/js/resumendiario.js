@@ -1,10 +1,9 @@
 
 function calculaGranTotal(data) {
-	var producto = null;
 	var total = 0;
 	for (item in data) {
-		producto = data[item];
-		total = total + (producto.cantidad * producto.precioVenta)  
+		totalTmp = data[item].total;
+		total = total + totalTmp;  
 	}	
 	return total;
 }
@@ -19,8 +18,8 @@ function inicializa_table_ventas() {
                             field: 'TipoMovimiento',
                             title: 'Movimiento'
                         }, {
-                            field: 'Total',
-                            title: 'total.'
+                            field: 'total',
+                            title: 'Total'
 			}],
 			//data: result,
 			search : true,
@@ -42,15 +41,19 @@ function consultaResumenDiario() {
         var fini = $('#fechaIni').val()
         var ffin = $('#fechaFin').val(); 
 	$.getJSON("resumenmovimiento/" + fini + "/" + ffin + "/", function(result){
-          $('#ventaTabla').bootstrapTable('load',result);
+           total = calculaGranTotal(result);
+           $('#ventaTabla').bootstrapTable('load',result);
+           $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 	});  
 }
 
+var $tableVenta = $('#ventaTabla');
 $(document).ready(function() {
         inicializa_table_ventas();
 	
 	$( "#btnSearch" ).click(function() {
-	     consultaResumenDiario() 
+	     consultaResumenDiario() ;
+             return false;
 	});	
 	
 })

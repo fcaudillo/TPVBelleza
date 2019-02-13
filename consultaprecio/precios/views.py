@@ -105,7 +105,7 @@ def  resumen_movimiento(request,fechaIni, fechaFin):
     cursor.execute(sql, [])
     items = cursor.fetchall()
     for item in items:
-      dat = {'fecha': item[0] , "TipoMovimiento"  : item[1],  "Total : " : item[2] }
+      dat = {'fecha': item[0] , "TipoMovimiento"  : item[1],  "total" : item[2] }
       result.append(dat)
 
     return HttpResponse(json.dumps(result), content_type='application/json')
