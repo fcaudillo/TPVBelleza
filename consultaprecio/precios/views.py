@@ -68,6 +68,11 @@ def login_view(request):
         return render(request,'precios/login.html',{'error':'Invalid username o password'}) 
    return render(request, 'precios/login.html')
 
+
+@login_required
+def reporte_diario(request):
+   return render(request,'precios/reporte_diario.html')
+
 @login_required
 def find_movimiento(request,fechaIni, fechaFin):
     result = [];

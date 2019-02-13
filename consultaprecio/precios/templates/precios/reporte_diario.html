@@ -1,0 +1,61 @@
+{% extends "precios/base_menu.html" %}
+
+{% block titulo %}
+<title> Resumen del dia </title>
+{% endblock %}
+
+{% block custom_page_resources %} {% endblock %}
+
+{% block body %}
+       <div class="container mt-5">
+        {% include "precios/nav.html" %}
+	  <p>Resumen diario </p>
+	 <form class="form-horizontal">
+		  
+                {% csrf_token %}
+		<!-- Text input-->
+		<div class="form-group">
+		  <label class="col-md-4 control-label" for="fechaIni">Fecha inicial.</label>  
+		  <div class="col-md-4">
+		  <input name="fechaIni" class="form-control input-md" id="fechaIni" required="" type="text" >
+		   
+		  </div>
+		</div>
+
+		<div class="form-group">
+		  <label class="col-md-4 control-label" for="fechaFin">Fecha final.</label>  
+		  <div class="col-md-4">
+		  <input name="fechaFin" class="form-control input-md" id="fechaFin" required="" type="text" >
+		   
+		  </div>
+		</div>
+
+		<!-- Button -->
+		<div class="form-group">
+		  <label class="col-md-4 control-label" ></label>
+		  <div class="col-md-2">
+			<button class="btn btn-primary" id="btnSearch">Buscar</button>
+		  </div>
+		</div>
+
+	</form>
+	
+		<table id="ventaTabla" class="table table-scroll table-striped" >
+			 <tfoot>
+				<tr>
+				   <th></th>
+				   <th></th>
+				   <th></th>
+				   <th></th>
+				   <th></th>
+				   <th>Total Compra</th>
+				   <th> <div align="right"  class="granTotal">0.0</div></th>
+				</tr>
+			 </tfoot>
+		</table>
+
+{% endblock %}
+{% block custom_code_page %}	
+	<script src="/static/precio/js/validadores.js"></script>
+	<script src="/static/precio/js/resumendiario.js"></script>
+{% endblock 
