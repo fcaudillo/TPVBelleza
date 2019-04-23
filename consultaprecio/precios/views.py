@@ -22,7 +22,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.db import connection
 from celery import  Celery
-from tasks import sum
+from tasks import sum, recarga
 
 def siguiente_folio(prefix):
   prefijo = prefix.strip();
@@ -52,11 +52,14 @@ def generar_codigo_barras(request,prefijo):
 
 
 @login_required
-def recarga (request,numero,cantidad):
-   result = sum.apply_async([numero,cantidad],queue='celeryx') 
-   result.wait(60)
-   suma = result.result
-   return HttpResponse(json.dumps({'respuesta':'OK', 'suma': suma}), content_type='application/json')
+def recargatae (request,compania, plan, numero,monto):
+   print compania,plan,numero,monto
+   #result = sum.apply_async([numero,cantidad],queue='celeryx') 
+   #result = recarga.apply_async([compania,plan,numero,monto],queue='celeryx')
+   #result = recarga.apply_async(['a','b','c','d'],queue='celeryx')
+   result = recarga.apply_async([compania,plan,numero,monto],queue='celeryx') 
+   result.wait(16000)
+   return HttpResponse(result.result,  content_type='application/json')
 
 
 # Create your views here.

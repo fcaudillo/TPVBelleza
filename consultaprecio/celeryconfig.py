@@ -17,3 +17,4 @@ result_backend = 'rpc://'
 
 #result_backend = 'amqp://' deprecated
 result_persistent = False
+
