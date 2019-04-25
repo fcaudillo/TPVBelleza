@@ -22,7 +22,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.db import connection
 from celery import  Celery
-from tasks import sum, recarga
+from kombu import Connection, Exchange, Queue, Producer
+from tasks import recarga
+
 
 def siguiente_folio(prefix):
   prefijo = prefix.strip();
@@ -54,11 +56,24 @@ def generar_codigo_barras(request,prefijo):
 @login_required
 def recargatae (request,compania, plan, numero,monto):
    print compania,plan,numero,monto
-   #result = sum.apply_async([numero,cantidad],queue='celeryx') 
-   #result = recarga.apply_async([compania,plan,numero,monto],queue='celeryx')
-   #result = recarga.apply_async(['a','b','c','d'],queue='celeryx')
    result = recarga.apply_async([compania,plan,numero,monto],queue='celeryx') 
    result.wait(16000)
+   print ("resultado " + result.result)
+   try:
+     task_queue = Queue('msgreload', Exchange('msgreload'), routing_key='msgreload')
+     print ("1...")
+     with Connection('amqp://guest@rabbitmq:5672//') as conn:
+       print ("2...")
+       with conn.channel() as channel:
+         print ("3...")
+         producer = Producer(channel)
+         print ("4...")
+         producer.publish(result.result,exchange=task_queue.exchange,routing_key=task_queue.routing_key,declare=[task_queue])
+         print ("5...")
+   except:
+      pass
+
+   
    return HttpResponse(result.result,  content_type='application/json')
 
 

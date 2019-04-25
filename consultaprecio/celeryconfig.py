@@ -8,6 +8,7 @@ task_default_exchange_type = 'direct'
 ## Broker settings.
 broker_url = 'amqp://guest@rabbitmq:5672//'
 
+broker_heartbeat = 10
 # List of modules to import when the Celery worker starts.
 imports = ('tasks',)
 
