@@ -12,7 +12,7 @@ import xlrd
 import json
 import os
 import datetime
-from precios.models import TipoMovimiento, Movimiento, Categoria
+from precios.models import TipoMovimiento, Movimiento, Categoria, Compania, Plan
 from precios.etiqueta_chica import generar_etiquetas, obtener_lista_productos
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
@@ -95,6 +95,7 @@ def login_view(request):
       else:
         return render(request,'precios/login.html',{'error':'Invalid username o password'}) 
    return render(request, 'precios/login.html')
+
 
 
 @login_required
@@ -363,3 +364,12 @@ class ImportCatalogView(TemplateView):
       return context
 
 
+class RecargaTaeView(TemplateView):
+   template_name = 'precios/recarga.html'
+   def get_context_data(self, **kwargs):
+      context = super(TemplateView, self).get_context_data(**kwargs)
+      list_grupos = list(self.request.user.groups.all()); 
+      nombres_grupos = [item.name for item in list_grupos] 
+      context['pantalla'] = 'recarga'
+      context['es_master'] = True if 'Master' in nombres_grupos else False;
+      return context

@@ -51,7 +51,16 @@ class DetalleMovimientoManager(models.Manager):
       precioCompra = data['cantidad'] * data['precioCompra']
       det = self.create(movimiento = movimiento, barcode = data['barcode'], description = data['description'], cantidad = data['cantidad'], precioCompra = precioCompra, precioVenta = precioVenta)
       return det
-	  
+
+
+
+class Compania(models.Model):
+    id = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=5, default='')
+    description = models.CharField(max_length=255)
+    imagen = models.CharField(max_length=50)
+    comision = models.IntegerField(default=0)
+
 class Categoria(models.Model):
     id = models.AutoField(primary_key=True)
     codigo = models.CharField(max_length=5, default='')
@@ -90,6 +99,16 @@ class Producto (models.Model):
 		 'precioVenta':float(self.precioVenta)
 	  
 	  }
+
+
+class Plan(models.Model):
+   id = models.AutoField(primary_key=True)
+   plan = models.CharField(max_length=20, default='')
+   description = models.CharField(max_length=255)
+   monto = models.IntegerField(default=0)
+   compania = models.ForeignKey(Compania,models.SET_NULL,blank=True, null=True)
+   producto = models.ForeignKey(Producto,models.SET_NULL,blank=True, null=True) 
+	  
 
 class TipoMovimiento (models.Model):
     id = models.AutoField(primary_key=True)

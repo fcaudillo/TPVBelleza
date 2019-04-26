@@ -26,6 +26,16 @@
            <a href="{% url "consulta" %}">Ventas </a></li>
         {%  endif %}
 
+
+        {% if pantalla == 'recarga' %}
+           <li class="active">
+           <a href="{% url "recarga" %}">Recargas <span class="sr-only">(current)</span></a></li>
+        {% else %}
+           <li>
+           <a href="{% url "recarga" %}">Recargas </a></li>
+        {%  endif %}
+
+
         {% if pantalla == 'impresion' %}
           <li class="active">
             <a href="{% url "impresion" %}">Impresion <span class="sr-only">(current)</span></a>
