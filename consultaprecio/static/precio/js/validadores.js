@@ -47,6 +47,15 @@ function isValidSoloNumeros(componentId, mensajeError, handleValidate) {
 	return true;
 }
 
+function isValidSelect(componentId, mensajeError, handleValidate) {
+
+             if($.trim($('input[name="' + componentId + '"]:checked').val()) == ''){
+                  handleValidate(false,componentId,mensajeError);
+                  return false;
+             }
+             handleValidate(true,componentId,mensajeError);
+             return true;
+}
 
 function isValidFloat(componentId, mensajeError, handleValidate) {
 	var campo = $('#' + componentId).val();

@@ -4,7 +4,32 @@
 <title> Recargas de tiempo aire </title>
 {% endblock %}
 
-{% block custom_page_resources %} {% endblock %}
+{% block custom_page_resources %}
+
+  <link rel="stylesheet" href="/static/precio/css/recarga.css" >
+  <script languaje='javascript'>
+
+     function normalizePlan(origen) {
+        old = "###"
+        planes = []
+        plan_compania = []
+        for (var i = 0; i < origen.length; i++) {
+           if (old != origen[i].compania) { 
+               plan_compania = []
+               planes[origen[i].compania] = plan_compania
+           }
+           plan_compania.push(origen[i])
+           old = origen[i].compania
+        }
+        return planes;
+     }
+     var planes_plain = {{ planes | safe }}
+     var planes = normalizePlan(planes_plain)
+     alert(planes)
+
+  </script>
+
+{% endblock %}
 
 {% block body %}
        <div class="container mt-5">
@@ -13,37 +38,75 @@
 		  
                 {% csrf_token %}
 		<!-- Text input-->
-		<div class="form-group">
+		<div class="row form-group">
 		  <label class="col-md-4 control-label" for="compania">Compania</label>  
 		  <div class="col-md-4">
-		  <input name="compania" class="form-control input-md" id="compania" required="" type="text" >
-		   
+                  <select name="compania"  id="compania" class="form-control"  >
+                  {% for c in companias %}
+                     <option value='{{ c.codigo }}'> {{ c.description }} </option>
+                  {% endfor %}
+		  </select> 
+                  <small class="form-text form-text-error"></small>
+	
 		  </div>
 		</div>
 
-		<div class="form-group">
+		<div class="row form-group">
 		  <label class="col-md-4 control-label" for="plan">Plan</label>  
 		  <div class="col-md-4">
-		  <input name="plan" class="form-control input-md" id="plan" required="" type="text" >
+                      <div class="radio">
+                        <table>
+                          <tr><td id="bloque0" width="30%" vertical-align="top">
+                            
+                          </td>
+                          <td id="bloque1" width = "30%" vertical-align="top">
+
+                          </tr>
+                        </table>
+                        
+                       <small id="errorMonto" class="form-text form-text-error"></small>
+                     </div>
 		   
 		  </div>
 		</div>
 
+<!-- Modal -->
+<div class="modal fade" id="dlgMensaje" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Mensaje</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       <p id="msgText"> </p> 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-		<div class="form-group">
+
+		<div class="row form-group">
 		  <label class="col-md-4 control-label" for="telefono1">Telefono:</label>  
 		  <div class="col-md-4">
 		  <input name="telefono1" class="form-control input-md" id="telefono1" required="" type="text" >
-		   
+                  <small class="form-text form-text-error"></small>
+ 
 		  </div>
 		</div>
 
 
-		<div class="form-group">
-		  <label class="col-md-4 control-label" for="telefono2">Telefono:</label>  
+		<div class="row form-group">
+		  <label class="col-md-4 control-label" for="telefono2">Confirmar:</label>  
 		  <div class="col-md-4">
 		  <input name="telefono2" class="form-control input-md" id="telefono2" required="" type="text" >
-		   
+		  <small class="form-text form-text-error"></small>
+  
 		  </div>
 		</div>
 		<!-- Button -->

@@ -368,8 +368,16 @@ class RecargaTaeView(TemplateView):
    template_name = 'precios/recarga.html'
    def get_context_data(self, **kwargs):
       context = super(TemplateView, self).get_context_data(**kwargs)
+      companias = list(Compania.objects.all())
+      planes = list(Plan.objects.all().order_by('compania'))
+      planes_json = [] 
+      for  item in planes:
+         planes_json.append({"plan": item.plan, "description": item.description, "monto": item.monto, "compania" : item.compania.codigo })
+      print planes_json
       list_grupos = list(self.request.user.groups.all()); 
       nombres_grupos = [item.name for item in list_grupos] 
+      context['companias'] = companias
+      context['planes'] = json.dumps(planes_json)
       context['pantalla'] = 'recarga'
       context['es_master'] = True if 'Master' in nombres_grupos else False;
       return context
