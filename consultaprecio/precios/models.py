@@ -108,7 +108,15 @@ class Plan(models.Model):
    monto = models.IntegerField(default=0)
    compania = models.ForeignKey(Compania,models.SET_NULL,blank=True, null=True)
    producto = models.ForeignKey(Producto,models.SET_NULL,blank=True, null=True) 
-	  
+
+class Recarga(models.Model):
+    id = models.AutoField(primary_key=True)
+    plan = models.ForeignKey(Plan, models.SET_NULL,blank=True, null=True)
+    celular =  models.CharField(max_length=20, default='', blank=True, null=True)
+    monto = models.IntegerField(default=0)
+    falta = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    estatus = models.CharField(max_length=20, default='EN PROCESO')
+ 
 
 class TipoMovimiento (models.Model):
     id = models.AutoField(primary_key=True)

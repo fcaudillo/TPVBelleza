@@ -12,7 +12,7 @@ import xlrd
 import json
 import os
 import datetime
-from precios.models import TipoMovimiento, Movimiento, Categoria, Compania, Plan
+from precios.models import TipoMovimiento, Movimiento, Categoria, Compania, Plan, Recarga
 from precios.etiqueta_chica import generar_etiquetas, obtener_lista_productos
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
@@ -56,9 +56,16 @@ def generar_codigo_barras(request,prefijo):
 @login_required
 def recargatae (request,compania, plan, numero,monto):
    print compania,plan,numero,monto
+   planObj = Plan.objects.filter(plan = plan)[0]
+   if planObj.monto != monto:
+      return HttpResponse(json.dumps({'rcode':23, 'rcode_description': 'El monto no coincide con el plan'}), content_type='application/json')
+
+   rec = Recarga.objects.create(plan = planObj,  celular = numero, monto= planObj.monto)
+
    result = recarga.apply_async([compania,plan,numero,monto],queue='celeryx') 
+   print "Esperando 16000 para resultados"
    result.wait(16000)
-   print ("resultado " + result.result)
+   print ("resultado 2" + result.result)
    try:
      task_queue = Queue('msgreload', Exchange('msgreload'), routing_key='msgreload')
      print ("1...")
@@ -72,8 +79,8 @@ def recargatae (request,compania, plan, numero,monto):
          print ("5...")
    except:
       pass
-
-   
+   print ("Regreando de recarga tae")
+   return HttpResponse(result.result, content_type='application/json') 
    return HttpResponse(result.result,  content_type='application/json')
 
 

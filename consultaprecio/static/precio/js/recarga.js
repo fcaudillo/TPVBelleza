@@ -54,12 +54,35 @@ function recargaTAE() {
         var compania = $('#compania').val()
         var plan = $('#plan').val(); 
         var telefono = $('#telefono1').val()
-        var monto = '10'
- 
+        var monto = $('input[name="plan"]:checked').parent().text()
+        monto = monto.substr(2);
+
+        $('#dlgMensaje').modal('hide') 
+        $('#waitDialog').modal('show')
+
 	$.getJSON("/recargatae/" + compania + "/" + plan + "/" + telefono + "/" + monto + "/", function(result){
-             alert("Regreso de la llamada")
-             alert(result)
-	});  
+             if (result.rcode != 0) {
+                 $("#lblEstadoRecarga").text("Fallo al recargar el celular")
+                 $("#lblCelularExitoso").text($("#telefono2").val())
+                 $("#lblRespuesta").text(result.rcode_description)
+             }else {
+
+                 $("#lblEstadoRecarga").text("Recarga Exitosa")
+                 $("#lblCelularExitoso").text($("#telefono2").val())
+                 $("#lblRespuesta").text("Codigo autorizacion" + result.op_authorization)
+             }
+             $('#waitDialog').modal('hide')
+             $('#dlgResult').modal('show')
+             $('#plan').prop("checked", false)
+             $('#telefono1').val("")
+             $('#telefono2').val("")
+	}).fail(function(jqXHR, textStatus, errorThrown) { 
+             $('#waitDialog').modal('hide')
+             $('#plan').prop("checked", false)
+             $('#telefono1').val("")
+             $('#telefono2').val("")
+             console.log('getJSON request failed! ' + textStatus); 
+        });
 }
 
 function refrescaPlanes() {
@@ -87,21 +110,23 @@ $(document).ready(function() {
         $("#compania").change(function() {
            refrescaPlanes()
         });
+
+        $('#btnAceptar').on('click', function (event) {
+          recargaTAE();
+          event.preventDefault();
+        });
 	
-	$( "#btnRecarga" ).click(function() {
+	$( "#btnRecarga" ).click(function(event) {
 
              if (!isValidForm(validadores)) {
                 return false;
              }
-
-             msg = validaInfo()
-             if( msg != ''){
-                 $('#msgText').text(msg)
-                 $('#dlgMensaje').modal('show')
-                 return false;
-             }
-	     recargaTAE() ;
-             return false;
+             $("#imgCarrier").attr("src",$("#img" + $("#compania").val()).attr("src"));
+             $('#lblCarrier').text( $("[name='compania'] option:selected").text())
+             $('#lblCelular').text($("#telefono1").val())
+             $('#lblMonto').text($('input[name="plan"]:checked').parent().text())
+             $('#dlgMensaje').modal('show')
+	    event.preventDefault(); 
 	});	
 	
 })

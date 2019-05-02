@@ -25,7 +25,6 @@
      }
      var planes_plain = {{ planes | safe }}
      var planes = normalizePlan(planes_plain)
-     alert(planes)
 
   </script>
 
@@ -50,6 +49,13 @@
 	
 		  </div>
 		</div>
+                <div style="display:none">
+                  
+                  {% for c in companias %}
+                     <img id="img{{c.codigo}}" src='/static/img/{{c.imagen}}' /> 
+                  {% endfor %}
+
+                </div>
 
 		<div class="row form-group">
 		  <label class="col-md-4 control-label" for="plan">Plan</label>  
@@ -75,16 +81,43 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Mensaje</h5>
+        <h5 class="modal-title" id="exampleModalLongTitle">Confirmación de recarga</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-       <p id="msgText"> </p> 
+         <div class="row text-center" >  
+            <img id="imgCarrier" src="" height="60" width="60"> 
+         </div>
+         <div class="row">
+            <div class="col-sm-12 text-center">
+              <h1 id="lblCarrier"> </h1>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-sm-6 text-center" >
+              <p> Celular </p> 
+            </div>
+            <div class="col-sm-6 text-center">
+              <h3 id="lblCelular"> </h3>
+            </div>
+         </div>
+
+         <div class="row">
+            <div class="col-sm-6 text-center" >
+              <p>Monto  </p> 
+            </div>
+            <div class="col-sm-6 text-center">
+              <h1 id="lblMonto"> </h1>
+            </div>
+         </div>
+
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+
+        <button id="btnAceptar" type="button" class="btn btn-primary" data-dismiss="modal">Confirmar recarga</button>
       </div>
     </div>
   </div>
@@ -118,6 +151,70 @@
 		</div>
 
 	</form>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="waitDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Esperando confirmacion</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <div class="row text-center" >  
+            <img id="imgCarrier" src="/static/img/loadTAE.gif" height="60" width="60"> 
+         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="dlgResult" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Estado de la recarga</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <div class="row">
+            <div class="col-sm-12 text-center">
+              <h1 id="lblEstadoRecarga"> </h1>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-sm-6 text-center" >
+              <p> Celular </p> 
+            </div>
+            <div class="col-sm-6 text-center">
+              <h3 id="lblCelularExitoso"> </h3>
+            </div>
+         </div>
+
+         <div class="row">
+            <div class="col-sm-6 text-center" >
+              <p> </p> 
+            </div>
+            <div class="col-sm-6 text-center">
+              <h1 id="lblRespuesta"> </h1>
+            </div>
+         </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 {% endblock %}
 {% block custom_code_page %}	
