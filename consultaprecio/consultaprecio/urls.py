@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from precios.views import FindProductView, FindView, ChangeProductView,PrintLabelView,ImportCatalogView, RecargaTaeView
+from precios.views import FindProductView, FindView, ChangeProductView,PrintLabelView,ImportCatalogView, RecargaTaeView,ReporteRecargaView
 from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas, download, upload_file, login_view, logout_view, resumen_movimiento, reporte_diario, recargatae 
 from django.contrib.auth.decorators import login_required
 
@@ -25,6 +25,7 @@ urlpatterns = [
         url('generar_codigo_barras/(?P<prefijo>\w+)/$',generar_codigo_barras, name='generar_codigo_barras'),
         url('recargatae/(?P<compania>\w+)/(?P<plan>\w+)/(?P<numero>\w+)/(?P<monto>\w+)/$',recargatae, name='recargatae'),
         url('recarga/$',login_required(RecargaTaeView.as_view()), name='recarga'),
+        url('reporte_recarga/$',login_required(ReporteRecargaView.as_view()),name='reporte_recargas'),
 	url('find/(?P<barcode>\w+)/$',find_consulta, name='find'),
         url('resumenmovimiento/(?P<fechaIni>\w+)/(?P<fechaFin>\w+)/$',resumen_movimiento, name='resumen_movimiento'),
         url('download/$',download, name='download'),

@@ -52,7 +52,7 @@ var validadores = [
 
 function recargaTAE() {
         var compania = $('#compania').val()
-        var plan = $('#plan').val(); 
+        var plan = $('input[name="plan"]:checked').val(); 
         var telefono = $('#telefono1').val()
         var monto = $('input[name="plan"]:checked').parent().text()
         monto = monto.substr(2);

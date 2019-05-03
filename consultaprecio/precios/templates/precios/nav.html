@@ -27,14 +27,21 @@
         {%  endif %}
 
 
-        {% if pantalla == 'recarga' %}
-           <li class="active">
-           <a href="{% url "recarga" %}">Recargas <span class="sr-only">(current)</span></a></li>
-        {% else %}
-           <li>
-           <a href="{% url "recarga" %}">Recargas </a></li>
-        {%  endif %}
 
+        {% if pantalla == 'recarga' or pantalla == 'recarga_datos' %}
+           <li class="dropdown active" >
+        {% else %} 
+           <li class="dropdown">
+        {% endif %}
+
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Recarga <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url "recarga" %}">Recarga normal</a></li>
+            <li><a href="{% url "importar" %}">Recarga Internet</a></li>
+            <li><a href="{% url "reporte_recargas" %}">Reporte recargas</a></li> 
+
+          </ul>
+        </li>
 
         {% if pantalla == 'impresion' %}
           <li class="active">
@@ -46,7 +53,7 @@
            </li>
         {% endif %}
      {% if es_master %}
-        {% if pantalla == 'movimiento_inventario' or pantalla == 'importacion' %}
+        {% if pantalla == 'movimiento_inventario' or pantalla == 'importacion' or pantalla == 'reporte_diario' %}
            <li class="dropdown active" >
         {% else %} 
            <li class="dropdown">

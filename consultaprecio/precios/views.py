@@ -24,7 +24,7 @@ from django.db import connection
 from celery import  Celery
 from kombu import Connection, Exchange, Queue, Producer
 from tasks import recarga
-
+import sys
 
 def siguiente_folio(prefix):
   prefijo = prefix.strip();
@@ -56,32 +56,61 @@ def generar_codigo_barras(request,prefijo):
 @login_required
 def recargatae (request,compania, plan, numero,monto):
    print compania,plan,numero,monto
-   planObj = Plan.objects.filter(plan = plan)[0]
-   if planObj.monto != monto:
-      return HttpResponse(json.dumps({'rcode':23, 'rcode_description': 'El monto no coincide con el plan'}), content_type='application/json')
+   planObj = None
+   rec = None
+   result = None
 
-   rec = Recarga.objects.create(plan = planObj,  celular = numero, monto= planObj.monto)
+   try:
+      planObj = Plan.objects.filter(plan = plan)[0]
+      print ("monto req " + monto + " monto plan " + str(planObj.monto))
+      if int(planObj.monto) != int(monto):
+         return HttpResponse(json.dumps({'rcode':23, 'rcode_description': 'El monto no coincide con el plan'}), content_type='application/json')
+      if planObj.compania.codigo != compania:
+         return HttpResponse(json.dumps({'rcode':23, 'rcode_description': 'El plan no coincide con la compania'}), content_type='application/json')
 
-   result = recarga.apply_async([compania,plan,numero,monto],queue='celeryx') 
-   print "Esperando 16000 para resultados"
-   result.wait(16000)
-   print ("resultado 2" + result.result)
+      rec = Recarga.objects.create(plan = planObj,  celular = numero, monto= planObj.monto)
+   except:
+      return HttpResponse(json.dumps({'rcode':25, 'rcode_description':  'Error guardando la recarga' }), content_type='application/json')
+
+   try:
+      result = recarga.apply_async([compania,plan,numero,monto],queue='celeryx') 
+      print "Esperando 16000 para resultados"
+      result.wait(16000)
+      print ("resultado 2" + result.result)
+   except:
+        rec.estatus = 'ERROR'
+        rec.error = sys.exc_info()[0]
+        rec.save()
+        return HttpResponse(json.dumps({'rcode':26, 'rcode_description':  'No se logro contactar al proveedor' }), content_type='application/json')
+
+   try:
+     print (result.result)
+     res = json.loads(result.result)
+     print (rec)
+     if res['rcode'] != 0:
+        print ("debug 1...")
+        rec.estatus = 'ERROR'
+        print ("debug 2...")
+        rec.error = res['rcode_description']
+        print ("debug 3...")
+        rec.save()
+     else:
+        rec.estatus = 'OK'
+        rec.codigoautorizacion = res['op_authorization'] 
+        rec.save()
+   except:
+      return HttpResponse(json.dumps({'rcode':234, 'rcode_description': 'Desconocido ' + result.result}), content_type='application/json')
+
    try:
      task_queue = Queue('msgreload', Exchange('msgreload'), routing_key='msgreload')
-     print ("1...")
      with Connection('amqp://guest@rabbitmq:5672//') as conn:
-       print ("2...")
        with conn.channel() as channel:
-         print ("3...")
          producer = Producer(channel)
-         print ("4...")
          producer.publish(result.result,exchange=task_queue.exchange,routing_key=task_queue.routing_key,declare=[task_queue])
-         print ("5...")
    except:
       pass
    print ("Regreando de recarga tae")
    return HttpResponse(result.result, content_type='application/json') 
-   return HttpResponse(result.result,  content_type='application/json')
 
 
 # Create your views here.
@@ -107,7 +136,7 @@ def login_view(request):
 
 @login_required
 def reporte_diario(request):
-   return render(request,'precios/reporte_diario.html')
+   return render(request,'precios/reporte_diario.html',{'pantalla':'reporte_diario'})
 
 @login_required
 def find_movimiento(request,fechaIni, fechaFin):
@@ -388,3 +417,13 @@ class RecargaTaeView(TemplateView):
       context['pantalla'] = 'recarga'
       context['es_master'] = True if 'Master' in nombres_grupos else False;
       return context
+
+
+class ReporteRecargaView(TemplateView):
+   template_name = 'precios/reporte_recarga.html'
+   def get_context_data(self, **kwargs):
+      print "Estoy en ReporteRecargaView"
+      context = super(TemplateView, self).get_context_data(**kwargs)
+      context['pantalla'] = 'reporte_recarga'
+      return context
+
