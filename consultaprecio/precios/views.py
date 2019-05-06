@@ -88,11 +88,8 @@ def recargatae (request,compania, plan, numero,monto):
      res = json.loads(result.result)
      print (rec)
      if res['rcode'] != 0:
-        print ("debug 1...")
         rec.estatus = 'ERROR'
-        print ("debug 2...")
         rec.error = res['rcode_description']
-        print ("debug 3...")
         rec.save()
      else:
         rec.estatus = 'OK'
@@ -109,7 +106,6 @@ def recargatae (request,compania, plan, numero,monto):
          producer.publish(result.result,exchange=task_queue.exchange,routing_key=task_queue.routing_key,declare=[task_queue])
    except:
       pass
-   print ("Regreando de recarga tae")
    return HttpResponse(result.result, content_type='application/json') 
 
 
@@ -148,6 +144,24 @@ def find_movimiento(request,fechaIni, fechaFin):
       dat = {'fecha': item.fecha, 'Tipo Mov': item.tipo_movimiento.description }
       result.append(dat)
     return result
+
+
+
+@login_required
+def  recargas_periodo(request,fechaIni, fechaFin):
+    result = [];
+    fi = fechaIni[:4] + "/" + fechaIni[4:6] + "/" + fechaIni[6:8]
+    ff = fechaFin[:4] + "/" + fechaFin[4:6] + "/" + fechaFin[6:8]
+    fini = datetime.datetime.strptime(fi  + ' 0:0:0','%Y/%m/%d %H:%M:%S')
+    ffin = datetime.datetime.strptime(ff  + ' 23:59:59','%Y/%m/%d %H:%M:%S')
+
+    items = list(Recarga.objects.filter(falta__range=(fini,ffin)).order_by('falta'))
+    for item in items:
+      dat = {'fecha': item.falta.strftime("%d/%m/%Y, %H:%M:%S"), "descripcion"  : item.plan.description, "telefono" : item.celular, "monto":  item.monto, "autorizacion":item.codigoautorizacion, "error" : item.error, "estatus" : item.estatus }
+      result.append(dat)
+
+    return HttpResponse(json.dumps(result), content_type='application/json')
+
 
 @login_required
 def  resumen_movimiento(request,fechaIni, fechaFin):
@@ -405,16 +419,41 @@ class RecargaTaeView(TemplateView):
    def get_context_data(self, **kwargs):
       context = super(TemplateView, self).get_context_data(**kwargs)
       companias = list(Compania.objects.all())
-      planes = list(Plan.objects.all().order_by('compania'))
+      planes = list(Plan.objects.filter(tipoplan=0).order_by('compania'))
       planes_json = [] 
       for  item in planes:
          planes_json.append({"plan": item.plan, "description": item.description, "monto": item.monto, "compania" : item.compania.codigo })
       print planes_json
       list_grupos = list(self.request.user.groups.all()); 
       nombres_grupos = [item.name for item in list_grupos] 
+      context['titulo'] = 'Recargas  a celular'
       context['companias'] = companias
       context['planes'] = json.dumps(planes_json)
       context['pantalla'] = 'recarga'
+      context['es_master'] = True if 'Master' in nombres_grupos else False;
+      return context
+
+
+class RecargaDatosTaeView(TemplateView):
+   template_name = 'precios/recarga.html'
+   def get_context_data(self, **kwargs):
+      context = super(TemplateView, self).get_context_data(**kwargs)
+      companias = [] 
+      planes = list(Plan.objects.filter(tipoplan=1).order_by('compania'))
+      planes_json = [] 
+      tmp_compania = ''
+      for  item in planes:
+         if item.compania.codigo != tmp_compania:
+            companias.append(item.compania)
+            tmp_compania = item.compania.codigo
+         planes_json.append({"plan": item.plan, "description": item.description, "monto": item.monto, "compania" : item.compania.codigo })
+      print planes_json
+      list_grupos = list(self.request.user.groups.all()); 
+      nombres_grupos = [item.name for item in list_grupos] 
+      context['titulo'] = 'Recargas plan de internet (datos) ' 
+      context['companias'] = companias
+      context['planes'] = json.dumps(planes_json)
+      context['pantalla'] = 'recargadatos'
       context['es_master'] = True if 'Master' in nombres_grupos else False;
       return context
 
@@ -424,6 +463,10 @@ class ReporteRecargaView(TemplateView):
    def get_context_data(self, **kwargs):
       print "Estoy en ReporteRecargaView"
       context = super(TemplateView, self).get_context_data(**kwargs)
+      hoy = datetime.datetime.now() 
+      print (hoy.strftime('%Y%m%d'))
+      context['fini'] = hoy.strftime('%Y%m%d')
+      context['ffin'] = context['fini'] 
       context['pantalla'] = 'reporte_recarga'
       return context
 

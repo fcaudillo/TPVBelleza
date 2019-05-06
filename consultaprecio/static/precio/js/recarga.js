@@ -50,12 +50,28 @@ var validadores = [
                         "validate" : [ isValidEmpty, isValidFloat, isValidTelefonos ]
                 }]
 
+function encuentraplan(plan, planes) {
+  for (var i = 0; i < planes.length; i++) {
+     if (planes[i].plan == plan) 
+        return planes[i]
+  }
+  return null;
+}
+
 function recargaTAE() {
         var compania = $('#compania').val()
         var plan = $('input[name="plan"]:checked').val(); 
         var telefono = $('#telefono1').val()
-        var monto = $('input[name="plan"]:checked').parent().text()
-        monto = monto.substr(2);
+
+        var opciones = planes[$("#compania").val()]
+        var planObj = encuentraplan(plan,opciones)
+
+        if (planObj == null) {
+            alert('Plan invalido. Consulte al administrador')
+            return;
+        }
+
+        var monto = planObj['monto']
 
         $('#dlgMensaje').modal('hide') 
         $('#waitDialog').modal('show')
@@ -95,7 +111,10 @@ function refrescaPlanes() {
      bloque = "#bloque0"
      if (i > (opciones.length / 2))
        bloque = "#bloque1"
-     $(bloque).append("<label><input type='radio' name='plan' id='plan' value='" + opciones[i].plan + "'> $" + opciones[i].monto + "</label><br/>")
+     tmp_desc = '$' + opciones[i].monto
+     if (pantalla == 'recargadatos')
+        tmp_desc = opciones[i].description
+     $(bloque).append("<label><input type='radio' name='plan' id='plan' value='" + opciones[i].plan + "'> " + tmp_desc + "</label><br/>")
   }
 
 }

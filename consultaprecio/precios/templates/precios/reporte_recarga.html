@@ -16,7 +16,7 @@
 		<div class="form-group">
 		  <label class="col-md-4 control-label" for="fechaIni">Fecha inicial.</label>  
 		  <div class="col-md-4">
-		  <input name="fechaIni" class="form-control input-md" id="fechaIni" required="" type="text" >
+		  <input name="fechaIni" class="form-control input-md" id="fechaIni" required="" type="text" value="{{ fini }}" >
 		   
 		  </div>
 		</div>
@@ -24,7 +24,7 @@
 		<div class="form-group">
 		  <label class="col-md-4 control-label" for="fechaFin">Fecha final.</label>  
 		  <div class="col-md-4">
-		  <input name="fechaFin" class="form-control input-md" id="fechaFin" required="" type="text" >
+		  <input name="fechaFin" class="form-control input-md" id="fechaFin" required="" type="text" value="{{ ffin }}" >
 		   
 		  </div>
 		</div>
@@ -39,11 +39,11 @@
 
 	</form>
 	
-		<table id="ventaTabla" class="table table-scroll table-striped" >
+		<table id="reporterecarga" class="table table-scroll table-striped" >
 			 <tfoot>
 				<tr>
 				   <th></th>
-				   <th>Total venta</th>
+				   <th>Total recargas exitosas</th>
 				   <th> <div align="right"  class="granTotal">0.0</div></th>
 				</tr>
 			 </tfoot>

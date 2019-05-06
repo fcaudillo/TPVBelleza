@@ -8,7 +8,7 @@
 
   <link rel="stylesheet" href="/static/precio/css/recarga.css" >
   <script languaje='javascript'>
-
+     var pantalla = '{{ pantalla }}'
      function normalizePlan(origen) {
         old = "###"
         planes = []
@@ -32,7 +32,7 @@
 
 {% block body %}
        <div class="container mt-5">
-	  <p>Recarga de tiempo aire </p>
+	  <p> {{ titulo }} </p>
 	 <form class="form-horizontal">
 		  
                 {% csrf_token %}
