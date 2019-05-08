@@ -60,12 +60,16 @@ class Compania(models.Model):
     description = models.CharField(max_length=255)
     imagen = models.CharField(max_length=50)
     comision = models.IntegerField(default=0)
+    def __str__(self):
+      return 'codigo : %s, descripcion: %s, imagen  : %s \n ' % (self.codigo,self.description, self.imagen)
 
 class Categoria(models.Model):
     id = models.AutoField(primary_key=True)
     codigo = models.CharField(max_length=5, default='')
     description = models.CharField(max_length=255)
     parent = models.ForeignKey('self',models.SET_NULL, blank=True, null=True)
+    def __str__(self):
+      return 'codigo: %s, descripcion: %s \n ' % (self.codigo, self.codigo.descripcion)
 
 class Producto (models.Model):
    id = models.AutoField(primary_key=True)
@@ -77,7 +81,7 @@ class Producto (models.Model):
    maximoexist = models.IntegerField(default=0)
    precioCompra = models.DecimalField(max_digits=5, decimal_places=2)
    precioVenta =models.DecimalField(max_digits=5, decimal_places=2)
-   ubicacion = models.CharField(max_length=255)
+   ubicacion = models.CharField(max_length=255, default='')
    categoria = models.ForeignKey(Categoria,models.SET_NULL, blank=True, null=True)
    falta =  models.DateTimeField(blank=False, null=False)
    fmodificacion =  models.DateTimeField(blank=True, null=True)
@@ -110,6 +114,9 @@ class Plan(models.Model):
    compania = models.ForeignKey(Compania,models.SET_NULL,blank=True, null=True)
    producto = models.ForeignKey(Producto,models.SET_NULL,blank=True, null=True) 
 
+   def __str__(self):
+    return 'plan: %s, descripcion: %s, monto :  %d, tipoplan : %d, compania: %s \n' % (self.plan, self.description, self.monto, self.tipoplan, self.compania.codigo)
+
 class Recarga(models.Model):
     id = models.AutoField(primary_key=True)
     plan = models.ForeignKey(Plan, models.SET_NULL,blank=True, null=True)
@@ -119,6 +126,9 @@ class Recarga(models.Model):
     estatus = models.CharField(max_length=20, default='EN PROCESO')
     error = models.CharField(max_length=1024, default='')
     codigoautorizacion = models.CharField(max_length=30, default='')
+
+    def __str__(self):
+      return 'plan: %s, celular: %s, monto: %d, estatus: %s, error: %s, codigoautorizacion: %s \n' % (self.plan.description, self.celular, self.monto, self.estatus,self.error, self.codigoautorizacion)
  
 
 class TipoMovimiento (models.Model):
@@ -129,7 +139,7 @@ class TipoMovimiento (models.Model):
     factor_conta = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     prioridad = models.DecimalField(default=0, max_digits=2, decimal_places=0)
     def __str__(self):
-	 return 'Codigo : %s, Descripcion : %s, factor: %f \n' % (self.codigo, self.description, self.factor)
+	 return 'Codigo : %s, Descripcion : %s, factor: %f, factor_conta:  %f, prioridad : %d \n' % (self.codigo, self.description, self.factor, self.factor_conta, self.prioridad)
 
 class Movimiento (models.Model):
     id = models.AutoField(primary_key=True)

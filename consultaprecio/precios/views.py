@@ -81,7 +81,7 @@ def recargatae (request,compania, plan, numero,monto):
         rec.estatus = 'ERROR'
         rec.error = sys.exc_info()[0]
         rec.save()
-        return HttpResponse(json.dumps({'rcode':26, 'rcode_description':  'No se logro contactar al proveedor' }), content_type='application/json')
+        return HttpResponse(json.dumps({'rcode':26, 'rcode_description':  'Se envio al proveedor sin respuesta.' }), content_type='application/json')
 
    try:
      print (result.result)
@@ -95,6 +95,30 @@ def recargatae (request,compania, plan, numero,monto):
         rec.estatus = 'OK'
         rec.codigoautorizacion = res['op_authorization'] 
         rec.save()
+        try:
+          #Guardar la venta
+          mov = dict()
+          mov['tipo_movimiento'] = TipoMovimiento.objects.filter(codigo='TAE')[0].id
+
+          planObj = Plan.objects.filter(plan=plan)[0]
+          mov['total'] = planObj.producto.precioVenta
+          mov['descripcion'] = 'VENTA DE TIEMPO  AIRE'
+          items = []
+          mov['items'] = items
+          pr = planObj.producto
+          det_mov = dict()
+          det_mov['cantidad'] = 1
+          det_mov['barcode'] = pr.barcode
+          det_mov['ubicacion'] = ''
+          det_mov['description'] = planObj.description
+          det_mov['precioCompra'] = pr.precioCompra
+          det_mov['precioVenta'] = pr.precioVenta
+          det_mov['total'] = det_mov['cantidad'] * pr.precioVenta
+          items.append(det_mov)
+
+          Movimiento.objects.create_from_json(mov,request.user)
+        except:
+           pass
    except:
       return HttpResponse(json.dumps({'rcode':234, 'rcode_description': 'Desconocido ' + result.result}), content_type='application/json')
 
@@ -132,7 +156,13 @@ def login_view(request):
 
 @login_required
 def reporte_diario(request):
-   return render(request,'precios/reporte_diario.html',{'pantalla':'reporte_diario'})
+   hoy = datetime.datetime.now() 
+   fini = hoy.strftime('%Y%m%d')
+   ffin = fini 
+   list_grupos = list(request.user.groups.all()); 
+   nombres_grupos = [item.name for item in list_grupos] 
+   es_master = True if 'Master' in nombres_grupos else False;
+   return render(request,'precios/reporte_diario.html',{'pantalla':'reporte_diario','fini':fini, 'ffin':ffin, 'es_master': es_master})
 
 @login_required
 def find_movimiento(request,fechaIni, fechaFin):
@@ -462,11 +492,15 @@ class ReporteRecargaView(TemplateView):
    template_name = 'precios/reporte_recarga.html'
    def get_context_data(self, **kwargs):
       print "Estoy en ReporteRecargaView"
+      list_grupos = list(self.request.user.groups.all()); 
+      nombres_grupos = [item.name for item in list_grupos] 
+      es_master = True if 'Master' in nombres_grupos else False;
       context = super(TemplateView, self).get_context_data(**kwargs)
       hoy = datetime.datetime.now() 
       print (hoy.strftime('%Y%m%d'))
       context['fini'] = hoy.strftime('%Y%m%d')
       context['ffin'] = context['fini'] 
       context['pantalla'] = 'reporte_recarga'
+      context['es_master'] = es_master
       return context
 
