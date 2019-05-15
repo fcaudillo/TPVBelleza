@@ -8,7 +8,7 @@
    }
    
    stage('Construyendo imagen') {
-       sh ('docker build -t  fcaudillo/tpv-verde:lts . ') 
+       sh ('docker build -build-arg BUILD_USU_MQ=${USUARIO_MQ} --build-arg BUILD_PASS_MQ=${PASSWORD_MQ} -t  fcaudillo/tpv-verde:lts . ') 
    }
   
    stage('Subiendo la imagen.') {
