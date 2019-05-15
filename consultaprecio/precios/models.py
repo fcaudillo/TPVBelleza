@@ -69,7 +69,7 @@ class Categoria(models.Model):
     description = models.CharField(max_length=255)
     parent = models.ForeignKey('self',models.SET_NULL, blank=True, null=True)
     def __str__(self):
-      return 'codigo: %s, descripcion: %s \n ' % (self.codigo, self.descripcion)
+      return 'codigo: %s, descripcion: %s \n ' % (self.codigo, self.description)
 
 class Producto (models.Model):
    id = models.AutoField(primary_key=True)
