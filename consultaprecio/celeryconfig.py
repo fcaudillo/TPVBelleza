@@ -1,6 +1,6 @@
 from kombu import Queue
 import os
-task_default_queueE = 'celeryx'
+task_default_queue = 'celeryx'
 task_default_exchange = 'celeryx'
 task_default_exchange_type = 'direct'
 
