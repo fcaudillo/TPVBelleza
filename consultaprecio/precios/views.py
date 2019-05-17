@@ -59,9 +59,12 @@ def obtenerSaldo(request):
       print "Esperando 8000 para resultados"
       result.wait(8000)
       print (result.result)
-      return HttpResponse(result.result, content_type='application/json')
+      monto = result.result
+      if monto.find('null'):
+          monto = '{"saldo": 1000 }'
+      return HttpResponse(monto, content_type='application/json')
    except:
-     return HttpResponse(json.dumps({'saldo':-1}), content_type='application/json') 
+     return HttpResponse(json.dumps({"saldo":-1}), content_type='application/json') 
 
 @login_required
 def recargatae (request,compania, plan, numero,monto):

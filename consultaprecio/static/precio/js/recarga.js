@@ -58,6 +58,16 @@ function encuentraplan(plan, planes) {
   return null;
 }
 
+function refrescaSaldo() {
+    $.getJSON("/obtenerSaldo/", function(result) {
+       $("#lblSaldo").text(result.saldo)
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+       $("#lblSaldo").text("No disponible")
+       console.log('getJSON request failed! ' + textStatus);
+    });
+
+}
+
 function recargaTAE() {
         var compania = $('#compania').val()
         var plan = $('input[name="plan"]:checked').val(); 
@@ -92,11 +102,13 @@ function recargaTAE() {
              $('#plan').prop("checked", false)
              $('#telefono1').val("")
              $('#telefono2').val("")
+             refrescaSaldo()
 	}).fail(function(jqXHR, textStatus, errorThrown) { 
              $('#waitDialog').modal('hide')
              $('#plan').prop("checked", false)
              $('#telefono1').val("")
              $('#telefono2').val("")
+             refrescaSaldo()
              console.log('getJSON request failed! ' + textStatus); 
         });
 }
@@ -126,6 +138,8 @@ $(document).ready(function() {
         $("#compania").val($("#compania option:first").val());
 
         refrescaPlanes()
+        refrescaSaldo()
+
         $("#compania").change(function() {
            refrescaPlanes()
         });

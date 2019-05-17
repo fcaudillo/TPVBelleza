@@ -32,7 +32,16 @@
 
 {% block body %}
        <div class="container mt-5">
-	  <p> {{ titulo }} </p>
+          <div class="row">
+             <div class="col-sm-4"> </div>
+             <div class="col-sm-4">
+	           <h3 class="control-label"> {{ titulo }} </h3>
+             </div>
+
+             <div class="col-sm-4">
+                 <h2 class="text-success">Saldo: <label id="lblSaldo" class="control-label text-primary"> </label>  </h2>
+             </div>
+         </div>
 	 <form class="form-horizontal">
 		  
                 {% csrf_token %}
