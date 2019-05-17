@@ -23,7 +23,7 @@ from django.contrib.auth import logout
 from django.db import connection
 from celery import  Celery
 from kombu import Connection, Exchange, Queue, Producer
-from tasks import recarga
+from tasks import recarga, consultaSaldo 
 import sys
 
 def siguiente_folio(prefix):
@@ -52,6 +52,16 @@ def generar_codigo_barras(request,prefijo):
    codigo = calcular_codigo_barras(prefijo) 
    return HttpResponse(json.dumps({'respuesta':'OK', 'codigo_barras': codigo}), content_type='application/json')
 
+@login_required
+def obtenerSaldo(request):
+   try:
+      result = consultaSaldo.apply_async([],queue='celeryx') 
+      print "Esperando 8000 para resultados"
+      result.wait(8000)
+      print (result.result)
+      return HttpResponse(result.result, content_type='application/json')
+   except:
+     return HttpResponse(json.dumps({'saldo':-1}), content_type='application/json') 
 
 @login_required
 def recargatae (request,compania, plan, numero,monto):
@@ -185,7 +195,7 @@ def  recargas_periodo(request,fechaIni, fechaFin):
     fini = datetime.datetime.strptime(fi  + ' 0:0:0','%Y/%m/%d %H:%M:%S')
     ffin = datetime.datetime.strptime(ff  + ' 23:59:59','%Y/%m/%d %H:%M:%S')
 
-    items = list(Recarga.objects.filter(falta__range=(fini,ffin)).order_by('falta'))
+    items = list(Recarga.objects.filter(falta__range=(fini,ffin)).order_by('-falta'))
     for item in items:
       dat = {'fecha': item.falta.strftime("%d/%m/%Y, %H:%M:%S"), "descripcion"  : item.plan.description, "telefono" : item.celular, "monto":  item.monto, "autorizacion":item.codigoautorizacion, "error" : item.error, "estatus" : item.estatus }
       result.append(dat)

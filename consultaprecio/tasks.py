@@ -17,3 +17,7 @@ def sum(x,y):
 @app.task
 def recarga(compania,plan,numero,monto):
   return "llamadalocalnosirve"
+
+@app.task
+def consultaSaldo():
+  return "LLamadadummynosirve"
