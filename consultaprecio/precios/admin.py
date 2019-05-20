@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from precios.models import Categoria, TipoMovimiento, Compania, Plan
+from precios.models import Categoria, TipoMovimiento, Compania, Plan, Configuracion
 
 # Register your models here.
 @admin.register(Categoria)
@@ -20,3 +20,7 @@ class PlanAdmin(admin.ModelAdmin):
 @admin.register(TipoMovimiento)
 class TipoMovimientoAdmin(admin.ModelAdmin):
    list_display = ('codigo','description','factor','factor_conta','prioridad')
+
+@admin.register(Configuracion)
+class ConfiguracionAdmin(admin.ModelAdmin):
+   list_display = ('clave','valor')

@@ -4,6 +4,10 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 import datetime
+from django.db.models.signals import post_save, post_init
+from django.apps import apps
+
+miapp = apps.get_app_config('precios')
 
 # Create your models here.
 
@@ -52,7 +56,30 @@ class DetalleMovimientoManager(models.Manager):
       det = self.create(movimiento = movimiento, barcode = data['barcode'], description = data['description'], cantidad = data['cantidad'], precioCompra = precioCompra, precioVenta = precioVenta)
       return det
 
+class Configuracion(models.Model):
+    id = models.AutoField(primary_key=True)
+    clave = models.CharField(max_length=30, blank=False, null=False,  default='')
+    valor = models.CharField(max_length=300, default='')
+    previous_valor = None
 
+    @staticmethod
+    def post_save(sender, **kwargs):
+        instance = kwargs.get('instance')
+        created = kwargs.get('created')
+        if instance.previous_valor != instance.valor or created:
+           miapp.refreshConfiguracion()
+           print ("Hubo un cambio en la configuracion") 
+
+    @staticmethod
+    def remember_valor(sender, **kwargs):
+        instance = kwargs.get('instance')
+        instance.previous_valor = instance.valor
+
+    def __str__(self):
+       return '%s : %s' % (self.clave,self.valor) 
+
+post_save.connect(Configuracion.post_save,sender=Configuracion)
+post_init.connect(Configuracion.remember_valor,sender=Configuracion)
 
 class Compania(models.Model):
     id = models.AutoField(primary_key=True)

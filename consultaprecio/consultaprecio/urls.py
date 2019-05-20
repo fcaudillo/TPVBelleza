@@ -46,3 +46,4 @@ urlpatterns = [
         url(r'logout',logout_view, name='logout'),
         url(r'impresion/',login_required(PrintLabelView.as_view()),name='impresion')
 ]
+

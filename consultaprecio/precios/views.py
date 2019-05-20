@@ -25,6 +25,9 @@ from celery import  Celery
 from kombu import Connection, Exchange, Queue, Producer
 from tasks import recarga, consultaSaldo 
 import sys
+from django.apps import apps
+
+miapp = apps.get_app_config('precios')
 
 def siguiente_folio(prefix):
   prefijo = prefix.strip();
@@ -56,12 +59,10 @@ def generar_codigo_barras(request,prefijo):
 def obtenerSaldo(request):
    try:
       result = consultaSaldo.apply_async([],queue='celeryx') 
-      print "Esperando 8000 para resultados"
+      print "1. Esperando 8000 para resultados"
       result.wait(8000)
       print (result.result)
       monto = result.result
-      if monto.find('null'):
-          monto = '{"saldo": 1000 }'
       return HttpResponse(monto, content_type='application/json')
    except:
      return HttpResponse(json.dumps({"saldo":-1}), content_type='application/json') 
@@ -96,6 +97,7 @@ def recargatae (request,compania, plan, numero,monto):
         rec.save()
         return HttpResponse(json.dumps({'rcode':26, 'rcode_description':  'Se envio al proveedor sin respuesta.' }), content_type='application/json')
 
+   res = None
    try:
      print (result.result)
      res = json.loads(result.result)
@@ -106,7 +108,9 @@ def recargatae (request,compania, plan, numero,monto):
         rec.save()
      else:
         rec.estatus = 'OK'
-        rec.codigoautorizacion = res['op_authorization'] 
+        rec.codigoautorizacion = res['op_authorization']
+        print ("Codigo de autorizacion : ")
+        print (res['op_authorization'])
         rec.save()
         try:
           #Guardar la venta
@@ -136,11 +140,19 @@ def recargatae (request,compania, plan, numero,monto):
       return HttpResponse(json.dumps({'rcode':234, 'rcode_description': 'Desconocido ' + result.result}), content_type='application/json')
 
    try:
+     res['template_tae'] = 'print_recibo_tae'
+     res['cliente_nombre'] = miapp.getConfiguracion().get('CLIENTE_NOMBRE')
+     res['ticket_pie'] = miapp.getConfiguracion().get('TICKET_PIE')
+     res['cliente_giro'] = miapp.getConfiguracion().get('CLIENTE_GIRO')
+     print_object = json.dumps(res)
+     print("***** Enviando hacia  rabbitmq para impresion")
+     print (print_object)
+     print ("**********************")
      task_queue = Queue('msgreload', Exchange('msgreload'), routing_key='msgreload')
      with Connection('amqp://guest@rabbitmq:5672//') as conn:
        with conn.channel() as channel:
          producer = Producer(channel)
-         producer.publish(result.result,exchange=task_queue.exchange,routing_key=task_queue.routing_key,declare=[task_queue])
+         producer.publish(print_object,exchange=task_queue.exchange,routing_key=task_queue.routing_key,declare=[task_queue])
    except:
       pass
    return HttpResponse(result.result, content_type='application/json') 
@@ -175,7 +187,7 @@ def reporte_diario(request):
    list_grupos = list(request.user.groups.all()); 
    nombres_grupos = [item.name for item in list_grupos] 
    es_master = True if 'Master' in nombres_grupos else False;
-   return render(request,'precios/reporte_diario.html',{'pantalla':'reporte_diario','fini':fini, 'ffin':ffin, 'es_master': es_master})
+   return render(request,'precios/reporte_diario.html',{'pantalla':'reporte_diario','fini':fini, 'ffin':ffin, 'es_master': es_master,'nombre_cliente':miapp.getConfiguracion().get('CLIENTE_NOMBRE')})
 
 @login_required
 def find_movimiento(request,fechaIni, fechaFin):
@@ -200,7 +212,7 @@ def  recargas_periodo(request,fechaIni, fechaFin):
 
     items = list(Recarga.objects.filter(falta__range=(fini,ffin)).order_by('-falta'))
     for item in items:
-      dat = {'fecha': item.falta.strftime("%d/%m/%Y, %H:%M:%S"), "descripcion"  : item.plan.description, "telefono" : item.celular, "monto":  item.monto, "autorizacion":item.codigoautorizacion, "error" : item.error, "estatus" : item.estatus }
+      dat = {'fecha': item.falta.strftime("%d/%m/%Y, %H:%M:%S"), "descripcion"  : item.plan.description, "telefono" : item.celular, "monto":  item.monto, "codigoautorizacion":item.codigoautorizacion, "error" : item.error, "estatus" : item.estatus }
       result.append(dat)
 
     return HttpResponse(json.dumps(result), content_type='application/json')
@@ -401,6 +413,7 @@ class FindProductView(TemplateView):
       vta = TipoMovimiento.objects.filter(codigo='VTA')[0]
       list_grupos = list(self.request.user.groups.all()); 
       nombres_grupos = [item.name for item in list_grupos] 
+      context['nombre_cliente'] = miapp.getConfiguracion().get('CLIENTE_NOMBRE')
       context['tipo_movimiento'] = vta
       context['pantalla'] = 'ventas'
       context['es_master'] = True if 'Master' in nombres_grupos else False;
@@ -417,6 +430,7 @@ class ChangeProductView(TemplateView):
       #import pdb; pdb.set_trace()
       list_grupos = list(self.request.user.groups.all()); 
       nombres_grupos = [item.name for item in list_grupos] 
+      context['nombre_cliente'] = miapp.getConfiguracion().get('CLIENTE_NOMBRE')
       context['tipo_movimiento'] = vta
       context['catalogo_tipos_mov'] = catalogo
       context['categorias'] = categorias
@@ -438,6 +452,7 @@ class PrintLabelView(TemplateView):
       compra = TipoMovimiento.objects.filter(codigo='COM')[0]
       list_grupos = list(self.request.user.groups.all()); 
       nombres_grupos = [item.name for item in list_grupos] 
+      context['nombre_cliente'] = miapp.getConfiguracion().get('CLIENTE_NOMBRE')
       context['tipo_movimiento'] = compra
       context['pantalla'] = 'impresion'
       context['es_master'] = True if 'Master' in nombres_grupos else False;
@@ -451,6 +466,7 @@ class ImportCatalogView(TemplateView):
       compra = TipoMovimiento.objects.filter(codigo='INV')[0]
       list_grupos = list(self.request.user.groups.all()); 
       nombres_grupos = [item.name for item in list_grupos] 
+      context['nombre_cliente'] = miapp.getConfiguracion().get('CLIENTE_NOMBRE')
       context['tipo_movimiento'] = compra
       context['pantalla'] = 'importacion'
       context['es_master'] = True if 'Master' in nombres_grupos else False;
@@ -469,6 +485,7 @@ class RecargaTaeView(TemplateView):
       print planes_json
       list_grupos = list(self.request.user.groups.all()); 
       nombres_grupos = [item.name for item in list_grupos] 
+      context['nombre_cliente'] = miapp.getConfiguracion().get('CLIENTE_NOMBRE')
       context['titulo'] = 'Recargas  a celular'
       context['companias'] = companias
       context['planes'] = json.dumps(planes_json)
@@ -493,6 +510,7 @@ class RecargaDatosTaeView(TemplateView):
       print planes_json
       list_grupos = list(self.request.user.groups.all()); 
       nombres_grupos = [item.name for item in list_grupos] 
+      context['nombre_cliente'] = miapp.getConfiguracion().get('CLIENTE_NOMBRE') 
       context['titulo'] = 'Recargas plan de internet (datos) ' 
       context['companias'] = companias
       context['planes'] = json.dumps(planes_json)
@@ -511,6 +529,7 @@ class ReporteRecargaView(TemplateView):
       context = super(TemplateView, self).get_context_data(**kwargs)
       hoy = datetime.datetime.now() 
       print (hoy.strftime('%Y%m%d'))
+      context['nombre_cliente'] = miapp.getConfiguracion().get('CLIENTE_NOMBRE') 
       context['fini'] = hoy.strftime('%Y%m%d')
       context['ffin'] = context['fini'] 
       context['pantalla'] = 'reporte_recarga'

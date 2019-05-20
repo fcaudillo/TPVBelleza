@@ -26,7 +26,7 @@ function inicializa_table_reporterecarga() {
                             field: 'monto',
                             title: 'monto'
                         }, {
-                            filed: 'autorizacion',
+                            field: 'codigoautorizacion',
                             title: 'autorizacion'
                         }, {
                             field: 'estatus',
