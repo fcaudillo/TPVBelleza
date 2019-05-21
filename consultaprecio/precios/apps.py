@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from django.db import connection
 
 from django.apps import AppConfig
 
@@ -7,8 +8,12 @@ from django.apps import AppConfig
 class PreciosConfig(AppConfig):
     name = 'precios'
     def ready(self):
-      self.configuracion = None
-      self.refreshConfiguracion()
+      self.configuracion = dict()
+      all_tables = connection.introspection.table_names()
+      print("Todas las tablas")
+      print all_tables
+      if 'precios_configuracion' in all_tables:
+        self.refreshConfiguracion()
 
     def getConfiguracion(self):
       return self.configuracion
