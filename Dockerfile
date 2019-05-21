@@ -21,6 +21,8 @@ RUN rm -f /etc/localtime
 RUN ln  -s  /usr/share/zoneinfo/America/Mexico_City /etc/localtime
 EXPOSE 9000
 
+RUN ./manage.py migrate
+
 CMD ["./manage.py", "runserver", "0.0.0.0:9000"]
 
 
