@@ -153,8 +153,9 @@ def recargatae (request,compania, plan, numero,monto):
        with conn.channel() as channel:
          producer = Producer(channel)
          producer.publish(print_object,exchange=task_queue.exchange,routing_key=task_queue.routing_key,declare=[task_queue])
-   except:
-      pass
+   except Exception as e:
+      print ("A ocuurido un error al enviar a impresion")
+      print (e)
    return HttpResponse(result.result, content_type='application/json') 
 
 
