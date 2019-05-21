@@ -149,10 +149,12 @@ def recargatae (request,compania, plan, numero,monto):
      print (print_object)
      print ("**********************")
      task_queue = Queue('msgreload', Exchange('msgreload'), routing_key='msgreload')
-     with Connection('amqp://guest@rabbitmq:5672//') as conn:
+     broker_url = 'amqp://%s:%s@rabbitmq:5672//' % (os.environ['USUARIO_MQ'],os.environ['PASSWORD_MQ'])
+     with Connection(broker_url) as conn:
        with conn.channel() as channel:
          producer = Producer(channel)
          producer.publish(print_object,exchange=task_queue.exchange,routing_key=task_queue.routing_key,declare=[task_queue])
+         print ("Se envio a impresion")
    except Exception as e:
       print ("A ocuurido un error al enviar a impresion")
       print (e)
