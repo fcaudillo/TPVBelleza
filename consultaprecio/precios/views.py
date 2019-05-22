@@ -145,11 +145,14 @@ def recargatae (request,compania, plan, numero,monto):
      res['ticket_pie'] = miapp.getConfiguracion().get('TICKET_PIE')
      res['cliente_giro'] = miapp.getConfiguracion().get('CLIENTE_GIRO')
      print_object = json.dumps(res)
-     print("***** Enviando hacia  rabbitmq para impresion")
+     name_queue = 'msgreload_' +  os.environ['CLIENTE_ID']
+
+     print("***** Enviando hacia  rabbitmq para impresion: " + name_queue)
      print (print_object)
      print ("**********************")
-     task_queue = Queue('msgreload', Exchange('msgreload'), routing_key='msgreload')
+     task_queue = Queue(name_queue, Exchange(name_queue), routing_key=name_queue)
      broker_url = 'amqp://%s:%s@rabbitmq:5672//' % (os.environ['USUARIO_MQ'],os.environ['PASSWORD_MQ'])
+     print (broker_url)
      with Connection(broker_url) as conn:
        with conn.channel() as channel:
          producer = Producer(channel)
