@@ -10,8 +10,6 @@ class PreciosConfig(AppConfig):
     def ready(self):
       self.configuracion = dict()
       all_tables = connection.introspection.table_names()
-      print("Todas las tablas")
-      print all_tables
       if 'precios_configuracion' in all_tables:
         self.refreshConfiguracion()
 

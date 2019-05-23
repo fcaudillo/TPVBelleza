@@ -84,7 +84,7 @@
 		<button type="button" class="btn btn-default">
 			<i class="glyphicon glyphicon-heart"></i>
 		</button>
-		<button type="button" class="btn btn-default">
+		<button id="btnClear" type="button" class="btn btn-default">
 			<i class="glyphicon glyphicon-trash"></i>
 		</button>
 	</div>
@@ -107,6 +107,30 @@
 
       </table>
 
+	<!-- Dialog impresion -->
+		<div id="myModalPrint" class="modal fade">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Realizar venta</h4>
+					</div>
+					<div class="modal-body">
+						<h1 id="totalLabel">Total</h1>
+						<p>
+						   <h1> <div class="precioTotal"> </div>  </h1>
+						</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Regresar</button>
+						<button type="button" class="btn btn-primary" id="btnVentaSinTicket">Sin Ticket</button>
+						<button type="button" class="btn btn-primary" id="btnVentaConTicket">Con Ticket</button>
+					</div>
+				</div>
+			</div>
+		</div>	
+	
+	<!-- fin dialog consulta impresion -->
 	
 
 	<script

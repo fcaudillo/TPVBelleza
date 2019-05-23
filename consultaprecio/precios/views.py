@@ -67,6 +67,38 @@ def obtenerSaldo(request):
    except:
      return HttpResponse(json.dumps({"saldo":-1}), content_type='application/json') 
 
+def send_to_print(modulo, plantilla,  objetojson):
+   try:
+     print ("Imprimiendo desde el modulo: " + modulo)
+     data = dict()
+     datos_generales = dict()
+     datos_generales['cliente_nombre'] = miapp.getConfiguracion().get('CLIENTE_NOMBRE')
+     datos_generales['ticket_pie'] = miapp.getConfiguracion().get('TICKET_PIE')
+     datos_generales['cliente_giro'] = miapp.getConfiguracion().get('CLIENTE_GIRO')
+     data['datos_generales'] = datos_generales
+     data['template'] = plantilla
+     data['data'] = objetojson
+
+     print_object = json.dumps(data)
+     name_queue = 'msgreload_' +  os.environ['CLIENTE_ID']
+
+     print("***** Enviando hacia  rabbitmq para impresion: " + name_queue)
+     print (print_object)
+     print ("**********************")
+     task_queue = Queue(name_queue, Exchange(name_queue), routing_key=name_queue)
+     broker_url = 'amqp://%s:%s@rabbitmq:5672//' % (os.environ['USUARIO_MQ'],os.environ['PASSWORD_MQ'])
+     print (broker_url)
+     with Connection(broker_url) as conn:
+       with conn.channel() as channel:
+         producer = Producer(channel)
+         producer.publish(print_object,exchange=task_queue.exchange,routing_key=task_queue.routing_key,declare=[task_queue])
+         print ("Se envio a impresion la plantilla " + plantilla)
+   except Exception as e:
+      print ("A ocuurido un error al enviar a impresion plantilla " + plantilla)
+      print (e)
+
+
+
 @login_required
 def recargatae (request,compania, plan, numero,monto):
    print compania,plan,numero,monto
@@ -140,27 +172,10 @@ def recargatae (request,compania, plan, numero,monto):
       return HttpResponse(json.dumps({'rcode':234, 'rcode_description': 'Desconocido ' + result.result}), content_type='application/json')
 
    try:
-     res['template_tae'] = 'print_recibo_tae'
-     res['cliente_nombre'] = miapp.getConfiguracion().get('CLIENTE_NOMBRE')
-     res['ticket_pie'] = miapp.getConfiguracion().get('TICKET_PIE')
-     res['cliente_giro'] = miapp.getConfiguracion().get('CLIENTE_GIRO')
-     print_object = json.dumps(res)
-     name_queue = 'msgreload_' +  os.environ['CLIENTE_ID']
-
-     print("***** Enviando hacia  rabbitmq para impresion: " + name_queue)
-     print (print_object)
-     print ("**********************")
-     task_queue = Queue(name_queue, Exchange(name_queue), routing_key=name_queue)
-     broker_url = 'amqp://%s:%s@rabbitmq:5672//' % (os.environ['USUARIO_MQ'],os.environ['PASSWORD_MQ'])
-     print (broker_url)
-     with Connection(broker_url) as conn:
-       with conn.channel() as channel:
-         producer = Producer(channel)
-         producer.publish(print_object,exchange=task_queue.exchange,routing_key=task_queue.routing_key,declare=[task_queue])
-         print ("Se envio a impresion")
+     send_to_print("Recargas","print_recibo_tae",res)
    except Exception as e:
-      print ("A ocuurido un error al enviar a impresion")
-      print (e)
+     print ("A ocurrido una execpcion en impresion de recibo")
+ 
    return HttpResponse(result.result, content_type='application/json') 
 
 
@@ -261,7 +276,7 @@ def find_consulta(request,barcode):
 
 @login_required
 def find_all(request): 
-   productos = list(Producto.objects.all())
+   productos = list(Producto.objects.filter(puede_venderse=True))
    result = [ obj.as_dict() for obj in productos ]
    return HttpResponse(json.dumps(result), content_type='application/json') 
 
@@ -316,6 +331,13 @@ def guarda_ticket(request):
      print received_json_data
      current_user = request.user
      mov = Movimiento.objects.create_from_json(received_json_data, current_user)
+     if received_json_data['tipo_impresion'] == 1:
+       try:
+         send_object = mov.as_dict_tpv()
+         send_object['tipo_impresion'] = received_json_data['tipo_impresion']
+         send_to_print("Ventas","print_ticket",send_object)
+       except Exception as e:
+         print ("A ocurrido una execpcion en impresion de recibo")
      return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
   
 

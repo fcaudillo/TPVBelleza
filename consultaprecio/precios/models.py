@@ -112,6 +112,7 @@ class Producto (models.Model):
    categoria = models.ForeignKey(Categoria,models.SET_NULL, blank=True, null=True)
    falta =  models.DateTimeField(blank=False, null=False)
    fmodificacion =  models.DateTimeField(blank=True, null=True)
+   puede_venderse = models.BooleanField(default=True)
 
    @staticmethod 
    def findByBarcode(codigo):
@@ -184,6 +185,21 @@ class Movimiento (models.Model):
          detalle = detalle + str(item) 
       
       return 'id : %d, username: %s , Tipo Mov: %s , total : %f, descripcion: %s fecha: %s \n Detalle: \n %s' % (self.id, self.user.username, self.tipo_movimiento.description, self.total, self.description, self.fecha, detalle)
+
+    def as_dict_tpv(self):
+       mov = {
+                'tipo_movimiento': self.tipo_movimiento.codigo,
+                'descripcion' : self.description,
+                'total' : float(self.total),
+                'fecha' : self.fecha.strftime('%d/%m/%Y %H:%M:%S'),
+                'usuario': self.user.username,
+                'detalle': []
+             }
+       items = list(DetalleMovimiento.objects.filter(movimiento = self.id))
+       detalle = mov['detalle']
+       for item in items:
+         detalle.append(item.as_dict_tpv()) 
+       return mov
 	  
 class DetalleMovimiento (models.Model):
    id = models.AutoField(primary_key=True)
@@ -207,3 +223,13 @@ class DetalleMovimiento (models.Model):
 		 'precioVenta':float(self.precioVenta)
 	  
 	  }	  
+
+
+   def as_dict_tpv(self):
+      return {
+		 'description':self.description,
+		 'cantidad':float(self.cantidad),
+		 'precioVenta':float(self.precioVenta)
+	     }	  
+
+

@@ -70,6 +70,42 @@ function cargaInventario() {
 	});  
 }
 
+
+function registrarVenta(tipo_impresion) {
+                    var $tableVenta = $('#ventaTabla');
+		    var data = $tableVenta.bootstrapTable('getData');
+			var ticket = {
+			   tipo_movimiento : venta_tipo_mov,
+			   total : calculaGranTotal(data),
+                           descripcion : 'Venta al publico',
+                           tipo_impresion : tipo_impresion,
+			   items : data
+			}
+			var jsonData = JSON.stringify(ticket);
+		    $.ajax({
+				type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+				dataType: 'json', // Set datatype - affects Accept header
+				url: "/tickets/add", // A valid URL
+				headers: {"X-HTTP-Method-Override": "PUT", "X-CSRFToken": $.cookie("csrftoken")}, // X-HTTP-Method-Override set to PUT.
+				data: jsonData, // Some data e.g. Valid JSON as a string
+				success: function (response) {
+					$('#ventaTabla').bootstrapTable('removeAll');
+					var data = $tableVenta.bootstrapTable('getData');
+			                total = calculaGranTotal(data);
+			                $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
+                                        cargaInventario();
+                                        $("#myModalPrint").modal('hide')
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+                                        $("#myModalPrint").modal('hide')
+					alert(xhr.status);
+					alert(thrownError);
+				}
+			});
+		   
+			return false;
+}	
+
 $(document).ready(function() {
         inicializa_table_products();
 	$('#ventaTabla').bootstrapTable({
@@ -231,7 +267,6 @@ $(document).ready(function() {
 		return false;
 	  });			 
 	
-
    
     var ean = null;
 	$( "#btnSearch" ).click(function() {
@@ -246,7 +281,18 @@ $(document).ready(function() {
 	  
 			return false;
 	});	
-	
+
+        $('#btnVentaConTicket').click(function() {
+            VENTA_CON_TICKET = 1
+            registrarVenta(VENTA_CON_TICKET)
+        });	
+
+
+        $('#btnVentaSinTicket').click(function() {
+            VENTA_SIN_TICKET = 0
+            registrarVenta(VENTA_SIN_TICKET)
+        });	
+
 	$('#btnAdd').on('click', function(evt) {
 		var data = $tableVenta.bootstrapTable('getData');
 		if (ean == null) {
@@ -271,37 +317,16 @@ $(document).ready(function() {
 		$("#myModal").modal('hide');
 		evt.stopPropagation();
 	});
+
+        $("#btnClear").click(function() {
+           $('#ventaTabla').bootstrapTable('removeAll');
+        });
 	
 	$( "#btnCobrar" ).click(function() {
-		    var data = $tableVenta.bootstrapTable('getData');
-			var ticket = {
-			   tipo_movimiento : venta_tipo_mov,
-			   total : calculaGranTotal(data),
-                           descripcion : 'Venta al publico',
-			   items : data
-			}
-			var jsonData = JSON.stringify(ticket);
-		    $.ajax({
-				type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
-				dataType: 'json', // Set datatype - affects Accept header
-				url: "/tickets/add", // A valid URL
-				headers: {"X-HTTP-Method-Override": "PUT", "X-CSRFToken": $.cookie("csrftoken")}, // X-HTTP-Method-Override set to PUT.
-				data: jsonData, // Some data e.g. Valid JSON as a string
-				success: function (response) {
-					$('#ventaTabla').bootstrapTable('removeAll');
-					var data = $tableVenta.bootstrapTable('getData');
-			                total = calculaGranTotal(data);
-			                $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
-                                        cargaInventario();
-					alert("Venta registrada");
-				},
-				error: function (xhr, ajaxOptions, thrownError) {
-					alert(xhr.status);
-					alert(thrownError);
-				}
-			});
-		   
-			return false;
+          var data = $tableVenta.bootstrapTable('getData');
+	  total = calculaGranTotal(data);
+          $('#totalLabel').text("Total : " + total);
+          $("#myModalPrint").modal('show')
 	});	
 
 })

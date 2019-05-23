@@ -95,7 +95,7 @@ function recargaTAE() {
 
                  $("#lblEstadoRecarga").text("Recarga Exitosa")
                  $("#lblCelularExitoso").text($("#telefono2").val())
-                 $("#lblRespuesta").text("Codigo autorizacion" + result.op_authorization)
+                 $("#lblRespuesta").text("Codigo autorizacion: " + result.op_authorization)
              }
              $('#waitDialog').modal('hide')
              $('#dlgResult').modal('show')
