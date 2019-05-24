@@ -78,6 +78,10 @@ class Configuracion(models.Model):
     def __str__(self):
        return '%s : %s' % (self.clave,self.valor) 
 
+    class Meta:
+       managed = False
+       db_table = 'precios_configuracion' 
+
 post_save.connect(Configuracion.post_save,sender=Configuracion)
 post_init.connect(Configuracion.remember_valor,sender=Configuracion)
 
@@ -90,6 +94,11 @@ class Compania(models.Model):
     def __str__(self):
       return 'codigo : %s, descripcion: %s, imagen  : %s \n ' % (self.codigo,self.description, self.imagen)
 
+    class Meta:
+       managed = False
+       db_table = 'precios_compania' 
+
+
 class Categoria(models.Model):
     id = models.AutoField(primary_key=True)
     codigo = models.CharField(max_length=5, default='')
@@ -97,6 +106,10 @@ class Categoria(models.Model):
     parent = models.ForeignKey('self',models.SET_NULL, blank=True, null=True)
     def __str__(self):
       return 'codigo: %s, descripcion: %s \n ' % (self.codigo, self.description)
+
+    class Meta:
+       managed = False
+       db_table = 'precios_categoria' 
 
 class Producto (models.Model):
    id = models.AutoField(primary_key=True)
@@ -132,6 +145,10 @@ class Producto (models.Model):
 	  
 	  }
 
+   class Meta:
+       managed = False
+       db_table = 'precios_producto' 
+
 
 class Plan(models.Model):
    id = models.AutoField(primary_key=True)
@@ -144,6 +161,10 @@ class Plan(models.Model):
 
    def __str__(self):
     return 'plan: %s, descripcion: %s, monto :  %d, tipoplan : %d, compania: %s \n' % (self.plan, self.description, self.monto, self.tipoplan, self.compania.codigo)
+
+   class Meta:
+       managed = False
+       db_table = 'precios_plan' 
 
 class Recarga(models.Model):
     id = models.AutoField(primary_key=True)
@@ -158,6 +179,9 @@ class Recarga(models.Model):
     def __str__(self):
       return 'plan: %s, celular: %s, monto: %d, estatus: %s, error: %s, codigoautorizacion: %s \n' % (self.plan.description, self.celular, self.monto, self.estatus,self.error, self.codigoautorizacion)
  
+    class Meta:
+       managed = False
+       db_table = 'precios_recarga' 
 
 class TipoMovimiento (models.Model):
     id = models.AutoField(primary_key=True)
@@ -168,6 +192,10 @@ class TipoMovimiento (models.Model):
     prioridad = models.DecimalField(default=0, max_digits=2, decimal_places=0)
     def __str__(self):
 	 return 'Codigo : %s, Descripcion : %s, factor: %f, factor_conta:  %f, prioridad : %d \n' % (self.codigo, self.description, self.factor, self.factor_conta, self.prioridad)
+
+    class Meta:
+       managed = False
+       db_table = 'precios_tipomovimiento' 
 
 class Movimiento (models.Model):
     id = models.AutoField(primary_key=True)
@@ -200,6 +228,11 @@ class Movimiento (models.Model):
        for item in items:
          detalle.append(item.as_dict_tpv()) 
        return mov
+
+    class Meta:
+       managed = False
+       db_table = 'precios_movimiento' 
+
 	  
 class DetalleMovimiento (models.Model):
    id = models.AutoField(primary_key=True)
@@ -224,6 +257,9 @@ class DetalleMovimiento (models.Model):
 	  
 	  }	  
 
+   class Meta:
+       managed = False
+       db_table = 'precios_detallemovimiento' 
 
    def as_dict_tpv(self):
       return {

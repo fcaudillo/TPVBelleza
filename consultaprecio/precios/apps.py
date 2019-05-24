@@ -11,7 +11,8 @@ class PreciosConfig(AppConfig):
       self.configuracion = dict()
       all_tables = connection.introspection.table_names()
       if 'precios_configuracion' in all_tables:
-        self.refreshConfiguracion()
+         pass
+#        self.refreshConfiguracion()
 
     def getConfiguracion(self):
       return self.configuracion
