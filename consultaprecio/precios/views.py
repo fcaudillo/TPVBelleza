@@ -361,7 +361,7 @@ class LoadData:
    def __init__(self, pathfile):
        self.pathfile = pathfile
    
-   def obtener_lista_prod_excel(self, filename, pos_codigo_barras = 1,pos_codigoproveedor = 2, pos_existencia = 3,pos_puntoreorden = 4, pos_maximoexist= 5,  pos_producto = 6, pos_precio_compra = 7, pos_precio_venta = 8, pos_ubicacion = 9,  pos_categoria = 10, pos_inicio = -1, pos_final = -1):
+   def obtener_lista_prod_excel(self, filename, pos_codigo_barras = 0,pos_codigoproveedor = 1, pos_existencia = 2,pos_puntoreorden = 3, pos_maximoexist= 4,  pos_producto = 5, pos_precio_compra = 6, pos_precio_venta = 7, pos_ubicacion = 8,  pos_categoria = 9, pos_inicio = -1, pos_final = -1):
        data = []
        workbook = xlrd.open_workbook(filename)
        worksheet = workbook.sheet_by_name('Sheet1')
