@@ -8,7 +8,7 @@
    }
    
    stage('Construyendo imagen') {
-       sh ('docker build --build-arg BUILD_USU_MQ=${USUARIO_MQ} --build-arg BUILD_PASS_MQ=${PASSWORD_MQ} --build-arg BUILD_CLIENTE_ID=${CLIENTE_ID} -t  fcaudillo/tpv-verde:lts . ') 
+       sh ('docker build --build-arg BUILD_USU_MQ=${USUARIO_MQ} --build-arg BUILD_PASS_MQ=${PASSWORD_MQ} --build-arg BUILD_CLIENTE_ID=${CLIENTE_ID} --build-arg BUILD_USU_DB=${USUARIO_DB} --build-arg BUILD_PASS_DB=${PASSWORD_DB} -t  fcaudillo/tpv-verde:lts . ') 
    }
   
    stage('Subiendo la imagen.') {

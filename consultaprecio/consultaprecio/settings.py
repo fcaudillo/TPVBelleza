@@ -76,7 +76,10 @@ WSGI_APPLICATION = 'consultaprecio.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 db_nombre = os.environ.get('CLIENTE_ID') 
+db_user= os.environ.get('USUARIO_DB')
+db_password = os.environ.get('PASSWORD_DB')
 
+ 
 DATABASE_ROUTERS = ('precios.router_db.MyDbRouter',)
 
 DATABASES = {
@@ -87,8 +90,8 @@ DATABASES = {
            'options': '-c search_path=' + db_nombre + ''
        },
        'NAME': 'dbtpv',
-       'USER': 'adm_paciente0',
-       'PASSWORD': '12345678',
+       'USER': db_user,
+       'PASSWORD': db_password,
        'HOST': 'dbtpv'
    },
 
@@ -98,8 +101,8 @@ DATABASES = {
            'options': '-c search_path=' + db_nombre + ''
        },
        'NAME': 'dbtpv',
-       'USER': 'adm_paciente0',
-       'PASSWORD': '12345678',
+       'USER': db_nombre,
+       'PASSWORD': db_password,
        'HOST': 'dbtpv'
    },
 }
