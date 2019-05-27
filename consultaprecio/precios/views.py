@@ -27,7 +27,6 @@ from tasks import recarga, consultaSaldo
 import sys
 from django.apps import apps
 
-
 miapp = apps.get_app_config('precios')
 
 def siguiente_folio(prefix):
