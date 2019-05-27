@@ -27,6 +27,7 @@ from tasks import recarga, consultaSaldo
 import sys
 from django.apps import apps
 
+
 miapp = apps.get_app_config('precios')
 
 def siguiente_folio(prefix):
@@ -407,7 +408,7 @@ class LoadData:
 	   
    def carga_catalogo(self):
        #Producto.objects.all().delete()	
-       productos = self.obtener_lista_prod_excel(self.pathfile,1, 2, 3, 4,5,6,7,8,9,10, 3,-1)
+       productos = self.obtener_lista_prod_excel(self.pathfile,0, 1, 2, 3,4,5,6,7,8,9, 3,-1)
        for producto in productos:
           print producto  
           lst_cat_categoria = list(Categoria.objects.filter(codigo=producto['categoria']))
