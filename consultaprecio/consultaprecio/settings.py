@@ -88,7 +88,7 @@ DATABASES = {
        },
        'NAME': 'dbtpv',
        'USER': 'adm_paciente0',
-       'PASSWORD': 'q1w2e3r4',
+       'PASSWORD': '12345678',
        'HOST': 'dbtpv'
    },
 
@@ -99,7 +99,7 @@ DATABASES = {
        },
        'NAME': 'dbtpv',
        'USER': 'adm_paciente0',
-       'PASSWORD': 'q1w2e3r4',
+       'PASSWORD': '12345678',
        'HOST': 'dbtpv'
    },
 }
