@@ -19,8 +19,9 @@
    }
    
    stage('Deploy a produccion') {
+
+       sh "docker run -e USUARIO_DB=${USUARIO_DB} -e PASSWORD_DB=${PASSWORD_DB} -v /home/dockeradm/data/tpv-verde:/app/tlapape/data --rm fcaudillo/tpv-verde:lts ./manage.py migrate " 
        sh "cd main && docker-compose stop tlapape"
-       sh "docker run -v /home/dockeradm/data/tpv-verde:/app/tlapape/data --rm fcaudillo/tpv-verde:lts ./manage.py migrate " 
        sh "cd main && docker-compose up -d --no-deps --build tlapape"
    }
 
