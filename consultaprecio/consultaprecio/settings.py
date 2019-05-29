@@ -102,7 +102,7 @@ DATABASES = {
            'options': '-c search_path=' + db_nombre + ''
        },
        'NAME': 'dbtpv',
-       'USER': db_nombre,
+       'USER': db_user,
        'PASSWORD': db_password,
        'HOST': 'dbtpv'
    },
