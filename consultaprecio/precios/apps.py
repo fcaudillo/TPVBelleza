@@ -4,7 +4,6 @@ from django.db import connection
 
 from django.apps import AppConfig
 
-
 class PreciosConfig(AppConfig):
     name = 'precios'
     def ready(self):
