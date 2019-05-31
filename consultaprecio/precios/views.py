@@ -398,10 +398,12 @@ class LoadData:
          if type(worksheet.cell(rx,pos_maximoexist).value) is float:
             maximoexist = worksheet.cell(rx,pos_maximoexist).value
          ubicacion = worksheet.cell(rx,pos_ubicacion).value
-         categoria = 1
-         if type(worksheet.cell(rx,pos_categoria).value) is int:
-            categoria = worksheet.cell(rx,pos_categoria).value 
-
+         categoria = Categoria.objects.filter(codigo='UNK')[0]
+         if type(worksheet.cell(rx,pos_categoria).value) is string: 
+            cat_tmp = worksheet.cell(rx,pos_categoria).value 
+            cat_bus = Categoria.objects.filter(codigo=cat_tmp)
+            if cat_bus.count() > 0:
+              categoria = cat_bus[0]
          data.append({'producto': producto, 'codigo': codigo_barras, 'codigoproveedor': codigoproveedor, 'precioCompra': precioCompra,'precioVenta':precioVenta, 'existencia': existencia, 'categoria' : categoria , 'ubicacion': ubicacion, 'puntoreorden': puntoreorden, 'maximoexist': maximoexist})
        return data
 	   
