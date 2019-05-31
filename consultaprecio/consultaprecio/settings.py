@@ -26,7 +26,7 @@ SECRET_KEY = '7l=)l$(@pu%zoh5670%8f&30@e8_@i8da5o8-6#kb1qtpy+qg9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','.elverde.mx']
+ALLOWED_HOSTS = ['localhost','.elverde.mx','192.99.212.7']
 
 
 # Application definition
