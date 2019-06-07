@@ -26,6 +26,7 @@ from kombu import Connection, Exchange, Queue, Producer
 from tasks import recarga, consultaSaldo 
 import sys
 from django.apps import apps
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 miapp = apps.get_app_config('precios')
 
@@ -280,6 +281,37 @@ def find_all(request):
    result = [ obj.as_dict() for obj in productos ]
    return HttpResponse(json.dumps(result), content_type='application/json') 
 
+def do_paginate(data_list, page_number):
+    ret_data_list = data_list
+    result_per_page = 4
+    paginator = Paginator(data_list, result_per_page)
+    try:
+        ret_data_list = paginator.page(page_number)
+    except EmptyPage:
+        # get the lat page data if the page_number is bigger than last page number.
+        ret_data_list = paginator.page(paginator.num_pages)
+    except PageNotAnInteger:
+        # if the page_number is not an integer then return the first page data.
+        ret_data_list = paginator.page(1)
+    return [ret_data_list, paginator]
+
+@login_required
+def find_products(request):
+   prod_list = Producto.objects.filter(puede_venderse=True).order_by('description')
+   page_number = request.GET.get('page', 1)
+   paginate_result = do_paginate(prod_list, page_number)
+   list_prods = paginate_result[0]
+   paginator = paginate_result[1]
+   productos = list(list_prods.object_list)
+   lista = [ obj.as_dict() for obj in productos ]
+   result = {
+              'num_pages' : paginator.num_pages,
+              'current_page': page_number,
+              'productos' : lista
+            }
+
+   return HttpResponse(json.dumps(result), content_type='application/json') 
+  
 
 @login_required
 def download(request):

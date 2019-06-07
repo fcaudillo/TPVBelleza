@@ -63,11 +63,61 @@ function inicializa_table_products() {
 		});
 }
 
-function cargaInventario() {
+function cargaInventarioSyncOld() {
         $('#testTabla').bootstrapTable('removeAll');    
 	$.getJSON("find/", function(result){
           $('#testTabla').bootstrapTable('load',result);
 	});  
+}
+
+
+function cargaInventario() {
+   cargaInventarioAsync()
+}
+
+function solicitaPagina (pagina) {
+   return new Promise(function(resolve, reject) {
+		$.getJSON("find_products/?page=" + pagina, function(result){
+			resolve(result);
+		});
+
+   });
+}
+		
+		
+function requestPageObservable(pagina) {
+   return Rx.Observable.fromPromise(solicitaPagina(pagina))
+}
+
+function cargaInventarioAsync() {
+        $('#testTabla').bootstrapTable('removeAll');
+        var arr_productos = []
+        $.getJSON("find_products/", function(result){
+          total_pages = result['num_pages']
+          pagina = 1
+          arr_productos = result.productos;
+          console.log("total paginas : " + total_pages)
+          if (total_pages > 1) {
+             incremento = 100 / total_pages
+             $('#myBar').width(incremento + "%");
+             $('#myProgreso').modal("show"); 
+             Rx.Observable.range(2,total_pages - 1).flatMap(requestPageObservable).subscribe(function(dato) {
+               console.log("pagina: " + dato.current_page + " de : " + dato.num_pages); 
+               pagina ++;
+               arr_productos = arr_productos.concat(dato.productos);
+               $('#myBar').width((pagina * incremento) + "%");
+             }, function (e) {
+               console.log(e);
+             }, function () {
+                 $('#testTabla').bootstrapTable('load',arr_productos);
+                 setTimeout(function() {
+                    $('#myProgreso').modal("hide");
+                 },1200);
+             });
+          }else {
+             $('#testTabla').bootstrapTable('load',arr_productos);
+          }
+        });
 }
 
 
