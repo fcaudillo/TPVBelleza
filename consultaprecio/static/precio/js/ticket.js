@@ -92,13 +92,15 @@ function requestPageObservable(pagina) {
 
 function on_line () {
    return new Promise(function(resolve, reject) {
-		$.getJSON("/on_line", function(result){
-			resolve(result);
-		},function () {
-                   console.log("fn1");
-                   resolve({"on_line":false});
-                },function(jqXHR, textStatus, errorThrown) {
-                        resolve({"on_line":false});
+                $.ajax({
+                      url : "/on_line",
+                      timeout: "2000",
+                      error : function () {
+                                 resolve({"on_line":false});
+                              },
+                     success : function(result) {
+                        resolve(result);
+                     }
                 });
 
    });
