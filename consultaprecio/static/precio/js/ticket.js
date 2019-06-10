@@ -89,6 +89,37 @@ function requestPageObservable(pagina) {
    return Rx.Observable.fromPromise(solicitaPagina(pagina))
 }
 
+
+function on_line () {
+   return new Promise(function(resolve, reject) {
+		$.getJSON("/on_line", function(result){
+			resolve(result);
+		},function () {
+                   console.log("fn1");
+                   resolve({"on_line":false});
+                },function(jqXHR, textStatus, errorThrown) {
+                        resolve({"on_line":false});
+                });
+
+   });
+}
+
+		
+function requestOnlineObservable() {
+   return Rx.Observable.fromPromise(on_line())
+}
+
+function checkStatusInternet() {
+  Rx.Observable.interval(5000).flatMap(requestOnlineObservable).subscribe(function(dato) {
+    console.log ("Ejecutando cada 5 segundos");
+    if (dato.on_line) {
+      $("#status_online").css("color","#64dd17");
+    }else {
+      $("#status_online").css("color","red");
+    }
+  });
+}
+
 function cargaInventarioAsync() {
         $('#testTabla').bootstrapTable('removeAll');
         var arr_productos = []
@@ -101,10 +132,12 @@ function cargaInventarioAsync() {
              incremento = 100 / total_pages
              $('#myBar').width(incremento + "%");
              $('#myProgreso').modal("show"); 
+             addProductos(arr_productos);
              Rx.Observable.range(2,total_pages - 1).flatMap(requestPageObservable).subscribe(function(dato) {
                console.log("pagina: " + dato.current_page + " de : " + dato.num_pages); 
                pagina ++;
                arr_productos = arr_productos.concat(dato.productos);
+               addProductos(dato.productos);
                $('#myBar').width((pagina * incremento) + "%");
              }, function (e) {
                console.log(e);
@@ -156,7 +189,33 @@ function registrarVenta(tipo_impresion) {
 			return false;
 }	
 
+function defineDatabase() {
+          db = new Dexie("tpv");
+          db.version(1).stores({
+              productos: 'barcode,description',
+              movimiento: 'id++'
+          });
+}
+
+function addProductos(productos) {
+  productos.forEach((producto) => {
+    db.productos.put(producto).then(function() {
+      return db.productos.get(producto.barcode);
+    }).then(function(producto) {
+       console.log("codigo barras " + producto.barcode + " descricion: " + producto.description);
+    }).catch(function(error) {
+        alert("opps " + error);
+    });
+  });
+
+}
+
+
 $(document).ready(function() {
+        console.log("1..");
+        defineDatabase();
+        checkStatusInternet();
+        console.log("2..");
         inicializa_table_products();
 	$('#ventaTabla').bootstrapTable({
 			columns: [{

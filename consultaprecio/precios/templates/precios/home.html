@@ -16,9 +16,12 @@
     <link rel="stylesheet" href="/static/precio/css/ticket.css">
     
     <script src="/static/precio/js/rx_all.js"></script>
+    <script src="/static/precio/js/dexie.js"></script>
     <script>
-	   var venta_tipo_mov = {{tipo_movimiento.id}};
-	</script>
+            var db = null;
+	    var venta_tipo_mov = {{tipo_movimiento.id}};
+            var on_line = false;
+    </script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>

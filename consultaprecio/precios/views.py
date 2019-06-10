@@ -179,6 +179,9 @@ def recargatae (request,compania, plan, numero,monto):
  
    return HttpResponse(result.result, content_type='application/json') 
 
+@login_required
+def on_line(request):
+   return HttpResponse(json.dumps({"on_line": True}), content_type='application/json')
 
 # Create your views here.
 @login_required
