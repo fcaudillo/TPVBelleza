@@ -113,11 +113,12 @@ function requestOnlineObservable() {
 
 function checkStatusInternet() {
   Rx.Observable.interval(5000).flatMap(requestOnlineObservable).subscribe(function(dato) {
-    console.log ("Ejecutando cada 5 segundos");
     if (dato.on_line) {
       $("#status_online").css("color","#64dd17");
+      $("#status_online2").css("color","#64dd17");
     }else {
       $("#status_online").css("color","red");
+      $("#status_online2").css("color","red");
     }
   });
 }
@@ -214,10 +215,8 @@ function addProductos(productos) {
 
 
 $(document).ready(function() {
-        console.log("1..");
         defineDatabase();
-        checkStatusInternet();
-        console.log("2..");
+        //checkStatusInternet();
         inicializa_table_products();
 	$('#ventaTabla').bootstrapTable({
 			columns: [{
