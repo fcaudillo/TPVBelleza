@@ -18,3 +18,31 @@
   height: 30px;
   background-color: #4CAF50;
 }
+
+.icon-size {
+    font-size:30px;
+    margin-right: 20px;
+    
+}
+#divContador {
+  visibility: hidden;
+}
+
+.movs-upload {
+    background: red;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    font-size: 14px;
+    z-index: 3;
+    color: white;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+

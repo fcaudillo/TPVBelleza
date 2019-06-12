@@ -89,6 +89,10 @@ function requestPageObservable(pagina) {
    return Rx.Observable.fromPromise(solicitaPagina(pagina))
 }
 
+function requestMovimientoCount() {
+  return Rx.Observable.fromPromise(db.movimientos.count())
+}
+
 
 function on_line () {
    return new Promise(function(resolve, reject) {
@@ -113,9 +117,11 @@ function requestOnlineObservable() {
 
 function checkStatusInternet() {
   Rx.Observable.interval(5000).flatMap(requestOnlineObservable).subscribe(function(dato) {
+    inline = dato.on_line;
     if (dato.on_line) {
       $("#status_online").css("color","#64dd17");
       $("#status_online2").css("color","#64dd17");
+      sendMovOffline();  
     }else {
       $("#status_online").css("color","red");
       $("#status_online2").css("color","red");
@@ -157,6 +163,29 @@ function cargaInventarioAsync() {
 }
 
 
+function sendTicket (url, ticket) {
+
+   ticket_promise  =  new Promise(function(resolve, reject) {
+	            var jsonData = JSON.stringify(ticket);
+		    $.ajax({
+				type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+				dataType: 'json', // Set datatype - affects Accept header
+				url: "/tickets/add", // A valid URL
+				headers: {"X-HTTP-Method-Override": "PUT", "X-CSRFToken": $.cookie("csrftoken")}, // X-HTTP-Method-Override set to PUT.
+				data: jsonData, // Some data e.g. Valid JSON as a string
+				success: function (response) {
+                                   resolve(ticket)
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+                                   reject();
+				}
+			});
+	});	  
+ 
+   return Rx.Observable.fromPromise(ticket_promise);
+}	
+
+
 function registrarVenta(tipo_impresion) {
                     var $tableVenta = $('#ventaTabla');
 		    var data = $tableVenta.bootstrapTable('getData');
@@ -184,8 +213,7 @@ function registrarVenta(tipo_impresion) {
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
                                         $("#myModalPrint").modal('hide')
-					alert(xhr.status);
-					alert(thrownError);
+                                        guardaTicketLocal(ticket);
 				}
 			});
 		   
@@ -196,9 +224,66 @@ function defineDatabase() {
           db = new Dexie("tpv");
           db.version(1).stores({
               productos: 'barcode,description',
-              movimiento: 'id++'
+              movimientos: 'id++'
           });
 }
+
+function sendMovOffline() {
+   if (envioEnProceso || inline == false)
+      return;
+
+   envioEnProceso = true;
+   db.movimientos.toArray().then(function (tickets) {
+       var totalMovsOffline = tickets.length;
+       Rx.Observable.from(tickets).flatMap(function (ticket) {
+          return sendTicket("",ticket);
+       }).flatMap (function (ticket)  {
+          return Rx.Observable.fromPromise(db.movimientos.delete(ticket.id));
+       }).delay(1000).subscribe(function () {
+          totalMovsOffline = totalMovsOffline - 1;
+          paintUploadCount(totalMovsOffline);
+       }, function (error) {
+          envioEnProceso = false;
+          alert("Error enviando ventas. Consulte al administrador");
+       }, function () {
+           envioEnProceso = false;
+           console.log("Terminando de  enviar movimientos");
+       }); 
+   });
+
+}
+
+
+function paintUploadCount(contador) {
+   $("#movsOffline").text(contador);
+   if (contador == 0){
+     setTimeout(function () {
+      $("#divContador").css('visibility', 'hidden');
+     },1500);
+   }else {
+      $("#divContador").css('visibility', 'visible');
+   }
+}
+
+
+function guardaTicketLocal(ticket) {
+   db.movimientos.put(ticket).then(function() {
+      console.log("Producto id " + ticket.id);
+      $('#ventaTabla').bootstrapTable('removeAll');
+      total = 0;
+      $("#ventaTabla").find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
+      requestMovimientoCount().subscribe(function(contador) {
+         paintUploadCount(contador);
+      });
+      return db.movimientos.get(ticket.id); 
+   }).then(function (ticket) {
+      console.log("total : " + ticket.total);
+      
+   }).catch(function(error) {
+      alert('No se logro guardar la venta: '+ error);
+  });
+}
+
 
 function addProductos(productos) {
   productos.forEach((producto) => {
@@ -216,7 +301,15 @@ function addProductos(productos) {
 
 $(document).ready(function() {
         defineDatabase();
-        //checkStatusInternet();
+        checkStatusInternet();
+
+        requestMovimientoCount().subscribe(function(contador) {
+          paintUploadCount(contador);
+          if (contador >0) {
+            sendMovOffline();
+          }
+        });
+
         inicializa_table_products();
 	$('#ventaTabla').bootstrapTable({
 			columns: [{

@@ -20,25 +20,9 @@
     <script>
             var db = null;
 	    var venta_tipo_mov = {{tipo_movimiento.id}};
-            var on_line = false;
+            var inline = false;
+            var envioEnProceso = false;
     </script>
-        <script>
-            function updateOnlineStatus() {
-                on_line = true;
-                $("#status_online").css("color","#64dd17");
-                $("#status_online2").css("color","#64dd17");
-            }
-
-            function updateOfflineStatus() {
-                on_line = false;
-                $("#status_online").css("color","red");
-                $("#status_online2").css("color","red");
-            }
-
-            window.addEventListener('online', updateOnlineStatus);
-            window.addEventListener('offline', updateOfflineStatus); 
- 
-        </script> 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -47,13 +31,25 @@
     <![endif]-->
   </head>
   <body>
-    <div class="container mt-5">	 
+     <div class="container mt-5">	 
         {% include "precios/nav.html" %}
         <form class="form-horizontal">
 		  
                 {% csrf_token %}
 		<!-- Form Name -->
-		<legend>Busqueda de productos</legend>
+                <div class="row">
+                  <div class="col-sm-8">
+		     <legend>Busqueda de productos</legend>
+                  </div>
+                  <div class="col-sm-4">
+                      <div id="divContador" class="pull-right" >
+
+                         <i class="glyphicon glyphicon-cloud-upload icon-size"></i>
+                         <span id="movsOffline" class="movs-upload">
+                         </span>
+                      </div>
+                  </div>
+                </div> 
 
 		<!-- Text input-->
 		<div class="form-group">
