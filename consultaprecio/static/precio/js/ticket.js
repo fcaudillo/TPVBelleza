@@ -305,9 +305,9 @@ $(document).ready(function() {
 
         requestMovimientoCount().subscribe(function(contador) {
           paintUploadCount(contador);
-          if (contador >0) {
-            sendMovOffline();
-          }
+          //if (contador >0) {
+          //  sendMovOffline();
+          //}
         });
 
         inicializa_table_products();
