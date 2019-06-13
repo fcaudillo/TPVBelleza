@@ -17,11 +17,51 @@
     
     <script src="/static/precio/js/rx_all.js"></script>
     <script src="/static/precio/js/dexie.js"></script>
+    <script src="/static/precio/js/sockjs.min.js"></script>
+    <script src="/static/precio/js/stomp.js"></script>
     <script>
             var db = null;
 	    var venta_tipo_mov = {{tipo_movimiento.id}};
             var inline = false;
             var envioEnProceso = false;
+    </script>
+
+ <script>
+        // Stomp.js boilerplatk
+        //var ws = new SockJS('http://127.0.0.1:15674/ws');
+        var ws = new WebSocket('ws://127.0.0.1:15674/ws');
+        var client = Stomp.over(ws);
+        // SockJS does not support heart-beat: disable heart-beats
+        client.heartbeat.outgoing = 5000;
+        client.heartbeat.incoming = 5000;
+        client.debug = function() {
+            /*if (window.console && console.log && console.log.apply) {
+                console.log.apply(console, arguments);
+            }*/
+        };
+        send = function(data) {
+            client.send('/queue/TestQueue', {}, data);
+        };
+        function llamada() {
+          send ('{"data":"saludos"}');
+        }
+        var on_connect = function(x) {
+            id = client.subscribe('/queue/TestQueue', function(d) {
+                console.log(id);
+                var p = JSON.parse(d.body);
+                //lines.push(p);
+                //draw(p, true);
+                console.log(p);
+            });
+            var x=10;
+            console.log(id);
+        };
+        var on_error = function(err) {
+            console.log('error');
+        };
+        client.connect('fcaudillo', 'abcdefg', on_connect, on_error, '/');
+        console.log(client);
+
     </script>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -65,6 +105,7 @@
 		  <label class="col-md-4 control-label" ></label>
 		  <div class="col-md-4">
 			<button class="btn btn-primary" id="btnSearch">Buscar</button>
+			<button class="btn btn-primary" id="btnTest" onclick="llamada()" >Test</button>
 		  </div>
 		</div>
 

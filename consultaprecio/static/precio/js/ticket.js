@@ -94,6 +94,31 @@ function requestMovimientoCount() {
 }
 
 
+function getProductoOnline (codigo) {
+  return Rx.Observable.fromPromise(new Promise (function(resolve,reject) {
+                $.ajax({
+                      url : "/find/" + $.trim(codigo) + "/",
+                      timeout: "4000",
+                      error : function (err) {
+                                 resolve(err);
+                              },
+                     success : function(result) {
+                        resolve(result);
+                     }
+                });
+         })); 
+}
+
+function getProductoOffline (codigo) {
+  return Rx.Observable.fromPromise(db.productos.get($.trim(codigo)));
+}
+
+function getProductoByBarcode (codigo) {
+   if (inline)
+     return getProductoOnline(codigo).onerrorresumenext(getProductoOffline(codigo));
+  return getProductoOffline(codigo); 
+}
+
 function on_line () {
    return new Promise(function(resolve, reject) {
                 $.ajax({
@@ -475,12 +500,12 @@ $(document).ready(function() {
 	$( "#btnSearch" ).click(function() {
 		    ean = null;
 			var codigo = $( "#codigobarras" ).val()
-			$.getJSON("/find/" + $.trim(codigo) + "/", function(result){
+                        getProductoByBarcode().subscribe(function (result) {
 				$('#descriptionProductoLabel').text(result.description);
 				$('.precioProductoLabel').text(Number(result.precioVenta).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 				ean = result;
 				$("#myModal").modal('show')
-			});
+                        });
 	  
 			return false;
 	});	

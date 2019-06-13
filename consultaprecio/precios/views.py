@@ -434,7 +434,7 @@ class LoadData:
             maximoexist = worksheet.cell(rx,pos_maximoexist).value
          ubicacion = worksheet.cell(rx,pos_ubicacion).value
          categoria = Categoria.objects.filter(codigo='UNK')[0]
-         if type(worksheet.cell(rx,pos_categoria).value) is string: 
+         if type(worksheet.cell(rx,pos_categoria).value) is str: 
             cat_tmp = worksheet.cell(rx,pos_categoria).value 
             cat_bus = Categoria.objects.filter(codigo=cat_tmp)
             if cat_bus.count() > 0:
