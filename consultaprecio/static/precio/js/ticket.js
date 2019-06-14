@@ -97,7 +97,7 @@ function requestMovimientoCount() {
 function getProductoOnline (codigo) {
   return Rx.Observable.fromPromise(new Promise (function(resolve,reject) {
                 $.ajax({
-                      url : "/find/" + $.trim(codigo) + "/",
+                      url : "/find_codigo/" + $.trim(codigo) + "/",
                       timeout: "4000",
                       error : function (err) {
                                  resolve(err);
@@ -114,8 +114,12 @@ function getProductoOffline (codigo) {
 }
 
 function getProductoByBarcode (codigo) {
+   inline = true;
    if (inline)
-     return getProductoOnline(codigo).onerrorresumenext(getProductoOffline(codigo));
+     return getProductoOnline(codigo).catch (function (err) {
+       return getProductoOffline(codigo); 
+     }); //.OnErrorResumeNext(Rx.Observable.just({'description':'xxx', 'precio': 100 }));
+     //return getProductoOnline(codigo).OnErrorResumeNext(getProductoOffline(codigo));
   return getProductoOffline(codigo); 
 }
 
@@ -500,7 +504,7 @@ $(document).ready(function() {
 	$( "#btnSearch" ).click(function() {
 		    ean = null;
 			var codigo = $( "#codigobarras" ).val()
-                        getProductoByBarcode().subscribe(function (result) {
+                        getProductoByBarcode(codigo).subscribe(function (result) {
 				$('#descriptionProductoLabel').text(result.description);
 				$('.precioProductoLabel').text(Number(result.precioVenta).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 				ean = result;
