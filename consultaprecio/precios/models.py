@@ -111,6 +111,20 @@ class Categoria(models.Model):
        managed = False
        db_table = 'precios_categoria' 
 
+
+class Proveedor(models.Model):
+    id = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=8, default='')
+    description = models.CharField(max_length=255)
+    def __str__(self):
+      return 'codigo: %s, descripcion: %s \n ' % (self.codigo, self.description)
+
+    class Meta:
+       managed = False
+       db_table = 'precios_proveedor' 
+
+
+
 class Producto (models.Model):
    id = models.AutoField(primary_key=True)
    barcode = models.CharField(max_length =30, unique=True)
