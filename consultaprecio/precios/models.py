@@ -112,23 +112,27 @@ class Categoria(models.Model):
        db_table = 'precios_categoria' 
 
 
-class Proveedor(models.Model):
+class Persona(models.Model):
     id = models.AutoField(primary_key=True)
     codigo = models.CharField(max_length=8, default='')
     description = models.CharField(max_length=255)
+    es_persona_moral = models.BooleanField(default=False);
+    es_proveedor = models.BooleanField(default=False)
+    es_cliente = models.BooleanField(default=False) 
     def __str__(self):
       return 'codigo: %s, descripcion: %s \n ' % (self.codigo, self.description)
 
     class Meta:
        managed = False
-       db_table = 'precios_proveedor' 
+       db_table = 'precios_persona' 
 
 
 
 class Producto (models.Model):
    id = models.AutoField(primary_key=True)
+   codigoInterno = models.CharField(max_length=20, unique=True)
    barcode = models.CharField(max_length =30, unique=True)
-   codigoproveedor = models.CharField(max_length = 40,default='')
+   persona = models.ForeignKey(Persona, models.SET_NULL, blank=True, null=True)
    description = models.CharField(max_length=255)
    existencia = models.IntegerField(default=0)
    minimoexist = models.IntegerField(default=0)
@@ -137,6 +141,7 @@ class Producto (models.Model):
    precioVenta =models.DecimalField(max_digits=5, decimal_places=2)
    ubicacion = models.CharField(max_length=255, default='')
    categoria = models.ForeignKey(Categoria,models.SET_NULL, blank=True, null=True)
+   unidad = models.CharField(max_length=30)
    falta =  models.DateTimeField(blank=False, null=False)
    fmodificacion =  models.DateTimeField(blank=True, null=True)
    puede_venderse = models.BooleanField(default=True)
@@ -144,6 +149,10 @@ class Producto (models.Model):
    @staticmethod 
    def findByBarcode(codigo):
      return Producto.objects.filter(barcode = codigo)[0]
+
+   @staticmethod
+   def findByCodigoInterno(codigo):
+     return Producto.objects.filter(codigoInterno = codigo)[0]
 
    def __str__(self):
     return 'barcode: %s, descricion: %s, existencia :  %d, precioCompra : %f, precioVenta: %f, minimoexist: %d, maximoexist: %d, codigoprov: %s, ubicacion: %s \n' % (self.barcode, self.description, self.existencia, self.precioCompra, self.precioVenta, self.minimoexist, self.maximoexist, self.codigoproveedor, self.ubicacion)
