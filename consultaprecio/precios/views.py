@@ -399,7 +399,23 @@ class LoadData:
    def obtener_lista_prod_excel(self, filename, pos_codigo_barras = 0,pos_codigoproveedor = 1, pos_existencia = 2,pos_puntoreorden = 3, pos_maximoexist= 4,  pos_producto = 5, pos_precio_compra = 6, pos_precio_venta = 7, pos_ubicacion = 8,  pos_categoria = 9, pos_inicio = -1, pos_final = -1):
        data = []
        workbook = xlrd.open_workbook(filename)
-       worksheet = workbook.sheet_by_name('Sheet1')
+       worksheet = workbook.sheet_by_name('Configuracion')
+       pos_codigo_barras = worksheet.cell(1,1)
+       pos_codigo_proveedor = worksheet.cell(2,1)
+       pos_codigo_interno = worksheet.cell(3,1)
+       pos_existencia = worksheet.cell(4,1)
+       pos_puntoreorden = worksheet.cell(5,1)
+       pos_maximoexist = worksheet.cell(6,1)
+       pos_producto = worksheet.cell(7,1)
+       pos_description_corta = worksheet.cell(8,1)
+       pos_precio_compra = worksheet.cell(9,1)
+       pos_precio_venta = worksheet.cell(10,1)
+       pos_unidad_venta = worksheet.cell(11,1)
+       pos_ubicacion = worksheet.cell(12,1)
+       pos_categoria = worksheet.cell(13,1)
+       pos_inicio = worksheet.cell(14,1)
+ 
+       worksheet = workbook.sheet_by_name('Productos')
        pos_inicio = 3 if pos_inicio == -1 else pos_inicio - 1
        pos_final = worksheet.nrows if pos_final == -1 else pos_final
        for rx in range(pos_inicio,pos_final): 
@@ -412,10 +428,18 @@ class LoadData:
          codigoproveedor = worksheet.cell(rx,pos_codigoproveedor).value;
          if type(worksheet.cell(rx,pos_codigoproveedor).value) is float:
            codigoproveedor = '%13.0f' % worksheet.cell(rx,pos_codigoproveedor).value
+
+         codigoInterno = worksheet.cell(rx,pos_codigo_interno).value
+         if type(worksheet.cell(rx,pos_codigo_interno).value) is float:
+            codigoInterno = '%6.0f' % wooksheet.cell(rx,pos_codigo_interno).value
+
          if type(codigo_barras) is unicode:
             if codigo_barras == u'':
                codigo_barras = ''
          producto = worksheet.cell(rx,pos_producto).value
+         descriptionCorta = worksheet.cell(rx,pos_description_corta).value
+         unidadVenta = worksheet.cell(rx,pos_unidad_venta).value
+
          precioCompra = None
          if type(worksheet.cell(rx,pos_precio_compra).value) is float:
             precioCompra = worksheet.cell(rx,pos_precio_compra).value
@@ -434,12 +458,13 @@ class LoadData:
             maximoexist = worksheet.cell(rx,pos_maximoexist).value
          ubicacion = worksheet.cell(rx,pos_ubicacion).value
          categoria = Categoria.objects.filter(codigo='UNK')[0]
+         persona = Categoria.objects.filter(codigo=worksheet.cell(0,1).value)[0]
          if type(worksheet.cell(rx,pos_categoria).value) is str: 
             cat_tmp = worksheet.cell(rx,pos_categoria).value 
             cat_bus = Categoria.objects.filter(codigo=cat_tmp)
             if cat_bus.count() > 0:
               categoria = cat_bus[0]
-         data.append({'producto': producto, 'codigo': codigo_barras, 'codigoproveedor': codigoproveedor, 'precioCompra': precioCompra,'precioVenta':precioVenta, 'existencia': existencia, 'categoria' : categoria , 'ubicacion': ubicacion, 'puntoreorden': puntoreorden, 'maximoexist': maximoexist})
+         data.append({'producto': producto,'descriptionCorta':descriptionCorta,'unidadVenta':unidadVenta,  'codigo': codigo_barras,'codigoInterno':codigoInterno, 'codigoproveedor': codigoproveedor, 'precioCompra': precioCompra,'precioVenta':precioVenta, 'existencia': existencia, 'categoria' : categoria , 'ubicacion': ubicacion, 'puntoreorden': puntoreorden, 'maximoexist': maximoexist,'persona':persona})
        return data
 	   
    def carga_catalogo(self):
@@ -453,7 +478,7 @@ class LoadData:
           else :
              cat_categoria = lst_cat_categoria[0]	
           producto['codigo'] = calcular_codigo_barras(producto['codigo'])
-          Producto.objects.create(barcode=producto['codigo'],codigoproveedor=producto['codigoproveedor'],description=producto['producto'], existencia=producto['existencia'],precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'], categoria = cat_categoria, ubicacion=producto['ubicacion'], minimoexist=producto['puntoreorden'],maximoexist=producto['maximoexist'], falta=datetime.datetime.now())		  
+          Producto.objects.create(barcode=producto['codigo'],codigoProveedor=producto['codigoProveedor'],codigoInterno=producto['codigoInterno'],description=producto['producto'], descriptionCorta=producto['descriptionCorta'],unidadVenta=producto['unidadVenta'], existencia=producto['existencia'],precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'], categoria = cat_categoria, ubicacion=producto['ubicacion'], minimoexist=producto['puntoreorden'],maximoexist=producto['maximoexist'],persona=producto['persona'],falta=datetime.datetime.now())		  
        return 1       	
    
    
