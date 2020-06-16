@@ -1,0 +1,269 @@
+    1  pwd
+    2  ls
+    3  cd consultaprecio/
+    4  ls
+    5  cd precios/
+    6  ls
+    7  vi etiqueta_ubicacion.py 
+    8  ./etiqueta_ubicacion.py 
+    9  vi etiqueta_ubicacion.py 
+   10  ./etiqueta_ubicacion.py 
+   11  ls
+   12  ./etiqueta_ubicacion.py 
+   13  vi etiqueta_ubicacion.py 
+   14  cd ../..
+   15  ls
+   16  exit
+   17  ls
+   18  cd consultaprecio/
+   19  cd precios/
+   20  ls
+   21  vi models.py
+   22  cd views.py
+   23  vi views.py
+   24  cat models.py
+   25  vi views.py
+   26  ls
+   27  ./manage.py makemigrations
+   28  cd ..
+   29  ./manage.py makemigrations
+   30  ls
+   31  cd ..
+   32  ls
+   33  ./setear_var.sh 
+   34  ./manage.py makemigrations
+   35  cd consultaprecio/
+   36  ./manage.py makemigrations
+   37  cd ..
+   38  ls
+   39  cat setear_var.sh 
+   40  export USUARIO_MQ=fcaudillo
+   41  export PASSWORD_MQ=abcdefg
+   42  export CLIENTE_ID=paciente0
+   43  export USUARIO_DB=adm_paciente0
+   44  export PASSWORD_DB=12345678
+   45  cd consultaprecio/
+   46  ./manage.py makemigrations
+   47  history
+   48  vi /etc/hosts
+   49  ping dbtpv
+   50  ./manage.py makemigrations
+   51  ./manage.py migrate
+   52  ls
+   53  cd precios/
+   54  ls
+   55  rm -rf migrations
+   56  rm -rf migrations_back/
+   57  ls
+   58  cd ..
+   59  ./manage.py makemigrations
+   60  ls
+   61  cd generated/
+   62  ls
+   63  cd ..
+   64  cd precios/
+   65  ls
+   66  rm -rf *.pyc
+   67  ls
+   68  cd templates/
+   69  ls
+   70  cd precios/
+   71  ls
+   72  cd ..
+   73  ls
+   74  cd ..
+   75  cd precios/
+   76  ls
+   77  cat DB-CATALOGOS-INICIALES/
+   78  LS
+   79  ls
+   80  cd DB-CATALOGOS-INICIALES/
+   81  ls
+   82  cd ..
+   83  ls
+   84  cd consultaprecio/
+   85  ./manage.py makemigrations
+   86  ./manage.py makemigrations consultaprecios
+   87  ./manage.py makemigrations precios
+   88  ./manage.py makemigrations
+   89  ./manage.py migrate
+   90  ./manage.py migrate precios
+   91  ./manage.py makemigrations precios
+   92  ./manage.py make precios
+   93  ./manage.py migrate precios
+   94  ./manage.py migrate 
+   95  ./manage.py makemigrations app_v1
+   96  ./manage.py makemigrations precios
+   97  ls
+   98  cd precios
+   99  ls
+  100  cd migrations/
+  101  ls
+  102  cat __init__.py
+  103  cat 0001_initial.py
+  104  ./manage.py makemigrations precios 
+  105  cd ..
+  106  ls
+  107  cd ..
+  108  ./manage.py makemigrations precios 
+  109  ./manage.py migrate precios 
+  110  git add *
+  111  git ..
+  112  cd ..
+  113  git add *
+  114  git status
+  115  git add .
+  116  git add 
+  117  git add *
+  118  git add --all
+  119  git status
+  120  git commit -m "un commit"
+  121  git push
+  122  ls
+  123  cd consultaprecio/
+  124  ls
+  125  ./manage.py makemigrations
+  126  ./manage.py makemigrations precios
+  127  ./manage.py migrate precios
+  128  cd precios/
+  129  ls
+  130  rm migrations/
+  131  rm -rf migrations/
+  132  cd ..
+  133  ./manage.py makemigrations precios
+  134  ./manage.py migrate precios
+  135  cd precios/
+  136  ls
+  137  cd migrations/
+  138  ls
+  139  vi 0001_initial.py
+  140  cd ..
+  141  ./manage.py migrate precios
+  142  ls
+  143  find . -name settings.py
+  144  cd ./consultaprecio/
+  145  ls
+  146  vi settings.py
+  147  cd ..
+  148  find . -name *Config*
+  149  find . -name precios.app.preciosConfing
+  150  find . -name precios.app.preciosConfig
+  151  cd consultaprecio/
+  152  cd precios/
+  153  ls
+  154  vi admin.py
+  155  cd ..
+  156  ./manage.py startapp precios
+  157  ls
+  158  cd consulta
+  159  cd consultaprecio/
+  160  ls
+  161  cat settings_back.txt 
+  162  cd ..
+  163  ls
+  164  cd precios/
+  165  ls
+  166  cd apps.py
+  167  vi apps.py
+  168* 
+  169  rm -rf migrations
+  170  ls
+  171  ./manage.py makemigrations precios
+  172  cd precios/
+  173  ls
+  174  rm -rf migrations/
+  175  cd ..
+  176  ./manage.py makemigrations precios
+  177  ./manage.py migrate precios
+  178  python manage.py migrate --fake-initial
+  179  python manage.py migrate precios --fake-initial
+  180  python manage.py makemigrations
+  181  python manage.py migrate
+  182  python manage.py migrate precios --fake-initial
+  183  ./manage.py makemigrations precios
+  184  python manage.py makemigrations
+  185  python manage.py migrate precios
+  186  python manage.py showmigrations
+  187  cd precios/
+  188  ls
+  189  cd migrations/
+  190  ls
+  191  cat 0001_initial.py
+  192  ls
+  193  rm 0001_initial.py
+  194  rm 0001_initial.pyc
+  195  rm __init__.pyc
+  196  ls
+  197  cat __init__.py 
+  198  cd ..
+  199  ls
+  200  ./manage.py migrate precios
+  201  ./manage.py makemigrations precios
+  202  ./manage.py migrate precios
+  203  ls
+  204  cd ..
+  205  env
+  206  ./manage.py makemigrations precios
+  207  cd consultaprecio/
+  208  ./manage.py makemigrations precios
+  209  python manage.py migrate precios --fake-initial
+  210  python manage.py makemigrations precios --fake-initial
+  211  python manage.py makemigrations precios
+  212  python manage.py migrate precios
+  213  python manage.py showmigrations
+  214  cd precios
+  215  ls
+  216  rm -rf migrations/
+  217  cd ..
+  218  ./manage.py makemigrations precios
+  219  ./manage.py migrate precios
+  220  ./manage.py makemigrations precios
+  221  cd precios/
+  222  ls
+  223  rm -rf migrations/
+  224  cd ..
+  225  ./manage.py makemigrations precios
+  226  python manage.py syncdb --all
+  227  ./manage.py makemigrations precios
+  228  cd precios/
+  229  ls
+  230  cd migrations/
+  231  ls
+  232  cd ..
+  233  ./manage.py migrate precios 0001_initial.py
+  234  ./manage.py migrate precios 0001_initial
+  235  ./manage.py help
+  236  ./manage.py sqlmigrate precios
+  237  ./manage.py sqlmigrate precios 0001_initial
+  238  cd precios
+  239  ls
+  240  cd migrations/
+  241* 
+  242  cat 0001_initial.py
+  243  cd ..
+  244  ./manage.py migrate precios --fake-initial
+  245  ./manage.py sqlmigrate precios 0001_initial
+  246  ./manage.py migrate precios zero
+  247  ./manage.py migrate precios 0001_initial
+  248  cat precios/migrations/0001_initial.py
+  249  ./manage.py sqlmigrate precios 
+  250  ./manage.py sqlmigrate precios 0001_initial
+  251  ./manage.py migrate help
+  252  ./manage.py migrate 
+  253  ./manage.py migrate precios zero
+  254  ./manage.py sqlmigrate precios 0001_initial
+  255  ./manage.py help
+  256  ./manage.py generateschema
+  257  ./manage.py dbshell
+  258  ./manage.py inspectdb
+  259  vi precios/migrations/0001_initial.py
+  260  ./manage.py migrate zero
+  261  ./manage.py migrate precios zero
+  262  ./manage.py makemigrations
+  263  ./manage.py migrate precios
+  264  ./manage.py sqlmigrate precios
+  265  ./manage.py sqlmigrate precios 0001_initial
+  266  cd ..
+  267  vi README.md 
+  268  ls
+  269  history > comandos_correcion_db_empty.txt
