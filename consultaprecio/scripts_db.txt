@@ -1,0 +1,62 @@
+BEGIN;
+--
+-- Create model Categoria
+--
+CREATE TABLE "precios_categoria" ("id" serial NOT NULL PRIMARY KEY, "codigo" varchar(5) NOT NULL, "description" varchar(255) NOT NULL, "parent_id" integer NULL);
+--
+-- Create model Compania
+--
+CREATE TABLE "precios_compania" ("id" serial NOT NULL PRIMARY KEY, "codigo" varchar(5) NOT NULL, "description" varchar(255) NOT NULL, "imagen" varchar(50) NOT NULL, "comision" integer NOT NULL);
+--
+-- Create model Configuracion
+--
+CREATE TABLE "precios_configuracion" ("id" serial NOT NULL PRIMARY KEY, "clave" varchar(30) NOT NULL, "valor" varchar(300) NOT NULL);
+--
+-- Create model TipoMovimiento
+--
+CREATE TABLE "precios_tipomovimiento" ("id" serial NOT NULL PRIMARY KEY, "codigo" varchar(30) NOT NULL UNIQUE, "description" varchar(255) NOT NULL, "factor" numeric(5, 2) NOT NULL, "factor_conta" numeric(5, 2) NOT NULL, "prioridad" numeric(2, 0) NOT NULL);
+--
+-- Create model Movimiento
+--
+CREATE TABLE "precios_movimiento" ("id" serial NOT NULL PRIMARY KEY, "tipo_movimiento_id" integer NULL, "user_id" integer NULL, "description" varchar(255) NOT NULL, "total" numeric(5, 2) NOT NULL, "fecha" timestamp with time zone NOT NULL);
+--
+-- Create model DetalleMovimiento
+--
+CREATE TABLE "precios_detallemovimiento" ("id" serial NOT NULL PRIMARY KEY, "movimiento_id" integer NULL, "barcode" varchar(30) NOT NULL, "description" varchar(255) NOT NULL, "cantidad" integer NOT NULL, "precioCompra" numeric(5, 2) NOT NULL, "precioVenta" numeric(5, 2) NOT NULL);
+--
+-- Create model Persona
+--
+CREATE TABLE "precios_persona" ("id" serial NOT NULL PRIMARY KEY, "codigo" varchar(8) NOT NULL, "description" varchar(255) NOT NULL, "es_persona_moral" boolean NOT NULL, "es_proveedor" boolean NOT NULL, "es_cliente" boolean NOT NULL);
+--
+-- Create model Producto
+--
+CREATE TABLE "precios_producto" ("id" serial NOT NULL PRIMARY KEY, "codigoInterno" varchar(20) NOT NULL UNIQUE, "codigoProveedor" varchar(50) NOT NULL, "persona_id" integer NULL, "categoria_id" integer NULL, "barcode" varchar(30) NOT NULL, "description" varchar(255) NOT NULL, "descriptionCorta" varchar(255) NOT NULL, "existencia" integer NOT NULL, "minimoexist" integer NOT NULL, "maximoexist" integer NOT NULL, "precioCompra" numeric(5, 2) NOT NULL, "precioVenta" numeric(5, 2) NOT NULL, "ubicacion" varchar(255) NOT NULL, "unidadVenta" varchar(30) NOT NULL, "falta" timestamp with time zone NOT NULL, "fmodificacion" timestamp with time zone NULL, "puede_venderse" boolean NOT NULL);
+--
+-- Create model Plan
+--
+CREATE TABLE "precios_plan" ("id" serial NOT NULL PRIMARY KEY, "plan" varchar(20) NOT NULL, "description" varchar(255) NOT NULL, "monto" integer NOT NULL, "tipoplan" integer NOT NULL, "compania_id" integer NULL, "producto_id" integer NULL);
+--
+-- Create model Recarga
+--
+CREATE TABLE "precios_recarga" ("id" serial NOT NULL PRIMARY KEY, "plan_id" integer NULL, "celular" varchar(20) NULL, "monto" integer NOT NULL, "falta" timestamp with time zone NULL, "estatus" varchar(20) NOT NULL, "error" varchar(1024) NOT NULL, "codigoautorizacion" varchar(30) NOT NULL);
+ALTER TABLE "precios_categoria" ADD CONSTRAINT "precios_categoria_parent_id_aa2de760_fk_precios_categoria_id" FOREIGN KEY ("parent_id") REFERENCES "precios_categoria" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "precios_categoria_parent_id_aa2de760" ON "precios_categoria" ("parent_id");
+CREATE INDEX "precios_tipomovimiento_codigo_bc36da39_like" ON "precios_tipomovimiento" ("codigo" varchar_pattern_ops);
+ALTER TABLE "precios_movimiento" ADD CONSTRAINT "precios_movimiento_tipo_movimiento_id_d7375790_fk_precios_t" FOREIGN KEY ("tipo_movimiento_id") REFERENCES "precios_tipomovimiento" ("id") DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "precios_movimiento" ADD CONSTRAINT "precios_movimiento_user_id_d71f36a9_fk_auth_user_id" FOREIGN KEY ("user_id") REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "precios_movimiento_tipo_movimiento_id_d7375790" ON "precios_movimiento" ("tipo_movimiento_id");
+CREATE INDEX "precios_movimiento_user_id_d71f36a9" ON "precios_movimiento" ("user_id");
+ALTER TABLE "precios_detallemovimiento" ADD CONSTRAINT "precios_detallemovim_movimiento_id_8d98efa7_fk_precios_m" FOREIGN KEY ("movimiento_id") REFERENCES "precios_movimiento" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "precios_detallemovimiento_movimiento_id_8d98efa7" ON "precios_detallemovimiento" ("movimiento_id");
+ALTER TABLE "precios_producto" ADD CONSTRAINT "precios_producto_persona_id_adb5dd8a_fk_precios_persona_id" FOREIGN KEY ("persona_id") REFERENCES "precios_persona" ("id") DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "precios_producto" ADD CONSTRAINT "precios_producto_categoria_id_25897e29_fk_precios_categoria_id" FOREIGN KEY ("categoria_id") REFERENCES "precios_categoria" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "precios_producto_codigoInterno_13fa52f9_like" ON "precios_producto" ("codigoInterno" varchar_pattern_ops);
+CREATE INDEX "precios_producto_persona_id_adb5dd8a" ON "precios_producto" ("persona_id");
+CREATE INDEX "precios_producto_categoria_id_25897e29" ON "precios_producto" ("categoria_id");
+ALTER TABLE "precios_plan" ADD CONSTRAINT "precios_plan_compania_id_61d31bbe_fk_precios_compania_id" FOREIGN KEY ("compania_id") REFERENCES "precios_compania" ("id") DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "precios_plan" ADD CONSTRAINT "precios_plan_producto_id_a24c53aa_fk_precios_producto_id" FOREIGN KEY ("producto_id") REFERENCES "precios_producto" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "precios_plan_compania_id_61d31bbe" ON "precios_plan" ("compania_id");
+CREATE INDEX "precios_plan_producto_id_a24c53aa" ON "precios_plan" ("producto_id");
+ALTER TABLE "precios_recarga" ADD CONSTRAINT "precios_recarga_plan_id_9296c420_fk_precios_plan_id" FOREIGN KEY ("plan_id") REFERENCES "precios_plan" ("id") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "precios_recarga_plan_id_9296c420" ON "precios_recarga" ("plan_id");
+COMMIT;

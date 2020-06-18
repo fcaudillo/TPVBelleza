@@ -132,7 +132,7 @@ class Producto (models.Model):
    id = models.AutoField(primary_key=True)
    codigoInterno = models.CharField(max_length=20, unique=True)
    codigoProveedor = models.CharField(max_length=50)
-   barcode = models.CharField(max_length =30, unique=True)
+   barcode = models.CharField(max_length =30, unique=False)
    persona = models.ForeignKey(Persona, models.SET_NULL, blank=True, null=True)
    description = models.CharField(max_length=255)
    descriptionCorta = models.CharField(max_length=255)

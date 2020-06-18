@@ -413,8 +413,8 @@ class LoadData:
        pos_unidad_venta = ord(worksheet.cell(11,1).value) - ord('A') 
        pos_ubicacion = ord(worksheet.cell(12,1).value) - ord('A')
        pos_categoria = ord(worksheet.cell(13,1).value) - ord('A')
-       pos_inicio = worksheet.cell(14,1).value
-       pos_final = worksheet.cell(15,1).value
+       pos_inicio = int(worksheet.cell(14,1).value)
+       pos_final = int(worksheet.cell(15,1).value)
        print "codigoProveedor = ", pos_codigo_proveedor 
        worksheet = workbook.sheet_by_name('Productos')
        #pos_inicio = int(3 if pos_inicio == -1 else pos_inicio - 1)
