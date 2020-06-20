@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+#from __future__ import unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -21,8 +22,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.db import connection
-from celery import  Celery
-from kombu import Connection, Exchange, Queue, Producer
+#from celery import Celery
+#from kombu import Connection, Exchange, Queue, Producer
 from tasks import recarga, consultaSaldo 
 import sys
 from django.apps import apps
@@ -413,12 +414,9 @@ class LoadData:
        pos_unidad_venta = ord(worksheet.cell(11,1).value) - ord('A') 
        pos_ubicacion = ord(worksheet.cell(12,1).value) - ord('A')
        pos_categoria = ord(worksheet.cell(13,1).value) - ord('A')
-       pos_inicio = worksheet.cell(14,1).value
-       pos_final = worksheet.cell(15,1).value
-       print "codigoProveedor = ", pos_codigo_proveedor 
+       pos_inicio = int(worksheet.cell(14,1).value) - 1
+       pos_final = int(worksheet.cell(15,1).value)
        worksheet = workbook.sheet_by_name('Productos')
-       #pos_inicio = int(3 if pos_inicio == -1 else pos_inicio - 1)
-       #pos_final = int(worksheet.nrows if pos_final == -1 else pos_final)
        proveedor = worksheet.cell(0,1).value
        for rx in range(pos_inicio,pos_final): 
          codigo_barras = worksheet.cell(rx,pos_codigo_barras).value;
@@ -459,7 +457,7 @@ class LoadData:
          if type(worksheet.cell(rx,pos_maximoexist).value) is float:
             maximoexist = worksheet.cell(rx,pos_maximoexist).value
          ubicacion = worksheet.cell(rx,pos_ubicacion).value
-         categoria = Categoria.objects.filter(codigo='UNK')[0]
+         categoria = Categoria.objects.filter(codigo=worksheet.cell(rx,pos_categoria).value)[0]
          persona = Persona.objects.filter(codigo=worksheet.cell(0,1).value)[0]
          if type(worksheet.cell(rx,pos_categoria).value) is str: 
             cat_tmp = worksheet.cell(rx,pos_categoria).value 
@@ -474,14 +472,9 @@ class LoadData:
        productos = self.obtener_lista_prod_excel(self.pathfile,0, 1, 2, 3,4,5,6,7,8,9, 3,-1)
        for producto in productos:
           print producto  
-          lst_cat_categoria = list(Categoria.objects.filter(codigo=producto['categoria']))
-          if len(lst_cat_categoria) == 0:
-             cat_categoria = list(Categoria.objects.filter(codigo='UNK'))[0]
-          else :
-             cat_categoria = lst_cat_categoria[0]	
           #producto['codigo'] = calcular_codigo_barras(producto['codigo'])
           producto['codigo'] = producto['codigo'] if producto['codigo'] else producto['codigoInterno']
-          Producto.objects.create(barcode=producto['codigo'],codigoProveedor=producto['codigoProveedor'],codigoInterno=producto['codigoInterno'],description=producto['producto'], descriptionCorta=producto['descriptionCorta'],unidadVenta=producto['unidadVenta'], existencia=producto['existencia'],precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'], categoria = cat_categoria, ubicacion=producto['ubicacion'], minimoexist=producto['puntoreorden'],maximoexist=producto['maximoexist'],persona=producto['persona'],falta=datetime.datetime.now())		  
+          Producto.objects.create(barcode=producto['codigo'],codigoProveedor=producto['codigoProveedor'],codigoInterno=producto['codigoInterno'],description=producto['producto'], descriptionCorta=producto['descriptionCorta'],unidadVenta=producto['unidadVenta'], existencia=producto['existencia'],precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'], categoria = producto['categoria'], ubicacion=producto['ubicacion'], minimoexist=producto['puntoreorden'],maximoexist=producto['maximoexist'],persona=producto['persona'],falta=datetime.datetime.now())		  
        return 1       	
    
    
