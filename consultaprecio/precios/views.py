@@ -218,6 +218,7 @@ def reporte_diario(request):
 @login_required
 def find_movimiento(request,fechaIni, fechaFin):
     result = [];
+    print "Estoy en find_movimiento"
     fini = datetime.datetime.strptime(fechaIni  + ' 0:0:0','%d/%m/%Y %H:%M:%S')
     ffin = datetime.datetime.strptime(fechaFin  + ' 23:59:59','%d/%m/%Y %H:%M:%S')
     lista = list(Movimiento.objects.filter(fecha__time__range=(fini,ffin)).order_by('tipo_movimiento__prioridad'))
@@ -252,12 +253,12 @@ def  resumen_movimiento(request,fechaIni, fechaFin):
     fini = datetime.datetime.strptime(fi  + ' 0:0:0','%Y/%m/%d %H:%M:%S')
     ffin = datetime.datetime.strptime(ff  + ' 23:59:59','%Y/%m/%d %H:%M:%S')
     sql = """
-             select date(m.fecha) as fecha, tm.description, sum(m.total * tm.factor_conta) as total
+             select to_char(date(m.fecha),'DD/MM/YYYY') as fecha, tm.description, sum(m.total * tm.factor_conta) as total
                from precios_movimiento m inner join precios_tipomovimiento tm
                                             on m.tipo_movimiento_id = tm.id
              where fecha between '%s' and '%s'
                and tm.prioridad in (2,3,4,5)
-             group by date(fecha), tipo_movimiento_id
+             group by date(fecha), tm.description
              order by 2
           """ % (fini, ffin)
     print sql
@@ -265,7 +266,7 @@ def  resumen_movimiento(request,fechaIni, fechaFin):
     cursor.execute(sql, [])
     items = cursor.fetchall()
     for item in items:
-      dat = {'fecha': item[0] , "TipoMovimiento"  : item[1],  "total" : item[2] }
+      dat = {'fecha': item[0] , "TipoMovimiento"  : item[1],  "total" : float(item[2]) }
       result.append(dat)
 
     return HttpResponse(json.dumps(result), content_type='application/json')
