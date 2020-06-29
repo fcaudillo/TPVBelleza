@@ -379,9 +379,14 @@ $(document).ready(function() {
 						if (!value) {
 							return 'Cantidad es requerida';
 						}
-						if (!/^[0-9]*$/.test(value)) {
-							return 'Ingrese una cantida correcta'
-						}
+						//if (!/^[0-9]*$/.test(value)) {
+					        //		return 'Ingrese una cantida correcta'
+						//}
+                                                var valid = !isNaN(value);
+                                                if (!valid) {
+
+                                                   return 'Ingrese una cantidad correcta'
+                                                }
 						var data = $('#ventaTabla').bootstrapTable('getData'),
 							index = $(this).parents('tr').data('index');
 						data[index].cantidad = parseInt(value);

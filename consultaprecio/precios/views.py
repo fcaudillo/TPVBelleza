@@ -253,20 +253,27 @@ def  resumen_movimiento(request,fechaIni, fechaFin):
     fini = datetime.datetime.strptime(fi  + ' 0:0:0','%Y/%m/%d %H:%M:%S')
     ffin = datetime.datetime.strptime(ff  + ' 23:59:59','%Y/%m/%d %H:%M:%S')
     sql = """
-             select to_char(date(m.fecha),'DD/MM/YYYY') as fecha, tm.description, sum(m.total * tm.factor_conta) as total
-               from precios_movimiento m inner join precios_tipomovimiento tm
-                                            on m.tipo_movimiento_id = tm.id
-             where fecha between '%s' and '%s'
-               and tm.prioridad in (2,3,4,5)
-             group by date(fecha), tm.description
-             order by 2
+			  select to_char(date(m.fecha),'DD/MM/YYYY') as fecha, 
+			         tm."description" as description,
+					 sum(dm."precioCompra"  * tm."factor_conta") as totalCosto,
+			         sum(dm."precioVenta" * tm."factor_conta") as total,
+					 sum((dm."precioVenta" - dm."precioCompra") * tm."factor_conta") as totalGanancia
+			
+			   from precios_detallemovimiento dm inner join precios_movimiento m on
+			                         m.id = dm.movimiento_id
+			                                      inner join precios_tipomovimiento tm
+								on m.tipo_movimiento_id = tm.id  
+			  where tm.prioridad in (2,3,4,5)
+			    and m.fecha between  '%s' and '%s'
+			  group by date(m.fecha), tm."description"
+                          order by 1,2
           """ % (fini, ffin)
     print sql
     cursor = connection.cursor()
     cursor.execute(sql, [])
     items = cursor.fetchall()
     for item in items:
-      dat = {'fecha': item[0] , "TipoMovimiento"  : item[1],  "total" : float(item[2]) }
+      dat = {'fecha': item[0] , "TipoMovimiento"  : item[1],  "totalVenta" : float(item[3]), "totalCosto":float(item[2]), "totalGanancia": float(item[4]) }
       result.append(dat)
 
     return HttpResponse(json.dumps(result), content_type='application/json')
@@ -288,7 +295,7 @@ def find_all(request):
 
 def do_paginate(data_list, page_number):
     ret_data_list = data_list
-    result_per_page = 4
+    result_per_page = 500
     paginator = Paginator(data_list, result_per_page)
     try:
         ret_data_list = paginator.page(page_number)

@@ -1,11 +1,14 @@
 
 function calculaGranTotal(data) {
-	var total = 0;
+	var totalVenta = 0;
+        var totalCosto = 0;
+        var totalGanancia = 0;
 	for (item in data) {
-		totalTmp = data[item].total;
-		total = total + totalTmp;  
+		totalVenta = totalVenta + data[item].totalVenta;  
+                totalCosto = totalCosto + data[item].totalCosto;
+                totalGanancia = totalGanancia + (totalVenta - totalCosto);
 	}	
-	return total;
+	return {'totalCosto':totalCosto,'totalVenta': totalVenta,'totalGanancia': totalGanancia}
 }
 
 function inicializa_table_ventas() {
@@ -17,10 +20,17 @@ function inicializa_table_ventas() {
 			}, {
                             field: 'TipoMovimiento',
                             title: 'Movimiento'
-                        }, {
-                            field: 'total',
-                            title: 'Total'
-			}],
+                        },{
+                          field: 'totalCosto',
+                          title: 'Total costo'
+                          }, {
+                            field: 'totalVenta',
+                            title: 'Total Venta'
+			  }, {
+                            field: 'totalGanancia',
+                            title: 'Total ganancia'
+                           }
+                        ],
 			//data: result,
 			search : true,
 			pagination: true,
@@ -41,9 +51,11 @@ function consultaResumenDiario() {
         var fini = $('#fechaIni').val()
         var ffin = $('#fechaFin').val(); 
 	$.getJSON("resumenmovimiento/" + fini + "/" + ffin + "/", function(result){
-           total = calculaGranTotal(result);
+           totales  = calculaGranTotal(result);
            $('#ventaTabla').bootstrapTable('load',result);
-           $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
+           $tableVenta.find("tfoot").find(".granTotalCosto").text(Number(totales.totalCosto).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
+           $tableVenta.find("tfoot").find(".granTotalVenta").text(Number(totales.totalVenta).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
+           $tableVenta.find("tfoot").find(".granTotalGanancia").text(Number(totales.totalGanancia).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 	});  
 }
 
