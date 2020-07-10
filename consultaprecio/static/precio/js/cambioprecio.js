@@ -330,6 +330,12 @@ $(document).ready(function() {
 	
 	 $("#testTabla").on("click-cell.bs.table", function (field, value, row, $el) {
 		if (value =="agregar"){
+                        tipo_movimiento = $('#tipoMov').val(),
+                        cantidadMod = 1
+                        //Es un cambio de precio 'MOD' cambiar el select para que me traiga el codigo de tipo_mov
+                        if (tipo_movimiento == '7') {
+                           cantidadMod = $el.existencia
+                        }
 				
 			var data = $tableVenta.bootstrapTable('getData');
 			var index_item = $tableVenta.find("[data-barcode='" + $el.barcode + "']").closest("tr").attr('data-index');
@@ -337,13 +343,13 @@ $(document).ready(function() {
 				$tableVenta.bootstrapTable('insertRow', {
 					index: data.length,
 					row: {
-						cantidad: 1,
+						cantidad: cantidadMod,
 						barcode: $el.barcode,
                                                 ubicacion: $el.ubicacion,
 						description: $el.description,
                                                 precioCompra: $el.precioCompra,
 						precioVenta: $el.precioVenta,
-						total: $el.precioCompra * 1
+						total: $el.precioCompra * cantidadMod
 					}
 				});	
                 $tableVenta.bootstrapTable('scrollTo', 'bottom');
@@ -479,6 +485,7 @@ $(document).ready(function() {
 		   alert ('No se puede agregar al ticket');
            return;		   
 		}
+
 		$tableVenta.bootstrapTable('insertRow', {
 			index: data.length,
 			row: {
@@ -486,7 +493,7 @@ $(document).ready(function() {
 				barcode: ean.barcode,
 				description: ean.description,
 				precioVenta: ean.precioVenta,
-				total: ean.precioVenta * 1
+				total: ean.precioVenta * 1 
 			}
 		});	
 		var data = $tableVenta.bootstrapTable('getData');
@@ -503,7 +510,8 @@ $(document).ready(function() {
 			   tipo_movimiento : $('#tipoMov').val(),
 			   total : calculaGranTotal(data),
                            descripcion : $('#mov_description').val(),
-			   items : data
+			   items : data,
+                           tipo_impresion : 0
 			}
 			var jsonData = JSON.stringify(ticket);
 		    $.ajax({

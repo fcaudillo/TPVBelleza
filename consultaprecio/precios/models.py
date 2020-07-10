@@ -34,6 +34,8 @@ class MovimientoManager(models.Manager):
            producto.ubicacion = item['ubicacion']
            producto.description = item['description']
            producto.existencia = producto.existencia + (item['cantidad'] * tipo_mov.factor)
+           if tipo_mov.codigo == 'MOD':
+             producto.existencia = item['cantidad']
            print "Existencia actual ", producto.existencia
            producto.save()
            print "Guardo el producto"

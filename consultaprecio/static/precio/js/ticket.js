@@ -514,6 +514,10 @@ $(document).ready(function() {
 				$('.precioProductoLabel').text(Number(result.precioVenta).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 				ean = result;
 				$("#myModal").modal('show')
+                                setTimeout(function() {
+                                   $('#btnAdd').focus()
+                                },300);
+
                         });
 	  
 			return false;
@@ -529,6 +533,20 @@ $(document).ready(function() {
             VENTA_SIN_TICKET = 0
             registrarVenta(VENTA_SIN_TICKET)
         });	
+
+
+        $('#bthAdd').on('keydown',function(e) {
+           if (e.which == 13) {
+              $('#bntAdd').click()
+           }
+
+           if (e.which == 27) {
+               $('#myModal').modal('hide')
+               $('#codigobarras').val('')
+               $('#codigobarras').focus()
+           }
+        })
+
 
 	$('#btnAdd').on('click', function(evt) {
 		var data = $tableVenta.bootstrapTable('getData');
@@ -552,6 +570,8 @@ $(document).ready(function() {
 		$tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 		$tableVenta.bootstrapTable('scrollTo', 'bottom');
 		$("#myModal").modal('hide');
+                $('#codigobarras').val('')
+                $('#codigobarras').focus()
 		evt.stopPropagation();
 	});
 
