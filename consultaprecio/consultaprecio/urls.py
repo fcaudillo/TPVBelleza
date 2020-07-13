@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from precios.views import FindProductView, FindView, ChangeProductView,PrintLabelView,ImportCatalogView, RecargaTaeView,ReporteRecargaView, RecargaDatosTaeView
-from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas, download, upload_file, login_view, logout_view, resumen_movimiento, reporte_diario, recargatae , recargas_periodo, obtenerSaldo, find_products, on_line
+from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas,genera_etiquetas_mediana, download, upload_file, login_view, logout_view, resumen_movimiento, reporte_diario, recargatae , recargas_periodo, obtenerSaldo, find_products, on_line
 from django.contrib.auth.decorators import login_required
 
 
@@ -38,7 +38,8 @@ urlpatterns = [
         url('find_products/',find_products,name='find_products'),
 	url('tickets/add',guarda_ticket, name='ticket_add'),
         url('producto/add',guarda_producto,name='producto_add'),
-        url('genera_etiquetas',genera_etiquetas,name='genera_etiquetas'),
+        url('genera_etiquetas/$',genera_etiquetas,name='genera_etiquetas'),
+        url('genera_etiquetas_mediana/$',genera_etiquetas_mediana,name='genera_etiquetas_mediana'),
 	url('encuentra/(?P<barcode>\w+)/$',FindView.as_view(),name='encuentra'),
 	url(r'consulta/',login_required(FindProductView.as_view()),name='consulta'),
 	url(r'cambioprecio/',login_required(ChangeProductView.as_view()),name='cambioprecio'),

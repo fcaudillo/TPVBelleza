@@ -23,7 +23,7 @@ def genera_barcode(codigo, filename):
    if len(codigo) == 13:
        ean = barcode.get('ean13',codigo,writer=ImageWriter())
    else:   
-       options = dict(dpi=300,module_height=10,center_text=True, text_distance=1, font_size=12)
+       options = dict(dpi=300,module_height=5,center_text=True, text_distance=1, font_size=12)
        ean = barcode.get('code128',codigo,writer=ImageWriter())
     
    return ean.save(filename,options)
@@ -41,7 +41,7 @@ def genera_etiqueta (producto, medidas, codigo = None):
   styleRowEmpty = ParagraphStyle(
         name='Normal',
         spaceAfter=0,
-        fontSize=3,
+        fontSize=8,
     )
 
   print "Producto ", producto
@@ -52,7 +52,7 @@ def genera_etiqueta (producto, medidas, codigo = None):
   style2 = ParagraphStyle(
         name='Normal',
         spaceAfter=4,
-        fontSize=14,
+        fontSize=16,
     )
   texto2 = '''<para align=center> 
                 {}
@@ -138,7 +138,7 @@ def generate_page_pdf(productos_por_pagina,page_renglones, page_columnas):
                 ]))
     return t; 
 
-def generar_etiquetas(file_output,lista_productos,page_renglones, page_columnas, start_position = "a1"):
+def generar_etiquetas_mediana(file_output,lista_productos,page_renglones, page_columnas, start_position = "a1"):
    etiquetas = []
    etiquetas_x_hoja = page_renglones * page_columnas
    doc = SimpleDocTemplate(file_output, pagesize=letter)
@@ -172,7 +172,7 @@ def generar_etiquetas(file_output,lista_productos,page_renglones, page_columnas,
 if __name__ == "__main__":
    lista_productos = obtener_lista_productos()
    archivo = '/app/app/TPVBelleza/salida_mediana.pdf'
-   generar_etiquetas(archivo,lista_productos,10,3,'a1') 
+   generar_etiquetas_mediana(archivo,lista_productos,10,3,'a1') 
 
 
 

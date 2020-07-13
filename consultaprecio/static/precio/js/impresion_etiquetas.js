@@ -11,7 +11,10 @@ $(document).ready(function() {
 						  },
 				
 				title: 'eliminar'
-			}, {
+			},{
+                                field: 'codigointerno',
+                                title: 'codigo Int.'  
+                         }, {
 				field: 'barcode',
 				
 				formatter: function(value, row, index) {
@@ -93,7 +96,10 @@ $(document).ready(function() {
 						  },
 				
 				title: 'codebar'
-			}, {
+			},{
+                                field: 'codigointerno',
+                                title: 'codigo Int'  
+                        }, {
 				field: 'barcode',
 				
 				formatter: function(value, row, index) {
@@ -144,6 +150,7 @@ $(document).ready(function() {
 					index: data.length,
 					row: {
 						cantidad: 1,
+                                                codigointerno: $el.codigointerno,
 						barcode: $el.barcode,
                                                 ubicacion: $el.ubicacion,
 						description: $el.description,
@@ -167,6 +174,7 @@ $(document).ready(function() {
 					index: parseInt(index_item),
 					row: {
 						cantidad: parseInt(producto.cantidad) + 1,
+                                                codigointerno: $el.codigointerno,
 						barcode: $el.barcode,
 						precioVenta: $el.precioVenta,
 						total: (producto.cantidad + 1) * $el.precioVenta
@@ -222,6 +230,7 @@ $(document).ready(function() {
 			index: data.length,
 			row: {
 				cantidad: 1,
+                                codigointerno: ean.codigointerno,
 				barcode: ean.barcode,
 				description: ean.description,
 				precioVenta: ean.precioVenta,
@@ -243,7 +252,7 @@ $(document).ready(function() {
 		    $.ajax({
 				type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
 				dataType: 'json', // Set datatype - affects Accept header
-				url: "/genera_etiquetas", // A valid URL
+				url: "/genera_etiquetas/", // A valid URL
 				headers: {"X-HTTP-Method-Override": "PUT", "X-CSRFToken": $.cookie("csrftoken")}, // X-HTTP-Method-Override set to PUT.
 				data: jsonData, // Some data e.g. Valid JSON as a string
 				success: function (response) {
@@ -259,6 +268,36 @@ $(document).ready(function() {
 		   
 			return false;
 	});	
+
+
+
+	$( "#btnImpresionMediana" ).click(function() {
+		    var data = $tableImpresion.bootstrapTable('getData');
+			var impresion = {
+			   posicion : $('#posicion').val(),
+                           items : data
+			}
+			var jsonData = JSON.stringify(impresion);
+		    $.ajax({
+				type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
+				dataType: 'json', // Set datatype - affects Accept header
+				url: "/genera_etiquetas_mediana/", // A valid URL
+				headers: {"X-HTTP-Method-Override": "PUT", "X-CSRFToken": $.cookie("csrftoken")}, // X-HTTP-Method-Override set to PUT.
+				data: jsonData, // Some data e.g. Valid JSON as a string
+				success: function (response) {
+					$('#impresionTabla').bootstrapTable('removeAll');
+                                        window.open("/download/", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=500,left=500,width=400,height=400");
+
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					alert(xhr.status);
+					alert(thrownError);
+				}
+			});
+		   
+			return false;
+	});	
+
 
 })
 	

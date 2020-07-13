@@ -23,7 +23,7 @@ def genera_barcode(codigo, filename):
    if len(codigo) == 13:
        ean = barcode.get('ean13',codigo,writer=ImageWriter())
    else:   
-       options = dict(dpi=200,module_height=10,center_text=True, text_distance=2, font_size=0)
+       options = dict(dpi=200,module_height=4,center_text=True, text_distance=2, font_size=4)
        ean = barcode.get('code128',codigo,writer=ImageWriter())
     
    return ean.save(filename,options)

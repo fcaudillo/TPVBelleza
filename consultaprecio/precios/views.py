@@ -15,6 +15,7 @@ import os
 import datetime
 from precios.models import TipoMovimiento, Movimiento, Categoria, Compania, Plan, Recarga, Persona
 from precios.etiqueta_chica import generar_etiquetas, obtener_lista_productos
+from precios.etiqueta_mediana import generar_etiquetas_mediana
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.contrib.auth import authenticate, login
@@ -280,9 +281,13 @@ def  resumen_movimiento(request,fechaIni, fechaFin):
 
 @login_required
 def find_consulta(request,barcode):
-   productos = list(Producto.objects.filter(barcode=barcode))
+   #barcode =barcode.encode('ascii','ignore')
+   print 'barcode = ', barcode
+   productos = list(Producto.objects.filter(barcode=barcode.strip()))
    if len(productos) == 0:
-      return HttpResponse(status=204)
+      productos = list(Producto.objects.filter(codigoInterno=barcode.strip()))
+      if len(productos) == 0:
+         return HttpResponse(status=204)
    pr = productos[0]
    return HttpResponse(json.dumps(pr.as_dict()), content_type='application/json')  
 
@@ -354,6 +359,21 @@ def genera_etiquetas(request):
     
    return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
 
+
+@login_required
+def genera_etiquetas_mediana(request):
+   print "Imprimir etiquetas mediana"
+   data = json.loads(request.body)
+   print data
+   lista_productos=[]
+   for item in data['items']:
+      precio = '${:,.2f}'.format(item['precioVenta'])
+      lista_productos.append({'producto': item['description'], 'codigo': item['codigointerno'], 'medidas': precio, 'cantidad': item['cantidad'] }) 
+   #lista_productos = obtener_lista_productos()
+   archivo = os.getcwd()+'/generated/salida_dj.pdf'
+   generar_etiquetas_mediana(archivo,lista_productos,10,3,data['posicion'])  
+    
+   return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
 
 @login_required
 def guarda_producto(request):
@@ -435,11 +455,11 @@ class LoadData:
           
          codigoproveedor = worksheet.cell(rx,pos_codigoproveedor).value;
          if type(worksheet.cell(rx,pos_codigoproveedor).value) is float:
-           codigoproveedor = '%13.0f' % worksheet.cell(rx,pos_codigoproveedor).value
+           codigoproveedor = '%f' % worksheet.cell(rx,pos_codigoproveedor).value
 
          codigoInterno = worksheet.cell(rx,pos_codigo_interno).value
          if type(worksheet.cell(rx,pos_codigo_interno).value) is float:
-            codigoInterno = '%6.0f' % worksheet.cell(rx,pos_codigo_interno).value
+            codigoInterno = '%f' % worksheet.cell(rx,pos_codigo_interno).value
 
          if type(codigo_barras) is unicode:
             if codigo_barras == u'':

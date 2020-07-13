@@ -163,6 +163,7 @@ class Producto (models.Model):
    
    def as_dict(self):
       return {
+             'codigointerno': self.codigoInterno,
 	     'barcode': self.barcode,
 		 'description':self.description,
 		 'existencia':self.existencia,
