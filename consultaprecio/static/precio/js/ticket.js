@@ -513,7 +513,7 @@ $(document).ready(function() {
 				$('#descriptionProductoLabel').text(result.description);
 				$('.precioProductoLabel').text(Number(result.precioVenta).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
 				ean = result;
-				$("#myModal").modal('show')
+				$("#myModal").modal({show:true, backdrop:'static', keyboard:false})
                                 setTimeout(function() {
                                    $('#btnAdd').focus()
                                 },300);
@@ -535,11 +535,12 @@ $(document).ready(function() {
         });	
 
 
-        $('#bthAdd').on('keydown',function(e) {
+        $('#myModal').on('keypress',function(e) {
+          /*
            if (e.which == 13) {
               $('#bntAdd').click()
            }
-
+          */
            if (e.which == 27) {
                $('#myModal').modal('hide')
                $('#codigobarras').val('')
@@ -547,6 +548,12 @@ $(document).ready(function() {
            }
         })
 
+
+        $('#btnCancelModal').on('click',function(e) {
+               $('#myModal').modal('hide')
+               $('#codigobarras').val('')
+               $('#codigobarras').focus()
+        })
 
 	$('#btnAdd').on('click', function(evt) {
 		var data = $tableVenta.bootstrapTable('getData');
