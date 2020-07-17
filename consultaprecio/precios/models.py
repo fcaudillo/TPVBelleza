@@ -229,7 +229,7 @@ class Movimiento (models.Model):
     id = models.AutoField(primary_key=True)
     tipo_movimiento = models.ForeignKey(TipoMovimiento)
     description = models.CharField(max_length=255)
-    total = models.DecimalField(default=0, max_digits=5, decimal_places=2)
+    total = models.DecimalField(default=0, max_digits=8, decimal_places=2)
     fecha =  models.DateTimeField(blank=False, null=False)
     user =  models.ForeignKey(User,on_delete=models.SET_NULL, null=True) 
     objects = MovimientoManager()
