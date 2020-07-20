@@ -536,11 +536,6 @@ $(document).ready(function() {
 
 
         $('#myModal').on('keypress',function(e) {
-          /*
-           if (e.which == 13) {
-              $('#bntAdd').click()
-           }
-          */
            if (e.which == 27) {
                $('#myModal').modal('hide')
                $('#codigobarras').val('')
@@ -549,17 +544,36 @@ $(document).ready(function() {
         })
 
 
-        $('#btnCancelModal').on('click',function(e) {
+        $('#myModal').on('keypress',function(e) {
+           if (e.which == 27) {
+               $('#myModal').modal('hide')
+               $('#codigobarras').val('')
+               $('#codigobarras').focus()
+           }
+        })
+
+
+        $('#btnCancelModal').click(function() {
                $('#myModal').modal('hide')
                $('#codigobarras').val('')
                $('#codigobarras').focus()
         })
 
+        $('#btnAdd').on('keypress',function(e) {
+            if (e.which == 113 || e.which == 81) {  //tecla q y Q
+               $('#myModal').modal('hide')
+               $('#codigobarras').val('')
+               $('#codigobarras').focus()
+            }
+            e.preventDefault()
+        })
+
+
 	$('#btnAdd').on('click', function(evt) {
 		var data = $tableVenta.bootstrapTable('getData');
 		if (ean == null) {
 		   alert ('No se puede agregar al ticket');
-           return;		   
+                   return;		   
 		}
 		$tableVenta.bootstrapTable('insertRow', {
 			index: data.length,
