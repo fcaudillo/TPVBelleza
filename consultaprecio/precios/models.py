@@ -129,7 +129,6 @@ class Persona(models.Model):
        db_table = 'precios_persona' 
 
 
-
 class Producto (models.Model):
    id = models.AutoField(primary_key=True)
    codigoInterno = models.CharField(max_length=20, unique=True)
@@ -176,6 +175,29 @@ class Producto (models.Model):
    class Meta:
        managed = False
        db_table = 'precios_producto' 
+
+
+
+class ProductoProveedor(models.Model):
+   id = models.AutoField(primary_key=True)
+   proveedor = models.ForeignKey(Persona, null=False) 
+   producto = models.ForeignKey(Producto, null=False)
+   codigoProveedor = models.CharField(max_length=50, unique=True)
+   descActualProveedor = models.CharField(max_length=200)
+   descAnteriorProveedor = models.CharField(max_length=200)
+   unidadCompra = models.CharField(max_length=30)
+   precioCompra = models.DecimalField(max_digits=6, decimal_places=2)
+   cantPorUnidadCompra =  models.DecimalField(max_digits=5, decimal_places=2)
+   cantMinimaCompra = models.DecimalField(max_digits=6, decimal_places=2,default=1)
+   puntuacionCambio = models.IntegerField(default=0)
+
+class HistoriaPrecioProveedor(models.Model):
+   id = models.AutoField(primary_key=True)
+   fechaLista = models.DateTimeField(blank=False, null=False)
+   productoProveedor = models.ForeignKey(ProductoProveedor, null=False) 
+   precioCompra = models.DecimalField(max_digits=6, decimal_places=2, null = False)
+
+
 
 
 class Plan(models.Model):
