@@ -17,8 +17,8 @@ styleSheet = getSampleStyleSheet()
 
 def genera_barcode(codigo, filename):
    options = dict(dpi=300,module_height=18,center_text=True, text_distance=2, font_size=0)
-   codigo  = codigo.strip();
    print "Codigo barrar a generar ", codigo
+   codigo  = codigo.strip();
    ean = None 
    if len(codigo) == 13:
        ean = barcode.get('ean13',codigo,writer=ImageWriter())
