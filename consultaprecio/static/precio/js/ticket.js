@@ -27,6 +27,9 @@ function inicializa_table_products() {
                         }, {
                             field: 'ubicacion',
                             title: 'ubicacion'
+                        }, Â{
+                            field: 'codigoInterno',
+                            title: '#Cod'
                         },
                         {
 				field: 'barcode',
