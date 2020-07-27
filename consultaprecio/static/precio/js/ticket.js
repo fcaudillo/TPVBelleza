@@ -28,7 +28,7 @@ function inicializa_table_products() {
                             field: 'ubicacion',
                             title: 'ubicacion'
                         }, {
-                            field: 'codigoInterno',
+                            field: 'codigointerno',
                             title: '#Cod'
                         },
                         {
