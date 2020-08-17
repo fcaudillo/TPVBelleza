@@ -485,6 +485,7 @@ class LoadData:
          if type(worksheet.cell(rx,pos_maximoexist).value) is float:
             maximoexist = worksheet.cell(rx,pos_maximoexist).value
          ubicacion = worksheet.cell(rx,pos_ubicacion).value
+         print "codigo interno  ", worksheet.cell(rx,pos_codigo_interno).value
          categoria = Categoria.objects.filter(codigo=worksheet.cell(rx,pos_categoria).value)[0]
          persona = Persona.objects.filter(codigo=worksheet.cell(0,1).value)[0]
          if type(worksheet.cell(rx,pos_categoria).value) is str: 

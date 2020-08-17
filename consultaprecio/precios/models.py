@@ -182,7 +182,7 @@ class ProductoProveedor(models.Model):
    id = models.AutoField(primary_key=True)
    proveedor = models.ForeignKey(Persona, null=False) 
    producto = models.ForeignKey(Producto, null=False)
-   codigoProveedor = models.CharField(max_length=50, unique=True)
+   codigoProveedor = models.CharField(max_length=50, null=False)
    descActualProveedor = models.CharField(max_length=200)
    descAnteriorProveedor = models.CharField(max_length=200)
    unidadCompra = models.CharField(max_length=30)
@@ -190,14 +190,27 @@ class ProductoProveedor(models.Model):
    cantPorUnidadCompra =  models.DecimalField(max_digits=5, decimal_places=2)
    cantMinimaCompra = models.DecimalField(max_digits=6, decimal_places=2,default=1)
    puntuacionCambio = models.IntegerField(default=0)
+   
+   class Meta:
+      unique_together = (('proveedor','codigoProveedor')),
+      indexes = [
+          models.Index(fields=['proveedor','codigoProveedor']),
+      ]
+
 
 class HistoriaPrecioProveedor(models.Model):
    id = models.AutoField(primary_key=True)
-   fechaLista = models.DateTimeField(blank=False, null=False)
-   productoProveedor = models.ForeignKey(ProductoProveedor, null=False) 
+   fechaLista = models.DateField(blank=False, null=False)
+   proveedor = models.ForeignKey(Persona, null=False) 
+   codigoProveedor = models.CharField(max_length=50,null=False)
+   descripcion = models.CharField(max_length=200,null=False)
    precioCompra = models.DecimalField(max_digits=6, decimal_places=2, null = False)
 
-
+   class Meta:
+      unique_together = (('fechaLista','proveedor','codigoProveedor')),
+      indexes = [
+          models.Index(fields=['fechaLista','proveedor','codigoProveedor']),
+      ]
 
 
 class Plan(models.Model):

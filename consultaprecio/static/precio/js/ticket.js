@@ -392,7 +392,7 @@ $(document).ready(function() {
                                                 }
 						var data = $('#ventaTabla').bootstrapTable('getData'),
 							index = $(this).parents('tr').data('index');
-						data[index].cantidad = parseInt(value);
+						data[index].cantidad = parseFloat(value);
 						data[index].total = data[index].cantidad * data[index].precioVenta;
 						$tableVenta.bootstrapTable('updateRow', {
 							index: parseInt(index),
