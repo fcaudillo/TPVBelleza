@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 import datetime
 from django.db.models.signals import post_save, post_init
 from django.apps import apps
+from decimal import Decimal
 
 miapp = apps.get_app_config('precios')
 
@@ -33,7 +34,7 @@ class MovimientoManager(models.Manager):
            producto.precioCompra = item['precioCompra']
            producto.ubicacion = item['ubicacion']
            producto.description = item['description']
-           producto.existencia = producto.existencia + (item['cantidad'] * tipo_mov.factor)
+           producto.existencia = producto.existencia + (Decimal(item['cantidad']) * tipo_mov.factor)
            if tipo_mov.codigo == 'MOD':
              producto.existencia = item['cantidad']
            print "Existencia actual ", producto.existencia
