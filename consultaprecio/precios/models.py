@@ -26,7 +26,7 @@ class MovimientoManager(models.Manager):
          print 'MovimientoManager', tipo_mov
          
          if tipo_mov.codigo == 'VTA':
-            producto.existencia = producto.existencia + (item['cantidad'] * tipo_mov.factor)
+            producto.existencia = producto.existencia + (Decimal(item['cantidad']) * tipo_mov.factor)
             producto.save()
 
          if tipo_mov.codigo != 'VTA':
