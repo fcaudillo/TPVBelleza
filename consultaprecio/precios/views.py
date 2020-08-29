@@ -29,6 +29,7 @@ from tasks import recarga, consultaSaldo
 import sys
 from django.apps import apps
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from cgi import escape
 
 miapp = apps.get_app_config('precios')
 
@@ -528,7 +529,10 @@ class FindProductView(TemplateView):
       vta = TipoMovimiento.objects.filter(codigo='VTA')[0]
       list_grupos = list(self.request.user.groups.all()); 
       nombres_grupos = [item.name for item in list_grupos] 
-      context['nombre_cliente'] = miapp.getConfiguracion().get('CLIENTE_NOMBRE')
+      context['nombre_cliente'] = escape(miapp.getConfiguracion().get('CLIENTE_NOMBRE'))
+      context['ticket_pie'] = escape(miapp.getConfiguracion().get('TICKET_PIE'))
+      context['cliente_giro'] = miapp.getConfiguracion().get('CLIENTE_GIRO')
+      context['cliente_direccion'] = escape(miapp.getConfiguracion().get('CLIENTE_DIRECCION'))
       context['tipo_movimiento'] = vta
       context['pantalla'] = 'ventas'
       context['es_master'] = True if 'Master' in nombres_grupos else False;

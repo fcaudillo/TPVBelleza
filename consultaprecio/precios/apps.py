@@ -11,7 +11,7 @@ class PreciosConfig(AppConfig):
       all_tables = connection.introspection.table_names()
       if 'precios_configuracion' in all_tables:
         print ("Existe precios_configuracion in alltables")
-        #fdcp 16/jun/2020 self.refreshConfiguracion()
+        self.refreshConfiguracion()
 
     def getConfiguracion(self):
       return self.configuracion

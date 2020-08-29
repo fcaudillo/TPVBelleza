@@ -528,7 +528,20 @@ $(document).ready(function() {
 
         $('#btnVentaConTicket').click(function() {
             VENTA_CON_TICKET = 1
-            registrarVenta(VENTA_CON_TICKET)
+            //registrarVenta(VENTA_CON_TICKET)
+
+$.ajax({
+	url: 'http://localhost:5000/print',
+	success: function(respuesta) {
+		console.log(respuesta);
+                alert(respuesta);
+	},
+	error: function(e) {
+        alert("error obtener informacion");
+        console.log("No se ha podido obtener la información");
+    }
+});
+
         });	
 
 
