@@ -60,17 +60,18 @@ function inicializa_table_products() {
 				field: 'agregar',
 				
 				formatter: function(value, row, index) {
-							//return '<i class="glyphicon glyphicon-ok-sign" onclick="agregar($(this))" ></i>';
-							return '<i class="glyphicon glyphicon-shopping-cart" data-barcode="' + row.barcode + '" ></i>';
+							return '<i class="glyphicon glyphicon-shopping-cart" data-codigointerno="' + row.codigointerno + '" ></i>';
 						  },
 				
-				title: 'codebar'
+				title: 'codigointerno'
 			}, {  
                                 field: 'existencia',
                                 title: 'existencia'
                         }, {
                                 field: 'ubicacion',
                                 title: 'ubicacion'
+                        },{ field:'codigointerno',
+                            title: '#Cod. Interno'
                         },  {
 				field: 'barcode',
 				
@@ -124,6 +125,11 @@ function fill_table_products() {
 	});  
 }
 
+function esc_comillas(text)
+{
+    return text.replace('"', '\"');
+}
+
 $(document).ready(function() {
         $.extend($.fn.bootstrapTable.defaults, $.fn.bootstrapTable.locales['es-MX']);
         inicializa_table_products();
@@ -133,11 +139,13 @@ $(document).ready(function() {
 				field: 'eliminar',
 				
 				formatter: function(value, row, index) {
-							return '<i class="glyphicon glyphicon-remove" data-barcode="' + row.barcode + '" ></i>';
+							return '<i class="glyphicon glyphicon-remove" data-codigointerno="' + row.codigointerno + '" ></i>';
 						  },
 				
 				title: 'eliminar'
-			}, {
+			},{ field: 'codigointerno',
+                            title: '#Cod Interno'
+                        }, {
 				field: 'barcode',
 				
 				formatter: function(value, row, index) {
@@ -266,10 +274,8 @@ $(document).ready(function() {
 				}
 
                         },{
-				field: 'precioVenta',
-				sortable: true,
 				title: 'Precio venta',
-
+                                field: 'precioVenta',
 				editable: {
 					type: 'text',
 					title: 'Precio venta',
@@ -332,21 +338,22 @@ $(document).ready(function() {
 		if (value =="agregar"){
                         tipo_movimiento = $('#tipoMov').val(),
                         cantidadMod = 1
-                        //Es un cambio de precio 'MOD' cambiar el select para que me traiga el codigo de tipo_mov
+                        //aa Es un cambio de precio 'MOD' cambiar el select para que me traiga el codigo de tipo_mov
                         if (tipo_movimiento == '7') {
                            cantidadMod = $el.existencia
                         }
 				
 			var data = $tableVenta.bootstrapTable('getData');
-			var index_item = $tableVenta.find("[data-barcode='" + $el.barcode + "']").closest("tr").attr('data-index');
+			var index_item = $tableVenta.find("[data-codigointerno='" + $el.codigointerno + "']").closest("tr").attr('data-index');
 			if (typeof(index_item) == 'undefined') {
 				$tableVenta.bootstrapTable('insertRow', {
 					index: data.length,
 					row: {
 						cantidad: cantidadMod,
+                                                codigointerno: $el.codigointerno,
 						barcode: $el.barcode,
                                                 ubicacion: $el.ubicacion,
-						description: $el.description,
+						description: esc_comillas($el.description),
                                                 precioCompra: $el.precioCompra,
 						precioVenta: $el.precioVenta,
 						total: $el.precioCompra * cantidadMod
@@ -360,7 +367,7 @@ $(document).ready(function() {
 				var producto = null;
 				for (item in data) {
 					producto = data[item];
-					if (producto.barcode == $el.barcode) {
+					if (producto.codigointerno == $el.codigointerno) {
 					   break;
 					}   
 				}
@@ -385,10 +392,10 @@ $(document).ready(function() {
 	 $("#ventaTabla").on("click-cell.bs.table", function (field, value, row, $el) {
 		if (value =="eliminar"){
 			
-			var index_item = $tableVenta.find("[data-barcode='" + $el.barcode + "']").closest("tr").attr('data-index');
+			var index_item = $tableVenta.find("[data-codigointerno='" + $el.codigointerno + "']").closest("tr").attr('data-index');
 			if (typeof(index_item) != 'undefined') {
 				//var del_data = { field:'id', values : [parseInt(index_item)] };
-				var del_data = { field:'barcode', values : [$el.barcode] };
+				var del_data = { field:'codigointerno', values : [$el.codigointerno] };
 				$tableVenta.bootstrapTable('remove', del_data);					
 			}
 			var data = $tableVenta.bootstrapTable('getData');
@@ -490,6 +497,7 @@ $(document).ready(function() {
 			index: data.length,
 			row: {
 				cantidad: 1,
+                                codigointerno: ean.codigointerno,
 				barcode: ean.barcode,
 				description: ean.description,
 				precioVenta: ean.precioVenta,

@@ -21,7 +21,7 @@ class MovimientoManager(models.Manager):
       totalVenta = 0
       for item in data['items']:
          item['movimiento'] = mov.id
-         producto = Producto.objects.filter(barcode=item['barcode'])[0]
+         producto = Producto.objects.filter(codigoInterno=item['codigointerno'])[0]
 
          print 'MovimientoManager', tipo_mov
          
@@ -56,7 +56,7 @@ class DetalleMovimientoManager(models.Manager):
       tipo_movimiento = data['__tipo_movimiento']
       precioVenta = data['cantidad'] * data['precioVenta']
       precioCompra = data['cantidad'] * data['precioCompra']
-      det = self.create(movimiento = movimiento, barcode = data['barcode'], description = data['description'], cantidad = data['cantidad'], precioCompra = precioCompra, precioVenta = precioVenta)
+      det = self.create(movimiento = movimiento, barcode = data['codigointerno'], description = data['description'], cantidad = data['cantidad'], precioCompra = precioCompra, precioVenta = precioVenta)
       return det
 
 class Configuracion(models.Model):

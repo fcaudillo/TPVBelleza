@@ -282,7 +282,6 @@ def  resumen_movimiento(request,fechaIni, fechaFin):
 
 @login_required
 def find_consulta(request,barcode):
-   #barcode =barcode.encode('ascii','ignore')
    print 'barcode = ', barcode
    productos = list(Producto.objects.filter(barcode=barcode.strip()))
    if len(productos) == 0:
@@ -396,14 +395,9 @@ def guarda_ticket(request):
      print received_json_data
      current_user = request.user
      mov = Movimiento.objects.create_from_json(received_json_data, current_user)
-     if received_json_data['tipo_impresion'] == 1:
-       try:
-         send_object = mov.as_dict_tpv()
-         send_object['tipo_impresion'] = received_json_data['tipo_impresion']
-         send_to_print("Ventas","print_ticket",send_object)
-       except Exception as e:
-         print ("A ocurrido una execpcion en impresion de recibo")
-     return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
+     now = datetime.datetime.now()
+     fecha = now.strftime("%m/%d/%Y %H:%M:%S")
+     return HttpResponse(json.dumps({'result':'success','folio':mov.id,'fecha': fecha}), content_type='application/json')
   
 
 @login_required
@@ -535,6 +529,8 @@ class FindProductView(TemplateView):
       context['cliente_direccion'] = escape(miapp.getConfiguracion().get('CLIENTE_DIRECCION'))
       context['tipo_movimiento'] = vta
       context['pantalla'] = 'ventas'
+      context['ip_impresora'] = miapp.getConfiguracion().get('IP_IMPRESORA')
+      context['adicional'] = miapp.getConfiguracion().get('TICKET_ADICIONAL')
       context['es_master'] = True if 'Master' in nombres_grupos else False;
       return context
 
