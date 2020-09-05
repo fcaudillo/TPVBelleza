@@ -2,5 +2,5 @@ xlrd==1.1.0
 reportlab==3.0
 python-escpos==2.2.0
 viivakoodi==0.8.0
-Django==1.11
+Django==1.11.29
 djangorestframework==3.9.0
