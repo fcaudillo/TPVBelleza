@@ -218,7 +218,8 @@ function sendTicket (url, ticket) {
 }	
 
 
-function sendTicketPrinter (ticket,result) {
+function sendTicketPrinter (ticket_json,result) {
+   var ticket = JSON.parse(ticket_json);
    var url_printer = 'http://' + ip_impresora + ':5000/print_ticket/';
    ticket_impresora = createTicketPrint(ticket,result);
    ticket_promise  =  new Promise(function(resolve, reject) {
@@ -287,6 +288,7 @@ function registrarVenta(tipo_impresion) {
                            tipo_impresion : tipo_impresion,
 			   items : data
 			}
+               
 	            var jsonData = JSON.stringify(ticket);
 		    $.ajax({
 				type: 'POST', // Use POST with X-HTTP-Method-Override or a straight PUT if appropriate.
@@ -301,8 +303,8 @@ function registrarVenta(tipo_impresion) {
 			                $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
                                         cargaInventario();
                                         $("#myModalPrint").modal('hide')
-                                        sendTicketPrinter(ticket,response).subscribe(function(result) {
-                                         alert('se envio a impresion');
+                                        sendTicketPrinter(jsonData,response).subscribe(function(result) {
+                                         //alert('se envio a impresion');
                                       },function error()  {
                                          alert('Tal vez no esta conectada la impresora')
                                       });
