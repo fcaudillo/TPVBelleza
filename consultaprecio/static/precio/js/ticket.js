@@ -303,11 +303,13 @@ function registrarVenta(tipo_impresion) {
 			                $tableVenta.find("tfoot").find(".granTotal").text(Number(total).toLocaleString('mx-MX', { style: 'currency', currency: 'MXN' }));
                                         cargaInventario();
                                         $("#myModalPrint").modal('hide')
-                                        sendTicketPrinter(jsonData,response).subscribe(function(result) {
-                                         //alert('se envio a impresion');
-                                      },function error()  {
-                                         alert('Tal vez no esta conectada la impresora')
-                                      });
+                                        if (tipo_impresion == 1) {
+                                           sendTicketPrinter(jsonData,response).subscribe(function(result) {
+                                             //alert('se envio a impresion');
+                                           },function error()  {
+                                             alert('Tal vez no esta conectada la impresora')
+                                          });
+                                        Ã}
 
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
