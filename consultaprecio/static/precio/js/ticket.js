@@ -309,7 +309,7 @@ function registrarVenta(tipo_impresion) {
                                            },function error()  {
                                              alert('Tal vez no esta conectada la impresora')
                                           });
-                                        Ã}
+                                        }
 
 				},
 				error: function (xhr, ajaxOptions, thrownError) {
