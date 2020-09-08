@@ -217,6 +217,18 @@ def reporte_diario(request):
    es_master = True if 'Master' in nombres_grupos else False;
    return render(request,'precios/reporte_diario.html',{'pantalla':'reporte_diario','fini':fini, 'ffin':ffin, 'es_master': es_master,'nombre_cliente':miapp.getConfiguracion().get('CLIENTE_NOMBRE')})
 
+
+@login_required
+def rep_vtadet(request):
+   hoy = datetime.datetime.now()
+   fini = hoy.strftime('%Y%m%d')
+   ffin = fini
+   list_grupos = list(request.user.groups.all());
+   nombres_grupos = [item.name for item in list_grupos]
+   es_master = True if 'Master' in nombres_grupos else False;
+   return render(request,'precios/reporte_vtadet.html',{'pantalla':'rep_vtadet','fini':fini, 'ffin':ffin, 'es_master': es_master,'nombre_cliente':miapp.getConfiguracion().get('CLIENTE_NOMBRE')})
+
+
 @login_required
 def find_movimiento(request,fechaIni, fechaFin):
     result = [];
@@ -257,9 +269,9 @@ def  resumen_movimiento(request,fechaIni, fechaFin):
     sql = """
 			  select to_char(date(m.fecha),'DD/MM/YYYY') as fecha, 
 			         tm."description" as description,
-					 sum(dm."precioCompra"  * tm."factor_conta") as totalCosto,
-			         sum(dm."precioVenta" * tm."factor_conta") as total,
-					 sum((dm."precioVenta" - dm."precioCompra") * tm."factor_conta") as totalGanancia
+					 sum(dm."cantidad" * dm."precioCompra"  * tm."factor_conta") as totalCosto,
+			         sum(dm."cantidad" * dm."precioVenta" * tm."factor_conta") as total,
+					 sum(dm."cantidad" * (dm."precioVenta" - dm."precioCompra") * tm."factor_conta") as totalGanancia
 			
 			   from precios_detallemovimiento dm inner join precios_movimiento m on
 			                         m.id = dm.movimiento_id
@@ -276,6 +288,46 @@ def  resumen_movimiento(request,fechaIni, fechaFin):
     items = cursor.fetchall()
     for item in items:
       dat = {'fecha': item[0] , "TipoMovimiento"  : item[1],  "totalVenta" : float(item[3]), "totalCosto":float(item[2]), "totalGanancia": float(item[4]) }
+      result.append(dat)
+
+    return HttpResponse(json.dumps(result), content_type='application/json')
+
+
+@login_required
+def  reporte_vtadet(request,fechaIni, fechaFin):
+    result = [];
+    fi = fechaIni[:4] + "/" + fechaIni[4:6] + "/" + fechaIni[6:8]
+    ff = fechaFin[:4] + "/" + fechaFin[4:6] + "/" + fechaFin[6:8]
+    fini = datetime.datetime.strptime(fi  + ' 0:0:0','%Y/%m/%d %H:%M:%S')
+    ffin = datetime.datetime.strptime(ff  + ' 23:59:59','%Y/%m/%d %H:%M:%S')
+    sql = """
+                        select m.id as folio,
+			       to_char(m.fecha,'DD/MM/YYYY HH:MI:SS') as fecha,
+                               tm."description" as tipomovimiento,
+							   usuario."username" as usuario,
+							   dm."barcode" as codigo,
+							   dm."description" as descripcion,
+							   dm."cantidad",
+							   dm."precioCompra",
+							   dm."precioVenta",
+							   tm."factor_conta" as factorconta,
+                                                           dm."cantidad" * dm."precioVenta" as total
+                           from precios_detallemovimiento dm inner join precios_movimiento m on
+                                                 m.id = dm.movimiento_id
+                                                              inner join precios_tipomovimiento tm
+                                                                on m.tipo_movimiento_id = tm.id
+				    		              inner join auth_user usuario
+								    on m.user_id = usuario.id
+                          where m.fecha between  '%s' and '%s'
+                         
+                          order by 1 desc,2 desc,5 desc
+          """ % (fini, ffin)
+    print sql
+    cursor = connection.cursor()
+    cursor.execute(sql, [])
+    items = cursor.fetchall()
+    for item in items:
+      dat = {"folio":item[0],"fecha": item[1] , "tipomovimiento"  : item[2],"username":item[3], "codigo":item[4], "descripcion":item[5],"cantidad":float(item[6]),"preciocompra":float(item[7]),"precioventa":float(item[8]),"factor_conta":float(item[9]),"total":float(item[10])}
       result.append(dat)
 
     return HttpResponse(json.dumps(result), content_type='application/json')

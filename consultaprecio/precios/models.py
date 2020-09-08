@@ -54,8 +54,8 @@ class DetalleMovimientoManager(models.Manager):
       print data
       movimiento = Movimiento.objects.get(id=data['movimiento'])
       tipo_movimiento = data['__tipo_movimiento']
-      precioVenta = data['cantidad'] * data['precioVenta']
-      precioCompra = data['cantidad'] * data['precioCompra']
+      precioVenta = data['precioVenta']
+      precioCompra = data['precioCompra']
       det = self.create(movimiento = movimiento, barcode = data['codigointerno'], description = data['description'], cantidad = data['cantidad'], precioCompra = precioCompra, precioVenta = precioVenta)
       return det
 
