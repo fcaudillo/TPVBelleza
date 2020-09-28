@@ -508,7 +508,7 @@ class LoadData:
          for ren in range(0,8): 
            print "ren = ", ren, " valor = " , worksheet.cell(rx,ren).value 
          codigoproveedor = worksheet.cell(rx,pos_codigo_proveedor).value;
-         if type(worksheet.cell(rx,pos_codigo_proveedor).value) is float:
+         if type(worksheet.cell(rx,pos_codigoproveedor).value) is float:
            codigoproveedor = '%f' % worksheet.cell(rx,pos_codigo_proveedor).value
 
          codigoInterno = worksheet.cell(rx,pos_codigo_interno).value
@@ -522,8 +522,11 @@ class LoadData:
          descriptionCorta = worksheet.cell(rx,pos_description_corta).value
          unidadVenta = worksheet.cell(rx,pos_unidad_venta).value
 
+         precioCompra = None
          precioCompra = worksheet.cell(rx,pos_precio_compra).value
-         precioVenta = worksheet.cell(rx,pos_precio_venta).value	
+         precioVenta = None
+         if type(worksheet.cell(rx,pos_precio_venta).value) is float:
+            precioVenta = worksheet.cell(rx,pos_precio_venta).value	
          existencia = 1
          if type(worksheet.cell(rx,pos_existencia).value) is float:
             existencia = int(worksheet.cell(rx,pos_existencia).value) 
