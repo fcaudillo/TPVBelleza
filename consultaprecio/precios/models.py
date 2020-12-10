@@ -165,6 +165,8 @@ class Producto (models.Model):
       return {
              'codigointerno': self.codigoInterno,
 	     'barcode': self.barcode,
+             'codigoProveedor': self.codigoProveedor,
+             'proveedor': self.persona.codigo,
 		 'description':self.description,
 		 'existencia':self.existencia,
                  'ubicacion': self.ubicacion,

@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from precios.views import FindProductView, FindView, ChangeProductView,PrintLabelView,ImportCatalogView, RecargaTaeView,ReporteRecargaView, RecargaDatosTaeView
-from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas,genera_etiquetas_mediana, download, upload_file, login_view, logout_view, resumen_movimiento, reporte_diario, recargatae , recargas_periodo, obtenerSaldo, find_products, on_line, reporte_vtadet, rep_vtadet
+from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas,genera_etiquetas_mediana, download, upload_file, login_view, logout_view, resumen_movimiento, reporte_diario, recargatae , recargas_periodo, obtenerSaldo, find_products, on_line, reporte_vtadet, rep_vtadet, catalogo_productos
 from django.contrib.auth.decorators import login_required
 
 
@@ -37,6 +37,7 @@ urlpatterns = [
         url('reportediario/$',reporte_diario, name='reporte_diario'),
         url('rep_vtadet/$',rep_vtadet, name='rep_vtadet'),
 	url('find/$',find_all, name='find_all'),
+        url('catalogo_productos/$',catalogo_productos,name='catalogo_productos'),
         url('find_products/',find_products,name='find_products'),
 	url('tickets/add',guarda_ticket, name='ticket_add'),
         url('producto/add',guarda_producto,name='producto_add'),

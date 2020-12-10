@@ -350,6 +350,13 @@ def find_all(request):
    result = [ obj.as_dict() for obj in productos ]
    return HttpResponse(json.dumps(result), content_type='application/json') 
 
+def catalogo_productos(request): 
+   print 'entrando catalogo_productos' 
+   productos = list(Producto.objects.filter(puede_venderse=True))
+   print '1..productos'
+   result = [ obj.as_dict() for obj in productos ]
+   return HttpResponse(json.dumps(result), content_type='application/json') 
+
 def do_paginate(data_list, page_number):
     ret_data_list = data_list
     result_per_page = 500

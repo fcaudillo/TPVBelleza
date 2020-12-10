@@ -81,6 +81,15 @@ function inicializa_table_products() {
 				
 				title: 'codebar'
 			}, {
+                                field: 'codigoProveedor',
+                                sorteable: true,
+                                title: 'Cod. Prov'
+                        },{
+                                field: 'proveedor',
+                                sorteable: true,
+                                title: 'Proveedor'
+                        },
+                        {
 				field: 'description',
 				sortable: true,
 				title: 'Descripcion'
@@ -153,7 +162,13 @@ $(document).ready(function() {
 						  },
 				
 				title: 'codebar'
-			}, {
+			},{
+                                field: 'codigoProveedor',
+                                title: 'Cod. prov'
+                        }, {
+                                field: 'proveedor',
+                                title: 'Proveeor',
+                        }, {
                                 field: 'ubicacion',
                                 title: 'ubicacion',
 
