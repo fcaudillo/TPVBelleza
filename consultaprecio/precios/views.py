@@ -516,11 +516,11 @@ class LoadData:
            print "ren = ", ren, " valor = " , worksheet.cell(rx,ren).value 
          codigoproveedor = worksheet.cell(rx,pos_codigo_proveedor).value;
          if type(worksheet.cell(rx,pos_codigo_proveedor).value) is float:
-           codigoproveedor = '%f' % worksheet.cell(rx,pos_codigo_proveedor).value
+           codigoproveedor = '%d' % worksheet.cell(rx,pos_codigo_proveedor).value
 
          codigoInterno = worksheet.cell(rx,pos_codigo_interno).value
          if type(worksheet.cell(rx,pos_codigo_interno).value) is float:
-            codigoInterno = '%f' % worksheet.cell(rx,pos_codigo_interno).value
+            codigoInterno = '%d' % worksheet.cell(rx,pos_codigo_interno).value
 
          if type(codigo_barras) is unicode:
             if codigo_barras == u'':
