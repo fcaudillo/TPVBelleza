@@ -17,6 +17,7 @@ from django.conf.urls import url
 from django.contrib import admin
 from precios.views import FindProductView, FindView, ChangeProductView,PrintLabelView,ImportCatalogView, RecargaTaeView,ReporteRecargaView, RecargaDatosTaeView
 from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas,genera_etiquetas_mediana, download, upload_file, login_view, logout_view, resumen_movimiento, reporte_diario, recargatae , recargas_periodo, obtenerSaldo, find_products, on_line, reporte_vtadet, rep_vtadet, catalogo_productos
+from precios.views import PuntoVentaView
 from django.contrib.auth.decorators import login_required
 
 
@@ -25,6 +26,7 @@ urlpatterns = [
         url('generar_codigo_barras/(?P<prefijo>\w+)/$',generar_codigo_barras, name='generar_codigo_barras'),
         url('recargatae/(?P<compania>\w+)/(?P<plan>\w+)/(?P<numero>\w+)/(?P<monto>\w+)/$',recargatae, name='recargatae'),
         url('recarga/$',login_required(RecargaTaeView.as_view()), name='recarga'),
+        url('puntoventa/$',login_required(PuntoVentaView.as_view()), name='puntoventa'),
         url('on_line/$',on_line, name='on_line'),
         url('obtenerSaldo/$',obtenerSaldo,name='obtenerSaldo'),
         url('recargadatos/$',login_required(RecargaDatosTaeView.as_view()), name='recargadatos'),

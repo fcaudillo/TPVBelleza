@@ -597,6 +597,25 @@ class FindProductView(TemplateView):
       return context
 
 
+class PuntoVentaView(TemplateView):
+   template_name = 'precios/puntoventa.html'
+   def get_context_data(self, **kwargs):
+      context = super(TemplateView, self).get_context_data(**kwargs)
+      vta = TipoMovimiento.objects.filter(codigo='VTA')[0]
+      list_grupos = list(self.request.user.groups.all()); 
+      nombres_grupos = [item.name for item in list_grupos] 
+      context['nombre_cliente'] = escape(miapp.getConfiguracion().get('CLIENTE_NOMBRE'))
+      context['ticket_pie'] = escape(miapp.getConfiguracion().get('TICKET_PIE'))
+      context['cliente_giro'] = miapp.getConfiguracion().get('CLIENTE_GIRO')
+      context['cliente_direccion'] = escape(miapp.getConfiguracion().get('CLIENTE_DIRECCION'))
+      context['tipo_movimiento'] = vta
+      context['pantalla'] = 'ventas'
+      context['ip_impresora'] = miapp.getConfiguracion().get('IP_IMPRESORA')
+      context['adicional'] = miapp.getConfiguracion().get('TICKET_ADICIONAL')
+      context['es_master'] = True if 'Master' in nombres_grupos else False;
+      return context
+
+
 class ChangeProductView(TemplateView):
    template_name = 'precios/cambioprecio.html'
    def get_context_data(self, **kwargs):
