@@ -207,8 +207,14 @@ class HistoriaPrecioProveedor(models.Model):
    proveedor = models.ForeignKey(Persona, null=False) 
    codigoProveedor = models.CharField(max_length=50,null=False)
    descripcion = models.CharField(max_length=200,null=False)
-   precioCompra = models.DecimalField(max_digits=6, decimal_places=2, null = False)
-
+   caja = models.DecimalField(max_digits=6, decimal_places=2, null = True)
+   unidad = models.CharField(max_length=30, null=True)
+   alta_rotacion = models.DecimalField(max_digits=2, decimal_places=0, null = True)
+   codigobarras = models.CharField(max_length=30, null=True)
+   precioCompra = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+   precioMayoreo = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+   precioPublico = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+   
    class Meta:
       unique_together = (('fechaLista','proveedor','codigoProveedor')),
       indexes = [

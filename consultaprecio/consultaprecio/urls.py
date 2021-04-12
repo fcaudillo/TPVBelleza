@@ -16,8 +16,8 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from precios.views import FindProductView, FindView, ChangeProductView,PrintLabelView,ImportCatalogView, RecargaTaeView,ReporteRecargaView, RecargaDatosTaeView
-from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas,genera_etiquetas_mediana, download, upload_file, login_view, logout_view, resumen_movimiento, reporte_diario, recargatae , recargas_periodo, obtenerSaldo, find_products, on_line, reporte_vtadet, rep_vtadet, catalogo_productos
-from precios.views import PuntoVentaView
+from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas,genera_etiquetas_mediana, download, upload_file, login_view, logout_view, resumen_movimiento, reporte_diario, recargatae , recargas_periodo, obtenerSaldo, find_products, on_line, reporte_vtadet, rep_vtadet, catalogo_productos, upload_catalogo_proveedor
+from precios.views import PuntoVentaView, ImportCatalogProveedorView
 from django.contrib.auth.decorators import login_required
 
 
@@ -48,8 +48,10 @@ urlpatterns = [
 	url('encuentra/(?P<barcode>\w+)/$',FindView.as_view(),name='encuentra'),
 	url(r'consulta/',login_required(FindProductView.as_view()),name='consulta'),
 	url(r'cambioprecio/',login_required(ChangeProductView.as_view()),name='cambioprecio'),
-        url(r'importar',login_required(ImportCatalogView.as_view()),name='importar'),
-        url(r'subir_archivo',upload_file, name='subir_archivo'),
+        url(r'importar/$',login_required(ImportCatalogView.as_view()),name='importar'),
+        url(r'importarproveedor/$',login_required(ImportCatalogProveedorView.as_view()),name='importarproveedor'),
+        url(r'subir_archivo$',upload_file, name='subir_archivo'),
+        url(r'subir_archivo_proveedor$',upload_catalogo_proveedor, name='subir_archivo_proveedor'),
         url(r'login',login_view, name='login'),
         url(r'logout',logout_view, name='logout'),
         url(r'impresion/',login_required(PrintLabelView.as_view()),name='impresion')

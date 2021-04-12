@@ -16,6 +16,7 @@ import datetime
 from precios.models import TipoMovimiento, Movimiento, Categoria, Compania, Plan, Recarga, Persona
 from precios.etiqueta_chica import generar_etiquetas, obtener_lista_productos
 from precios.etiqueta_mediana import generar_etiquetas_mediana
+from precios.LoadCatalogoProv import LoadListaProdProv
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.contrib.auth import authenticate, login
@@ -459,6 +460,23 @@ def guarda_ticket(request):
      return HttpResponse(json.dumps({'result':'success','folio':mov.id,'fecha': fecha}), content_type='application/json')
   
 
+
+@login_required
+def upload_catalogo_proveedor(request):
+    print "Subiendo el archivo"
+    if request.method == 'POST' and request.FILES['catalogo_proveedor']:
+        myfile = request.FILES['catalogo_proveedor']
+        fs = FileSystemStorage()
+        filename = fs.save(myfile.name, myfile)
+        uploaded_file_url = fs.url(filename)
+        print uploaded_file_url
+        path_file = settings.BASE_DIR + uploaded_file_url 
+        print path_file
+        load = LoadListaProdProv(path_file)
+        load.carga_catalogo()
+        
+    return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
+
 @login_required
 def upload_file(request):
     print "Subiendo el archivo"
@@ -668,6 +686,19 @@ class ImportCatalogView(TemplateView):
       context['es_master'] = True if 'Master' in nombres_grupos else False;
       return context
 
+
+class ImportCatalogProveedorView(TemplateView):
+   template_name = 'precios/import_catalog_proveedor.html'
+   def get_context_data(self, **kwargs):
+      context = super(TemplateView, self).get_context_data(**kwargs)
+      compra = TipoMovimiento.objects.filter(codigo='INV')[0]
+      list_grupos = list(self.request.user.groups.all()); 
+      nombres_grupos = [item.name for item in list_grupos] 
+      context['nombre_cliente'] = miapp.getConfiguracion().get('CLIENTE_NOMBRE')
+      context['tipo_movimiento'] = compra
+      context['pantalla'] = 'importacion'
+      context['es_master'] = True if 'Master' in nombres_grupos else False;
+      return context
 
 class RecargaTaeView(TemplateView):
    template_name = 'precios/recarga.html'
