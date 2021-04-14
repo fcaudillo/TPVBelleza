@@ -61,35 +61,35 @@ class LoadListaProdProv:
          try:
            caja = worksheet.cell(rx,pos_caja).value
          except:
-           caja = None;
+           caja = 1;
          try:
            unidad = worksheet.cell(rx,pos_unidad).value
          except:
-           unidad = None;
+           unidad = '';
          try:
            codigobarras = worksheet.cell(rx,pos_codigobarras).value
          except:
-           codigobarras = None;
+           codigobarras = '';
 
          try:
            alta_rotacion = worksheet.cell(rx,pos_alta_rotacion).value
          except:
-           alta_rotacion = None;
+           alta_rotacion = 0;
 
          try:
            precioCompra = worksheet.cell(rx,pos_precioCompra).value
          except:
-           precioCompra = None;
+           precioCompra = 0;
 
          try:
            precioMayoreo = worksheet.cell(rx,pos_precioMayoreo).value
          except:
-           precioMayoreo = None;
+           precioMayoreo = 0;
 
          try:
            precioPublico = worksheet.cell(rx,pos_precioPublico).value
          except:
-           precioPublico = None;
+           precioPublico = 0;
       
          print codigo_proveedor, ' -> ', descripcion
          data.append({'fechaLista': fecha_lista,'codigoProveedor':codigo_proveedor,'descripcion':descripcion,'caja':caja,'unidad':unidad,'codigobarras':codigobarras,'alta_rotacion':alta_rotacion,'precioCompra': precioCompra,'precioMayoreo':precioMayoreo,'precioPublico':precioPublico,'proveedor':persona})
