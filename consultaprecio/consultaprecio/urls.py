@@ -15,9 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from precios.views import FindProductView, FindView, ChangeProductView,PrintLabelView,ImportCatalogView, RecargaTaeView,ReporteRecargaView, RecargaDatosTaeView
-from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas,genera_etiquetas_mediana, download, upload_file, login_view, logout_view, resumen_movimiento, reporte_diario, recargatae , recargas_periodo, obtenerSaldo, find_products, on_line, reporte_vtadet, rep_vtadet, catalogo_productos, upload_catalogo_proveedor
-from precios.views import PuntoVentaView, ImportCatalogProveedorView
+from precios.views import FindProductView, FindView, ChangeProductView,PrintLabelView,ImportCatalogView, RecargaTaeView,ReporteRecargaView, RecargaDatosTaeView, findByCodigoInterno, updateProducto, findByCodigo
+from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas,genera_etiquetas_mediana, download, upload_file, login_view, logout_view, resumen_movimiento, reporte_diario, recargatae , recargas_periodo, obtenerSaldo, find_products, on_line, reporte_vtadet, rep_vtadet, catalogo_productos, upload_catalogo_proveedor, find_persona, find_historico
+from precios.views import PuntoVentaView, ImportCatalogProveedorView, guarda_producto_nuevo
 from django.contrib.auth.decorators import login_required
 
 
@@ -32,6 +32,10 @@ urlpatterns = [
         url('recargadatos/$',login_required(RecargaDatosTaeView.as_view()), name='recargadatos'),
         url('reporte_recargas/$',login_required(ReporteRecargaView.as_view()),name='reporte_recargas'),
 	url('find_codigo/(?P<barcode>\w+)/$',find_consulta, name='find_codigo'),
+	url('findByCodigoInterno/(?P<codigoInterno>\w+)/$',findByCodigoInterno, name='findCodigoInterno'),
+	url('findByCodigo/(?P<codigo>\w+)/$',findByCodigo, name='findCodigo'),
+	url('find_persona/(?P<tipopersona>\w+)/$',find_persona, name='find_persona'),
+	url('find_historico/(?P<proveedor>\w+)/(?P<codigo>\w+)/$',find_historico, name='find_historico'),
         url('resumenmovimiento/(?P<fechaIni>\w+)/(?P<fechaFin>\w+)/$',resumen_movimiento, name='resumen_movimiento'),
         url('reporte_vtadet/(?P<fechaIni>\w+)/(?P<fechaFin>\w+)/$',reporte_vtadet, name='reporte_vtadet'),
         url('download/$',download, name='download'),
@@ -43,6 +47,8 @@ urlpatterns = [
         url('find_products/',find_products,name='find_products'),
 	url('tickets/add',guarda_ticket, name='ticket_add'),
         url('producto/add',guarda_producto,name='producto_add'),
+        url('producto/agregar',guarda_producto_nuevo,name='producto_add_nuevo'),
+        url('producto/update',updateProducto,name='productoUpdate'),
         url('genera_etiquetas/$',genera_etiquetas,name='genera_etiquetas'),
         url('genera_etiquetas_mediana/$',genera_etiquetas_mediana,name='genera_etiquetas_mediana'),
 	url('encuentra/(?P<barcode>\w+)/$',FindView.as_view(),name='encuentra'),

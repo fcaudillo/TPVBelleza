@@ -125,6 +125,16 @@ class Persona(models.Model):
     def __str__(self):
       return 'codigo: %s, descripcion: %s \n ' % (self.codigo, self.description)
 
+    def as_dict(self):
+      return {
+               'id': self.id,
+               'codigo': self.codigo,
+               'description': self.description,
+               'es_persona_moral':self.es_persona_moral,
+               'es_proveedor': self.es_proveedor,
+               'es_cliente': self.es_cliente
+              }
+
     class Meta:
        managed = False
        db_table = 'precios_persona' 
@@ -167,11 +177,16 @@ class Producto (models.Model):
 	     'barcode': self.barcode,
              'codigoProveedor': self.codigoProveedor,
              'proveedor': self.persona.codigo,
-		 'description':self.description,
-		 'existencia':self.existencia,
-                 'ubicacion': self.ubicacion,
-		 'precioCompra':float(self.precioCompra),
-		 'precioVenta':float(self.precioVenta)
+             'proveedorId': self.persona.id,
+	     'description':self.description,
+	     'existencia':self.existencia,
+             'ubicacion': self.ubicacion,
+	     'precioCompra':float(self.precioCompra),
+	     'precioVenta':float(self.precioVenta),
+             'minimoExistencia': self.minimoexist,
+             'maximoExistencia': self.maximoexist,
+             'unidadVenta': self.unidadVenta,
+             'puedeVenderse': self.puede_venderse
 	  
 	  }
 
@@ -214,6 +229,21 @@ class HistoriaPrecioProveedor(models.Model):
    precioCompra = models.DecimalField(max_digits=6, decimal_places=2, default=0)
    precioMayoreo = models.DecimalField(max_digits=6, decimal_places=2, default=0)
    precioPublico = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+
+   def as_dict(self):
+      return {
+               'id': self.id,
+               'codigoProveedor': self.codigoProveedor,
+               'fechaLista': self.fechaLista.strftime('%d/%m/%Y'),
+               'descripcion': self.descripcion,
+               'caja': float(self.caja),
+               'unidad': self.unidad,
+               'alta_rotacion': float(self.alta_rotacion),
+               'codigobarras': self.codigobarras,
+               'precioCompra': float(self.precioCompra),
+               'precioMayoreo': float(self.precioMayoreo),
+               'precioPublico': float(self.precioPublico)
+              }
    
    class Meta:
       unique_together = (('fechaLista','proveedor','codigoProveedor')),

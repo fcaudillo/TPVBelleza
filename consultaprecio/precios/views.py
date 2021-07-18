@@ -13,7 +13,7 @@ import xlrd
 import json
 import os
 import datetime
-from precios.models import TipoMovimiento, Movimiento, Categoria, Compania, Plan, Recarga, Persona
+from precios.models import TipoMovimiento, Movimiento, Categoria, Compania, Plan, Recarga, Persona, HistoriaPrecioProveedor
 from precios.etiqueta_chica import generar_etiquetas, obtener_lista_productos
 from precios.etiqueta_mediana import generar_etiquetas_mediana
 from precios.LoadCatalogoProv import LoadListaProdProv
@@ -42,6 +42,13 @@ def siguiente_folio(prefix):
   
   #import pdb; pdb.set_trace()
   return int( dat[0].barcode[len(prefijo):]  ) + 1
+
+def next_folio():
+  sql = "select nextval('SEQ_PRODUCTOS')";
+  cursor = connection.cursor();
+  cursor.execute(sql,[])
+  items = cursor.fetchall();
+  return items[0];
 
 def calcular_codigo_barras(codigo):
   if len(codigo.strip()) > 4:
@@ -333,7 +340,7 @@ def  reporte_vtadet(request,fechaIni, fechaFin):
 
     return HttpResponse(json.dumps(result), content_type='application/json')
 
-@login_required
+#@login_required
 def find_consulta(request,barcode):
    print 'barcode = ', barcode
    productos = list(Producto.objects.filter(barcode=barcode.strip()))
@@ -343,6 +350,80 @@ def find_consulta(request,barcode):
          return HttpResponse(status=204)
    pr = productos[0]
    return HttpResponse(json.dumps(pr.as_dict()), content_type='application/json')  
+
+
+
+def updateProducto(request):
+  data = json.loads(request.body)
+  print 'data = ', data
+  productos = list(Producto.objects.filter(codigoInterno=data['codigoInterno']))
+  if len(productos) == 1:
+   persona = Persona.objects.get(pk=data['proveedor'])
+   print 'id = ', productos[0].id
+   producto = Producto.objects.get(pk=productos[0].id)
+   producto.codigoProveedor = data['codigoProveedor']
+   producto.barcode=data['codigoBarras'] 
+   producto.persona=persona 
+   producto.description=data['descripcion']
+   producto.descriptionCorta=data['descripcion']
+   producto.existencia=data['existencia']
+   producto.minimoexist=data['minimoExistencia']
+   producto.maximoexist=data['maximoExistencia']
+   producto.precioCompra=data['precioCompra']
+   producto.precioVenta=data['precioVenta']
+   producto.ubicacion=data['ubicacion']
+   producto.unidadVenta=data['unidadVenta']
+   producto.puede_venderse=True if data['puedeVenderse'] == 'true' else False;
+   producto.save();
+  return HttpResponse("{'return','success'}", content_type='application/json')  
+
+def findByCodigoInterno(request,codigoInterno):
+   print 'xx codigoInterno = ', codigoInterno
+   productos = list(Producto.objects.filter(codigoInterno=codigoInterno.strip()))
+   if len(productos) == 0:
+     return HttpResponse(status=204)
+   pr = productos[0]
+   return HttpResponse(json.dumps(pr.as_dict()), content_type='application/json')  
+
+
+def findByCodigo(request,codigo):
+   print 'findByCodigo = ', codigo
+   productos = list(Producto.objects.filter(barcode=codigo.strip()))
+   if len(productos) == 0:
+     productos = list(Producto.objects.filter(codigoInterno=codigo.strip()))
+     if len(productos) == 0:
+       return HttpResponse(status=204)
+   pr = productos[0]
+   return HttpResponse(json.dumps(pr.as_dict()), content_type='application/json')  
+
+
+def find_historico(request,proveedor,codigo):
+   codigo = codigo.strip()
+   print '2. find-historico codigo = *',codigo,'*',"abc"
+   persona = Persona.objects.get(pk=proveedor)
+   print 'persona = ', persona 
+
+   producto_proveedor = list(HistoriaPrecioProveedor.objects.filter(codigobarras=codigo).filter(proveedor=proveedor))
+   if len(producto_proveedor) == 0:
+     producto_proveedor = list(HistoriaPrecioProveedor.objects.filter(codigoProveedor=codigo).filter(proveedor=proveedor))
+     if len(producto_proveedor) == 0:
+       print 'No encontro el registro'
+       return HttpResponse(status=204)
+   print 'saludos 3'
+   data = producto_proveedor[0]
+   print 'data = ', data
+   return HttpResponse(json.dumps(data.as_dict()), content_type='application/json')
+
+def find_persona(request,tipopersona):
+  print 'persona = ', tipopersona
+  personas = None;
+  if tipopersona == 'proveedor' :
+    personas = list(Persona.objects.filter(es_proveedor=True))
+  else:
+    personas = list(Persona.objects.filter(es_cliente=True))
+  result = [ obj.as_dict() for obj in personas ]
+
+  return HttpResponse(json.dumps(result), content_type='application/json')
 
 
 @login_required
@@ -435,7 +516,7 @@ def genera_etiquetas_mediana(request):
     
    return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
 
-@login_required
+#@login_required
 def guarda_producto(request):
    print "Guardar producto"
    if request.method=='POST':
@@ -443,10 +524,40 @@ def guarda_producto(request):
       print producto 
       id = producto['categoria'];
       categoria = Categoria.objects.get(pk=id)
-      Producto.objects.create(barcode=producto['barcode'],description=producto['descripcion'], existencia=0,precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'],  categoria=categoria, minimoexist=producto['puntoreorden'], maximoexist=producto['maximoexist'], ubicacion=producto['ubicacion'], falta = datetime.datetime.now())		 
+      Producto.objects.create(codigoInterno=next_folio(),barcode=producto['barcode'],description=producto['descripcion'], existencia=0,precioCompra=producto['precioCompra'],precioVenta=producto['precioVenta'],  categoria=categoria, minimoexist=producto['puntoreorden'], maximoexist=producto['maximoexist'], ubicacion=producto['ubicacion'], falta = datetime.datetime.now())		 
 
       return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
 
+def guarda_producto_nuevo(request):
+   print "1.Guardar producto nuevo"
+   if request.method=='POST':
+      producto = json.loads(request.body)
+      print producto
+      categoria = Categoria.objects.filter(codigo='root')[0]
+      persona = Persona.objects.get(pk=producto['proveedor'])
+      print persona
+      prod_bd = Producto.objects.filter(codigoProveedor=producto['codigoProveedor'],persona=persona)
+      if prod_bd.exists():
+        print "producto existente"
+        return HttpResponse(json.dumps({'result':'fail'}),status=404, content_type='application/json')
+      folio = str(next_folio()[0])
+      Producto.objects.create(
+	codigoInterno=folio,
+	barcode=producto['codigoBarras'],
+        codigoProveedor=producto['codigoProveedor'],
+	description=producto['descripcion'], 
+	existencia=producto['existencia'],
+	precioCompra=producto['precioCompra'],
+	precioVenta=producto['precioVenta'],  
+	categoria=categoria, 
+	minimoexist=producto['minimoExistencia'], 
+	maximoexist=producto['maximoExistencia'], 
+	ubicacion=producto['ubicacion'], 
+        unidadVenta=producto['unidadVenta'], 
+        persona=persona,
+	falta = datetime.datetime.now())
+
+      return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
  
 @login_required
 def guarda_ticket(request):
