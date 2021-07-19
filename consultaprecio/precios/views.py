@@ -388,11 +388,12 @@ def findByCodigoInterno(request,codigoInterno):
 
 def findByCodigo(request,codigo):
    print 'findByCodigo = ', codigo
-   productos = list(Producto.objects.filter(barcode=codigo.strip()))
-   if len(productos) == 0:
+   if len(codigo.strip()) > 10:
+     productos = list(Producto.objects.filter(barcode=codigo.strip()))
+   else:
      productos = list(Producto.objects.filter(codigoInterno=codigo.strip()))
-     if len(productos) == 0:
-       return HttpResponse(status=204)
+   if len(productos) == 0:
+     return HttpResponse(status=204)
    pr = productos[0]
    return HttpResponse(json.dumps(pr.as_dict()), content_type='application/json')  
 
