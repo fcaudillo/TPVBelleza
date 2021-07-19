@@ -543,9 +543,9 @@ def guarda_producto_nuevo(request):
       folio = str(next_folio()[0])
       Producto.objects.create(
 	codigoInterno=folio,
-	barcode=producto['codigoBarras'],
-        codigoProveedor=producto['codigoProveedor'],
-	description=producto['descripcion'], 
+	barcode=producto['codigoBarras'].strip(),
+        codigoProveedor=producto['codigoProveedor'].strip(),
+	description=producto['descripcion'].strip(), 
 	existencia=producto['existencia'],
 	precioCompra=producto['precioCompra'],
 	precioVenta=producto['precioVenta'],  
@@ -553,7 +553,7 @@ def guarda_producto_nuevo(request):
 	minimoexist=producto['minimoExistencia'], 
 	maximoexist=producto['maximoExistencia'], 
 	ubicacion=producto['ubicacion'], 
-        unidadVenta=producto['unidadVenta'], 
+        unidadVenta=producto['unidadVenta'].strip(), 
         persona=persona,
 	falta = datetime.datetime.now())
 
