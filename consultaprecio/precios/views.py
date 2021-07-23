@@ -373,7 +373,7 @@ def updateProducto(request):
    producto.precioVenta=data['precioVenta']
    producto.ubicacion=data['ubicacion']
    producto.unidadVenta=data['unidadVenta']
-   producto.puede_venderse=True if data['puedeVenderse'] == 'true' else False;
+   producto.puede_venderse= data['puedeVenderse']
    producto.save();
   return HttpResponse("{'return','success'}", content_type='application/json')  
 
