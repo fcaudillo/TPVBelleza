@@ -728,7 +728,7 @@ class FindProductView(TemplateView):
 
 
 class PuntoVentaView(TemplateView):
-   template_name = 'precios/puntoventa2.html'
+   template_name = 'precios/puntoventa.html'
    def get_context_data(self, **kwargs):
       context = super(TemplateView, self).get_context_data(**kwargs)
       vta = TipoMovimiento.objects.filter(codigo='VTA')[0]
