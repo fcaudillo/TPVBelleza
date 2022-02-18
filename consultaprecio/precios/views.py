@@ -13,7 +13,7 @@ import xlrd
 import json
 import os
 import datetime
-from precios.models import TipoMovimiento, Movimiento, Categoria, Compania, Plan, Recarga, Persona, HistoriaPrecioProveedor
+from precios.models import TipoMovimiento, Movimiento, Categoria, Compania, Plan, Recarga, Persona, HistoriaPrecioProveedor, CambioPrecio
 from precios.etiqueta_chica import generar_etiquetas, obtener_lista_productos
 from precios.etiqueta_mediana import generar_etiquetas_mediana
 from precios.LoadCatalogoProv import LoadListaProdProv
@@ -33,6 +33,49 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from cgi import escape
 
 miapp = apps.get_app_config('precios')
+
+def cargar_cambios_precios(request,proveedor):    
+    print "proveedor", proveedor
+    sql = """
+            select p."codigoInterno",
+                   p."codigoProveedor",
+                   p."description",
+                   pp2."description" as proveedor,
+                   p."unidadVenta",
+                   p."precioCompra" as "precioActualTlapa",
+                   pp."precioCompra" as "ultimoPrecioProv",
+                   p."precioVenta"
+              from precios_producto p  left join precios_historiaprecioproveedor pp
+                          on p.persona_id = pp.proveedor_id
+                         and p."codigoProveedor" = pp."codigoProveedor"
+                         left join precios_persona pp2  
+                           on pp2.id = p.persona_id 
+             where p.persona_id = %s
+               and p."precioCompra" <> pp."precioCompra"
+          """ % (proveedor)
+    print sql
+    CambioPrecio.objects.filter(proveedorId=proveedor).delete()
+    cursor = connection.cursor()
+    cursor.execute(sql, [])
+    items = cursor.fetchall()
+    for item in items:
+      print item[1]
+      CambioPrecio.objects.create(codigoInterno=item[0],codigoProveedor=item[1],proveedor=item[3],proveedorId=proveedor,description=item[2],precioCompraAnt=item[5],precioCompra=item[6],precioVenta=item[7], fecha = datetime.datetime.now())
+
+    return HttpResponse(json.dumps({"status":"success"}), content_type='application/json')
+
+def find_cambio_precio(request,proveedor):
+    result = [];
+    print "Estoy en find_cambio_precio ", proveedor
+    lista = list(CambioPrecio.objects.filter(proveedorId=proveedor).order_by('description'))
+    for item in lista:
+      result.append(item.as_dict())
+    return HttpResponse(json.dumps(result), content_type='application/json')
+
+def delete_cambio_precio(request, key):
+   CambioPrecio.objects.filter(id=key).delete()
+   return HttpResponse(json.dumps({"result":"success"}), content_type='application/json')
+
 
 def siguiente_folio(prefix):
   prefijo = prefix.strip();

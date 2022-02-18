@@ -370,4 +370,39 @@ class DetalleMovimiento (models.Model):
 		 'precioVenta':float(self.precioVenta)
 	     }	  
 
+class CambioPrecio (models.Model):
+   id = models.AutoField(primary_key=True)
+   codigoInterno = models.CharField(max_length=20, unique=True)
+   codigoProveedor = models.CharField(max_length=50)
+   proveedor = models.CharField(max_length=255)
+   proveedorId = models.DecimalField(max_digits=7, decimal_places=2)
+   description = models.CharField(max_length=255)
+   precioCompraAnt = models.IntegerField(default=0)
+   precioCompra = models.DecimalField(max_digits=7, decimal_places=2)
+   precioVenta =models.DecimalField(max_digits=7, decimal_places=2)
+   fecha =  models.DateTimeField(blank=False, null=False)
+   
+   @staticmethod
+   def findByCodigoInterno(codigo):
+     return CambioPrecio.objects.filter(codigoInterno = codigo)[0]
+
+   def __str__(self):
+    return 'barcode: %s, descricion: %s, precioCompra : %f, precioVenta: %f ' % (self.barcode, self.description, self.precioCompra, self.precioVenta)
+
+   def as_dict(self):
+      return {
+             'codigointerno': self.codigoInterno,
+             'codigoProveedor': self.codigoProveedor,
+             'proveedor': self.proveedor,
+             'proveedorId': float(self.proveedorId),
+             'description':self.description,
+             'precioCompraAnt':float(self.precioCompraAnt),
+             'precioCompra':float(self.precioCompra),
+             'precioVenta':float(self.precioVenta),
+             'fecha' : self.fecha.strftime('%d/%m/%Y')
+          }
+
+   class Meta:
+       managed = False
+       db_table = 'precios_cambioprecio'
 
