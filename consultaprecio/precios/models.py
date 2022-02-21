@@ -391,6 +391,7 @@ class CambioPrecio (models.Model):
 
    def as_dict(self):
       return {
+             'id': self.id,
              'codigointerno': self.codigoInterno,
              'codigoProveedor': self.codigoProveedor,
              'proveedor': self.proveedor,
