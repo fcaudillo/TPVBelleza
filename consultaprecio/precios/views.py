@@ -583,7 +583,7 @@ def guarda_producto_nuevo(request):
       prod_bd = Producto.objects.filter(codigoProveedor=producto['codigoProveedor'],persona=persona)
       if prod_bd.exists():
         print "producto existente"
-        return HttpResponse(json.dumps({'result':'fail'}),status=404, content_type='application/json')
+        return HttpResponse(json.dumps({'result':'El registro ya existe'}),status=404, content_type='application/json')
       folio = str(next_folio()[0])
       Producto.objects.create(
 	codigoInterno=folio,
@@ -601,10 +601,10 @@ def guarda_producto_nuevo(request):
         persona=persona,
 	falta = datetime.datetime.now())
 
-      return HttpResponse(json.dumps({'result':'success'}), content_type='application/json')
+      return HttpResponse(json.dumps({'result':'success','folio': folio}), content_type='application/json')
  
 @login_required
-def guarda_ticket(request):
+	def guarda_ticket(request):
    if request.method=='POST':
      received_json_data=json.loads(request.body)
      print received_json_data
