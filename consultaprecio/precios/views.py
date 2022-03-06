@@ -604,7 +604,7 @@ def guarda_producto_nuevo(request):
       return HttpResponse(json.dumps({'result':'success','folio': folio}), content_type='application/json')
  
 @login_required
-	def guarda_ticket(request):
+def guarda_ticket(request):
    if request.method=='POST':
      received_json_data=json.loads(request.body)
      print received_json_data
