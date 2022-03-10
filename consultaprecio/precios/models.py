@@ -377,7 +377,7 @@ class CambioPrecio (models.Model):
    proveedor = models.CharField(max_length=255)
    proveedorId = models.DecimalField(max_digits=7, decimal_places=2)
    description = models.CharField(max_length=255)
-   precioCompraAnt = models.IntegerField(default=0)
+   precioCompraAnt = models.DecimalField(max_digits=7, decimal_places=2)
    precioCompra = models.DecimalField(max_digits=7, decimal_places=2)
    precioVenta =models.DecimalField(max_digits=7, decimal_places=2)
    fecha =  models.DateTimeField(blank=False, null=False)
