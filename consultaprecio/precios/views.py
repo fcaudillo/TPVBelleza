@@ -59,7 +59,6 @@ def cargar_cambios_precios(request,proveedor):
     cursor.execute(sql, [])
     items = cursor.fetchall()
     for item in items:
-      print item[1], item[5], type(item[5]), item[6], type(item[6])
       CambioPrecio.objects.create(codigoInterno=item[0],codigoProveedor=item[1],proveedor=item[3],proveedorId=proveedor,description=item[2],precioCompra=item[6],precioCompraAnt=item[5],precioVenta=item[7], fecha = datetime.datetime.now())
 
     return HttpResponse(json.dumps({"status":"success"}), content_type='application/json')
@@ -605,7 +604,7 @@ def guarda_producto_nuevo(request):
  
 @login_required
 def guarda_ticket(request):
-   if request.method=='POST':
+   if request.method=='POST' ººor request.method == 'GET':
      received_json_data=json.loads(request.body)
      print received_json_data
      current_user = request.user
