@@ -604,7 +604,7 @@ def guarda_producto_nuevo(request):
  
 @login_required
 def guarda_ticket(request):
-   if request.method=='POST' ººor request.method == 'GET':
+   if request.method=='POST' or request.method == 'GET':
      received_json_data=json.loads(request.body)
      print received_json_data
      current_user = request.user
