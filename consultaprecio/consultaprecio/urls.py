@@ -17,7 +17,7 @@ from django.conf.urls import url
 from django.contrib import admin
 from precios.views import FindProductView, FindView, ChangeProductView,PrintLabelView,ImportCatalogView, RecargaTaeView,ReporteRecargaView, RecargaDatosTaeView, findByCodigoInterno, updateProducto, findByCodigo
 from precios.views import generar_codigo_barras, find_consulta, find_all, guarda_ticket, guarda_producto, genera_etiquetas,genera_etiquetas_mediana, download, upload_file, login_view, logout_view, resumen_movimiento, reporte_diario, recargatae , recargas_periodo, obtenerSaldo, find_products, on_line, reporte_vtadet, rep_vtadet, catalogo_productos, upload_catalogo_proveedor, find_persona, find_historico
-from precios.views import PuntoVentaView, ImportCatalogProveedorView, guarda_producto_nuevo, cargar_cambios_precios, find_cambio_precio, delete_cambio_precio
+from precios.views import PuntoVentaView, ImportCatalogProveedorView, guarda_producto_nuevo, cargar_cambios_precios, find_cambio_precio, delete_cambio_precio, venta_productos
 from django.contrib.auth.decorators import login_required
 
 
@@ -37,6 +37,7 @@ urlpatterns = [
 	url('find_persona/(?P<tipopersona>\w+)/$',find_persona, name='find_persona'),
 	url('find_historico/(?P<proveedor>\w+)/(?P<codigo>\w+)/$',find_historico, name='find_historico'),
         url('resumenmovimiento/(?P<fechaIni>\w+)/(?P<fechaFin>\w+)/$',resumen_movimiento, name='resumen_movimiento'),
+        url('ventaproductos/(?P<fechaIni>\w+)/(?P<fechaFin>\w+)/$',venta_productos, name='ventaproductos'),
         url('findcambioprecios/(?P<proveedor>\w+)$',find_cambio_precio, name='findcambioprecios'),
         url('deletecambioprecios/(?P<key>\w+)$',delete_cambio_precio, name='deletecambioprecios'),
         url('cargacambioprecios/(?P<proveedor>\w+)$',cargar_cambios_precios, name='cargacambioprecios'),

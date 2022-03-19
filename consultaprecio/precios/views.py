@@ -309,6 +309,43 @@ def  recargas_periodo(request,fechaIni, fechaFin):
     return HttpResponse(json.dumps(result), content_type='application/json')
 
 
+def venta_productos(request,fechaIni, fechaFin):
+    result = [];
+    fi = fechaIni[:4] + "/" + fechaIni[4:6] + "/" + fechaIni[6:8]
+    ff = fechaFin[:4] + "/" + fechaFin[4:6] + "/" + fechaFin[6:8]
+    fini = datetime.datetime.strptime(fi  + ' 0:0:0','%Y/%m/%d %H:%M:%S')
+    ffin = datetime.datetime.strptime(ff  + ' 23:59:59','%Y/%m/%d %H:%M:%S')
+    sql = """
+
+                      select to_char(m.fecha,'DD/MM/YYYY HH24:MI:SS') as fecha,
+                                 dm."cantidad",
+                                 dm."description" as descripcion, 
+                                 dm."precioCompra",
+                                 dm."precioVenta",
+                                 dm."cantidad" * dm."precioVenta" * tm."factor_conta" as total,
+                                 tm."factor_conta",
+                                 tm."description",
+                                 m."id",
+                                 dm."id" as "idDetalle"
+                           from precios_detallemovimiento dm inner join precios_movimiento m on
+                                                 m.id = dm.movimiento_id
+                                                              inner join precios_tipomovimiento tm
+                                                                on m.tipo_movimiento_id = tm.id
+                          where tm.prioridad in (2,3,4,5)
+                            and m.fecha between '%s' and '%s'
+                           order by 1 DESC
+          """ % (fini, ffin)
+    print sql
+    cursor = connection.cursor()
+    cursor.execute(sql, [])
+    items = cursor.fetchall()
+    for item in items:
+      dat = {'fecha': item[0] , 'cantidad'  : item[1],  'descripcion' : item[2], 'precioCompra':float(item[3]), 'precioVenta': float(item[4]), 'total':float(item[5]), 'factorConta':float(item[6]),'tipoMovimiento':item[7], 'movimientoId':item[8], 'detalleMovientoId': item[9] }
+      result.append(dat)
+
+    return HttpResponse(json.dumps(result), content_type='application/json')
+
+
 @login_required
 def  resumen_movimiento(request,fechaIni, fechaFin):
     result = [];
