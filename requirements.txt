@@ -1,5 +1,5 @@
 xlrd==1.1.0
-reportlab==3.0
+reportlab==3.5.55
 python-escpos==3.0a8
 viivakoodi==0.8.0
 Django==1.11.15
